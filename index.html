@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gemini Family Budget Command Center v10.6</title>
+    <title>Gemini Family Budget Command Center v10.7</title>
     <style>
         :root {
             --bg-color: #060911;
@@ -80,6 +80,7 @@
             box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
         }
 
+        /* View sections control visibility */
         .view-section {
             display: none;
             flex-direction: column;
@@ -340,11 +341,11 @@
     <div class="main-layout">
         <div class="dashboard-col">
             <div class="nav-tabs">
-                <button class="tab-btn active" onclick="switchTab('dash-view', this)">Dash</button>
-                <button class="tab-btn" onclick="switchTab('converter-view', this)">Converter</button>
-                <button class="tab-btn" onclick="switchTab('analytics-view', this)">Analytics</button>
-                <button class="tab-btn" onclick="switchTab('wishlist-view', this)">Wishlist</button>
-                <button class="tab-btn" onclick="switchTab('income-view', this)">Income</button>
+                <button class="tab-btn active" data-view="dash-view">Dash</button>
+                <button class="tab-btn" data-view="converter-view">Converter</button>
+                <button class="tab-btn" data-view="analytics-view">Analytics</button>
+                <button class="tab-btn" data-view="wishlist-view">Wishlist</button>
+                <button class="tab-btn" data-view="income-view">Income</button>
             </div>
 
             <div id="dash-view" class="view-section active">
@@ -453,14 +454,17 @@
 
         let activeEditingId = null;
 
-        // Guaranteed working tab switcher using inline onclick handlers
-        window.switchTab = function(targetId, btnElement) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+        // Functional Tab Switching Logic
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.onclick = function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
 
-            btnElement.classList.add('active');
-            document.getElementById(targetId).classList.add('active');
-        };
+                this.classList.add('active');
+                const targetViewId = this.getAttribute('data-view');
+                document.getElementById(targetViewId).classList.add('active');
+            };
+        });
 
         function updateUI() {
             document.getElementById('balance-display').innerText = balance.toLocaleString();
@@ -603,7 +607,7 @@
             setTimeout(() => {
                 const aiBubble = document.createElement('div');
                 aiBubble.className = 'chat-bubble ai';
-                aiBubble.textContent = `All systems are functional! Tabs and auto-balancing work cleanly.`;
+                aiBubble.textContent = `All tab views and auto-balancing logic are fully active!`;
                 chatBox.appendChild(aiBubble);
                 chatBox.scrollTop = chatBox.scrollHeight;
             }, 500);
