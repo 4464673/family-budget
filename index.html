@@ -220,4 +220,1010 @@
   }
 
   .btn-action {
-    background: linear-gradient(135deg, #38bdf8, #0284c7
+    background: linear-gradient(135deg, #38bdf8, #0284c7);
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+    white-space: nowrap;
+  }
+
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--accent-red);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .stacked-bar {
+    display: flex;
+    height: 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    margin-top: 10px;
+  }
+
+  .stacked-segment { height: 100%; transition: width 0.5s ease-in-out; }
+
+  .category-card, .grid-item-card {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .progress-bg {
+    background: var(--bg-color);
+    border-radius: 8px;
+    height: 8px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .progress-fill { height: 100%; border-radius: 8px; transition: width 0.5s ease; }
+
+  .tx-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tx-item {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    padding: 10px 14px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .delete-tx { color: var(--accent-red); cursor: pointer; font-size: 14px; margin-left: 8px; }
+
+  .converter-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+  }
+  @media (max-width: 600px) {
+    .converter-grid { grid-template-columns: 1fr; }
+  }
+
+  /* AI SIDEBAR */
+  .ai-sidebar {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--glow-shadow);
+  }
+
+  .chat-feed {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    height: 280px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  @media (min-width: 981px) {
+    .chat-feed { height: 380px; }
+  }
+
+  .chat-msg { padding: 8px 12px; border-radius: 12px; max-width: 90%; word-break: break-word; }
+  .chat-msg.user { background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent-blue); align-self: flex-end; }
+  .chat-msg.ai { background: rgba(192, 132, 252, 0.15); border: 1px solid var(--accent-purple); align-self: flex-start; }
+
+  .page-view { display: none; }
+  .page-view.active { display: block; animation: fadeIn 0.3s ease-out; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body id="appBody">
+
+<div id="profileSelectOverlay" class="overlay-screen">
+  <div class="box-card">
+    <h2 style="color:var(--accent-blue); margin:0; font-size:20px;">👥 Family Profiles</h2>
+    <p style="font-size:11px; color:var(--text-secondary); margin-top:6px;">Select your account to sign in</p>
+    <div class="profiles-grid">
+      <div class="profile-tile" onclick="selectProfilePrompt('Omar')">Omar</div>
+      <div class="profile-tile" onclick="selectProfilePrompt('Zaid')">Zaid</div>
+      <div class="profile-tile" onclick="selectProfilePrompt('Aya')">Aya</div>
+      <div class="profile-tile" onclick="selectProfilePrompt('Maryam')">Maryam</div>
+      <div class="profile-tile" onclick="selectProfilePrompt('Souad')">Souad</div>
+      <div class="profile-tile" onclick="selectProfilePrompt('Sabit')">Sabit</div>
+    </div>
+  </div>
+</div>
+
+<div id="pinOverlay" class="overlay-screen" style="display:none;">
+  <div class="box-card">
+    <h2 id="pinTitle" style="color:var(--accent-blue); margin:0; font-size:20px;">🔒 Enter Password</h2>
+    <p id="pinSub" style="font-size:11px; color:var(--text-secondary); margin-top:6px;">Enter your profile security passcode</p>
+    <input type="password" id="pinInput" class="pin-input" maxlength="6" placeholder="••••" oninput="checkPin()">
+    <div id="pinError" style="color:var(--accent-red); font-size:11px; height:18px; margin-top:4px;"></div>
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <button class="btn-secondary" style="flex:1;" onclick="backToProfiles()">⬅ Back</button>
+      <button class="btn-action" style="flex:2;" id="pinActionBtn" onclick="submitPinBtn()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-grid" id="dashboardCard" style="display:none;">
+  
+  <div class="card">
+    <div class="header">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <h2 style="margin:0; color:var(--accent-blue); font-size:18px;">💳 Gemini Family Pro</h2>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+        <span class="badge" id="currentProfileBadge">👤 Profile</span>
+        <button class="btn-secondary" style="padding:4px 8px; font-size:10px;" onclick="logoutProfile()">Switch Account</button>
+        <select id="langSelector" onchange="changeLanguage(this.value)" style="padding:6px 8px; font-size:11px; width:auto;">
+          <option value="en">EN</option>
+          <option value="ru">RU</option>
+          <option value="kz">KZ</option>
+          <option value="ar">AR</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-btn active" id="tab-dash" onclick="switchPage('dash')" data-i18n="tabDash">📊 Dash</button>
+      <button class="nav-btn" id="tab-converter" onclick="switchPage('converter')" data-i18n="tabConverter">💱 Converter</button>
+      <button class="nav-btn" id="tab-analytics" onclick="switchPage('analytics')" data-i18n="tabAnalytics">📈 Analytics</button>
+      <button class="nav-btn" id="tab-wishlist" onclick="switchPage('wishlist')" data-i18n="tabWishlist">🛒 Wishlist</button>
+      <button class="nav-btn" id="tab-income" onclick="switchPage('income')" data-i18n="tabIncome">💼 Income</button>
+      <button class="nav-btn" id="tab-gaming" onclick="switchPage('gaming')" data-i18n="tabGaming">🎮 Gaming</button>
+      <button class="nav-btn" id="tab-warranty" onclick="switchPage('warranty')" data-i18n="tabWarranty">🛡️ Returns</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title" data-i18n="statBalance">Balance</div>
+        <div class="stat-value" id="grandTotal" style="color:var(--accent-green);">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title" data-i18n="statPace">Daily Pace</div>
+        <div class="stat-value" id="dailyPaceText" style="color:var(--accent-blue);">0</div>
+      </div>
+    </div>
+
+    <div class="page-view active" id="page-dash">
+      <div class="section-box">
+        <b data-i18n="depositTitle" style="font-size:13px;">💰 Deposit Monthly Allowance</b>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <input type="number" id="monthlyInput" value="0" style="flex:1;" placeholder="Amount">
+          <button class="btn-action" onclick="addMonthlyAllowance()" data-i18n="depositBtn">➕ Deposit</button>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <b data-i18n="quickLogTitle" style="font-size:13px;">🧾 Quick Log Expense</b>
+        <div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+          <input type="text" id="txName" data-i18n-placeholder="descPlaceholder" placeholder="Item description" style="flex:2; min-width:110px;">
+          <input type="number" id="txAmount" data-i18n-placeholder="amountPlaceholder" placeholder="Amount" style="flex:1; min-width:80px;">
+          <select id="txCategory" style="flex:1; min-width:100px;">
+            <option value="0" data-i18n="catSavings">Savings</option>
+            <option value="1" data-i18n="catEmergency">Emergency</option>
+            <option value="2" selected data-i18n="catBills">Bills</option>
+            <option value="3" data-i18n="catFun">Fun</option>
+          </select>
+          <button class="btn-action" onclick="logExpense()" data-i18n="deductBtn">💸 Deduct</button>
+        </div>
+      </div>
+
+      <b data-i18n="catBudgetsTitle" style="font-size:13px;">📂 Category Budgets</b>
+      <div id="categoriesContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="page-view" id="page-converter">
+      <div class="section-box">
+        <b data-i18n="convHeader" style="font-size:13px;">💱 Global Currency Converter</b>
+        <p style="font-size:11px; color:var(--text-secondary); margin-top:4px;" data-i18n="convSub">Convert across dozens of currencies, crypto coins, and precious metals instantly.</p>
+        
+        <div class="converter-grid">
+          <div>
+            <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:4px;" data-i18n="fromLbl">From Amount & Currency</label>
+            <input type="number" id="convInput" value="500" style="width:100%; margin-bottom:6px;" oninput="convertCurrency()">
+            <select id="convFromCurr" style="width:100%;" onchange="convertCurrency()"></select>
+          </div>
+          <div style="text-align:center; font-size:20px; color:var(--accent-blue); padding-top:10px;">➔</div>
+          <div>
+            <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:4px;" data-i18n="toLbl">To Currency</label>
+            <div id="convResultDisplay" style="background:var(--bg-color); border:1px solid var(--border-color); border-radius:12px; padding:10px 12px; font-size:14px; font-weight:800; color:var(--accent-green); margin-bottom:6px; min-height:41px; display:flex; align-items:center;">0.00</div>
+            <select id="convToCurr" style="width:100%;" onchange="convertCurrency()"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-view" id="page-analytics">
+      <div class="section-box">
+        <b data-i18n="breakdownTitle" style="font-size:13px;">📊 Visual Allocation Breakdown</b>
+        <div class="stacked-bar" id="chartBar"></div>
+      </div>
+      <div class="section-box">
+        <b data-i18n="insightsTitle" style="font-size:13px;">⚡ Spending Insights</b>
+        <div style="margin-top:10px; font-size:12px; line-height:1.7;">
+          • <span data-i18n="insightLogged">Total Logged Items:</span> <b id="analyticsCount">0</b><br>
+          • <span data-i18n="insightSpent">Total Spent All-Time:</span> <b id="analyticsTotalSpent" style="color:var(--accent-red);">0 KZT</b>
+        </div>
+      </div>
+      <button class="btn-danger" onclick="resetAll()" data-i18n="resetBtn">💥 Reset Profile Data</button>
+    </div>
+
+    <div class="page-view" id="page-wishlist">
+      <div class="section-box">
+        <b data-i18n="wishAddTitle" style="font-size:13px;">🛒 Add Item to Wishlist</b>
+        <div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+          <input type="text" id="wishName" data-i18n-placeholder="wishPlaceholder" placeholder="Item (e.g. GPU, Shoes)" style="flex:2; min-width:110px;">
+          <input type="number" id="wishCost" placeholder="Cost KZT" style="flex:1; min-width:80px;">
+          <button class="btn-action" onclick="addWishItem()" data-i18n="addBtn">➕ Add</button>
+        </div>
+      </div>
+      <b data-i18n="wishGridTitle" style="font-size:13px;">🎯 Wishlist Market Grid</b>
+      <div id="wishlistContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="page-view" id="page-income">
+      <div class="section-box">
+        <b data-i18n="incomeAddTitle" style="font-size:13px;">💼 Log Income / Side Hustle</b>
+        <div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+          <input type="text" id="incSource" data-i18n-placeholder="incomePlaceholder" placeholder="Source" style="flex:2; min-width:110px;">
+          <input type="number" id="incAmount" placeholder="Amount KZT" style="flex:1; min-width:80px;">
+          <button class="btn-action" onclick="addIncomeItem()" data-i18n="incomeBtn">📥 Add Funds</button>
+        </div>
+      </div>
+      <b data-i18n="incomeRecordsTitle" style="font-size:13px;">📈 Income Records</b>
+      <div class="tx-list" id="incomeListContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="page-view" id="page-gaming">
+      <div class="section-box">
+        <b data-i18n="gameTitle" style="font-size:13px;">🎮 Virtual Game Currency Calculator</b>
+        <p style="font-size:11px; color:var(--text-secondary); margin-top:4px;" data-i18n="gameSub">Check how much Robux, V-Bucks, or RP cost in KZT.</p>
+        
+        <div style="display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap;">
+          <select id="gameSelect" style="flex:2; min-width:140px;" onchange="calculateGameCurrency()">
+            <option value="4.8">Robux (Roblox) — ~4.8 KZT</option>
+            <option value="3.5">V-Bucks (Fortnite) — ~3.5 KZT</option>
+            <option value="3.2">Valorant Points — ~3.2 KZT</option>
+          </select>
+          <input type="number" id="gameAmount" value="1000" style="flex:1; min-width:80px;" placeholder="Quantity" oninput="calculateGameCurrency()">
+        </div>
+        <div style="margin-top:12px; background:var(--bg-color); padding:12px; border-radius:12px; border:1px solid var(--border-color); font-weight:800; color:var(--accent-yellow); font-size:12px;">
+          <span data-i18n="estCost">Estimated Cost:</span> <span id="gameResultCost">4,800</span> KZT
+        </div>
+      </div>
+    </div>
+
+    <div class="page-view" id="page-warranty">
+      <div class="section-box">
+        <b data-i18n="warTitle" style="font-size:13px;">🛡️ Register Product Warranty / Return</b>
+        <div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+          <input type="text" id="warName" data-i18n-placeholder="prodPlaceholder" placeholder="Product name" style="flex:2; min-width:110px;">
+          <input type="date" id="warExpiry" style="flex:1; min-width:110px;">
+          <button class="btn-action" onclick="addWarrantyItem()" data-i18n="warBtn">🛡️ Track Return</button>
+        </div>
+      </div>
+      <b data-i18n="warRecordsTitle" style="font-size:13px;">⏳ Active Warranties & Returns</b>
+      <div id="warrantyContainer" style="margin-top:10px;"></div>
+    </div>
+
+  </div>
+
+  <div class="ai-sidebar">
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <h3 style="margin:0; color:var(--accent-purple); font-size:15px;">🤖 Gemini AI</h3>
+        <span class="badge" style="background:rgba(192, 132, 252, 0.1); color:var(--accent-purple);">ONLINE</span>
+      </div>
+      <p style="font-size:10px; color:var(--text-secondary); margin-top:4px;" data-i18n="aiSub">Ask anything about your account or budget!</p>
+      <div class="chat-feed" id="chatFeed">
+        <div class="chat-msg ai" id="aiWelcomeMsg">👋 Welcome! Your profile session is active and secure.</div>
+      </div>
+    </div>
+    <div style="margin-top:12px; display:flex; gap:6px;">
+      <input type="text" id="aiUserPrompt" data-i18n-placeholder="aiPlaceholder" placeholder="Ask AI..." style="flex:1;" onkeypress="if(event.key==='Enter') sendAiQuery()">
+      <button class="btn-action" style="background:linear-gradient(135deg, #c084fc, #9333ea);" onclick="sendAiQuery()" data-i18n="aiBtn">💬 Ask</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // TRANSLATIONS DICTIONARY
+  var translations = {
+    en: {
+      secCenter: "🔒 Family Security",
+      unlockBtn: "Open Command Center",
+      tabDash: "📊 Dash",
+      tabConverter: "💱 Converter",
+      tabAnalytics: "📈 Analytics",
+      tabWishlist: "🛒 Wishlist",
+      tabIncome: "💼 Income",
+      tabGaming: "🎮 Gaming",
+      tabWarranty: "🛡️ Returns",
+      statBalance: "Balance",
+      statPace: "Daily Pace",
+      depositTitle: "💰 Deposit Monthly Allowance",
+      depositBtn: "➕ Deposit",
+      quickLogTitle: "🧾 Quick Log Expense",
+      descPlaceholder: "Item description",
+      amountPlaceholder: "Amount",
+      catSavings: "Savings",
+      catEmergency: "Emergency",
+      catBills: "Bills",
+      catFun: "Fun",
+      deductBtn: "💸 Deduct",
+      catBudgetsTitle: "📂 Category Budgets",
+      convHeader: "💱 Global Currency Converter",
+      convSub: "Convert across dozens of currencies, crypto coins, and precious metals instantly.",
+      fromLbl: "From Amount & Currency",
+      toLbl: "To Currency",
+      breakdownTitle: "📊 Visual Allocation Breakdown",
+      insightsTitle: "⚡ Spending Insights",
+      insightLogged: "Total Logged Items:",
+      insightSpent: "Total Spent All-Time:",
+      resetBtn: "💥 Reset Profile Data",
+      wishAddTitle: "🛒 Add Item to Wishlist",
+      wishPlaceholder: "Item (e.g. GPU, Shoes)",
+      addBtn: "➕ Add",
+      wishGridTitle: "🎯 Wishlist Market Grid",
+      incomeAddTitle: "💼 Log Income / Side Hustle",
+      incomePlaceholder: "Source",
+      incomeBtn: "📥 Add Funds",
+      incomeRecordsTitle: "📈 Income Records",
+      gameTitle: "🎮 Virtual Game Currency Calculator",
+      gameSub: "Check how much Robux, V-Bucks, or RP cost in KZT.",
+      estCost: "Estimated Cost:",
+      warTitle: "🛡️ Register Product Warranty / Return",
+      prodPlaceholder: "Product name",
+      warBtn: "🛡️ Track Return",
+      warRecordsTitle: "⏳ Active Warranties & Returns",
+      aiSub: "Ask anything about your account or budget!",
+      aiWelcome: "👋 Welcome! Your profile session is active and secure.",
+      aiPlaceholder: "Ask AI...",
+      aiBtn: "💬 Ask",
+      readyBuy: "🟩 Ready to buy!",
+      savingUp: "⏳ Saving up...",
+      buyNow: "Buy Now",
+      daysLeft: "days left",
+      expired: "Expired",
+      expiryDate: "Expiry Date:"
+    },
+    ru: {
+      secCenter: "🔒 Безопасность семьи",
+      unlockBtn: "Открыть панель",
+      tabDash: "📊 Главная",
+      tabConverter: "💱 Конвертер",
+      tabAnalytics: "📈 Аналитика",
+      tabWishlist: "🛒 Желания",
+      tabIncome: "💼 Доходы",
+      tabGaming: "🎮 Игры",
+      tabWarranty: "🛡️ Возвраты",
+      statBalance: "Баланс",
+      statPace: "Лимит на день",
+      depositTitle: "💰 Пополнить бюджет",
+      depositBtn: "➕ Пополнить",
+      quickLogTitle: "🧾 Быстрый расход",
+      descPlaceholder: "Описание товара",
+      amountPlaceholder: "Сумма",
+      catSavings: "Сбережения",
+      catEmergency: "Резерв",
+      catBills: "Счета",
+      catFun: "Развлечения",
+      deductBtn: "💸 Списать",
+      catBudgetsTitle: "📂 Бюджет категорий",
+      convHeader: "💱 Конвертер мировых валют",
+      convSub: "Мгновенная конвертация валют, криптовалюты и металлов.",
+      fromLbl: "Сумма и валюта",
+      toLbl: "Целевая валюта",
+      breakdownTitle: "📊 Распределение",
+      insightsTitle: "⚡ Анализ расходов",
+      insightLogged: "Всего записей:",
+      insightSpent: "Всего потрачено:",
+      resetBtn: "💥 Сбросить профиль",
+      wishAddTitle: "🛒 Добавить в желания",
+      wishPlaceholder: "Товар (напр. обувь)",
+      addBtn: "➕ Добавить",
+      wishGridTitle: "🎯 Сетка желаний",
+      incomeAddTitle: "💼 Записать доход",
+      incomePlaceholder: "Источник",
+      incomeBtn: "📥 Добавить",
+      incomeRecordsTitle: "📈 История доходов",
+      gameTitle: "🎮 Калькулятор игровой валюты",
+      gameSub: "Стоимость Robux, V-Bucks или RP в тенге.",
+      estCost: "Примерная стоимость:",
+      warTitle: "🛡️ Регистрация возврата",
+      prodPlaceholder: "Название товара",
+      warBtn: "🛡️ Отслеживать",
+      warRecordsTitle: "⏳ Активные гарантии",
+      aiSub: "Задавайте вопросы по вашему счету!",
+      aiWelcome: "👋 Сессия профиля активна.",
+      aiPlaceholder: "Спросите ИИ...",
+      aiBtn: "💬 Спросить",
+      readyBuy: "🟩 Можно покупать!",
+      savingUp: "⏳ Копим...",
+      buyNow: "Купить",
+      daysLeft: "дней осталось",
+      expired: "Истекло",
+      expiryDate: "Окончание:"
+    },
+    kz: {
+      secCenter: "🔒 Отбасы қауіпсіздігі",
+      unlockBtn: "Ашу",
+      tabDash: "📊 Басты",
+      tabConverter: "💱 Конвертер",
+      tabAnalytics: "📈 Аналитика",
+      tabWishlist: "🛒 Армандар",
+      tabIncome: "💼 Кіріс",
+      tabGaming: "🎮 Ойындар",
+      tabWarranty: "🛡️ Қайтару",
+      statBalance: "Баланс",
+      statPace: "Күндік лимит",
+      depositTitle: "💰 Бюджетті толықтыру",
+      depositBtn: "➕ Салу",
+      quickLogTitle: "🧾 Шығынды тіркеу",
+      descPlaceholder: "Сипаттамасы",
+      amountPlaceholder: "Сомасы",
+      catSavings: "Жинақ",
+      catEmergency: "Төтенше",
+      catBills: "Шоттар",
+      catFun: "Қызық",
+      deductBtn: "💸 Азайту",
+      catBudgetsTitle: "📂 Санаттар бюджеті",
+      convHeader: "💱 Әлемдік валюталар конвертері",
+      convSub: "Валюталар мен криптоны лезде айырбастаңыз.",
+      fromLbl: "Бастапқы сома мен валюта",
+      toLbl: "Мақсатты валюта",
+      breakdownTitle: "📊 Бөлініс",
+      insightsTitle: "⚡ Талдау",
+      insightLogged: "Барлық жазбалар:",
+      insightSpent: "Барлық жұмсалғаны:",
+      resetBtn: "💥 Профильді тазарту",
+      wishAddTitle: "🛒 Армандарға қосу",
+      wishPlaceholder: "Зат",
+      addBtn: "➕ Қосу",
+      wishGridTitle: "🎯 Армандар торлары",
+      incomeAddTitle: "💼 Кіріс қосу",
+      incomePlaceholder: "Қайдан",
+      incomeBtn: "📥 Қосу",
+      incomeRecordsTitle: "📈 Кіріс тарихы",
+      gameTitle: "🎮 Ойын валютасының калькуляторы",
+      gameSub: "Robux немесе V-Bucks теңге бағасы.",
+      estCost: "Құны:",
+      warTitle: "🛡️ Кепілдік немесе қайтару",
+      prodPlaceholder: "Өнім атауы",
+      warBtn: "🛡️ Бақылау",
+      warRecordsTitle: "⏳ Белсенді кепілдіктер",
+      aiSub: "Есептік жазбаңыз туралы сұраңыз!",
+      aiWelcome: "👋 Профиль сессиясы қосылды.",
+      aiPlaceholder: "AI-дан сұраңыз...",
+      aiBtn: "💬 Сұрау",
+      readyBuy: "🟩 Сатып алуға болады!",
+      savingUp: "⏳ Жинақталуда...",
+      buyNow: "Сатып алу",
+      daysLeft: "күн қалды",
+      expired: "Мерзімі өтті",
+      expiryDate: "Аяқталуы:"
+    },
+    ar: {
+      secCenter: "🔒 أمان العائلة",
+      unlockBtn: "فتح لوحة التحكم",
+      tabDash: "📊 الرئيسية",
+      tabConverter: "💱 المحول",
+      tabAnalytics: "📈 التحليلات",
+      tabWishlist: "🛒 الأمنيات",
+      tabIncome: "💼 الدخل",
+      tabGaming: "🎮 الألعاب",
+      tabWarranty: "🛡️ المرتجعات",
+      statBalance: "الرصيد",
+      statPace: "المعدل اليومي",
+      depositTitle: "💰 إيداع المصروف",
+      depositBtn: "➕ إيداع",
+      quickLogTitle: "🧾 تسجيل مصروف",
+      descPlaceholder: "الوصف",
+      amountPlaceholder: "المبلغ",
+      catSavings: "الادخار",
+      catEmergency: "الطوارئ",
+      catBills: "الفواتير",
+      catFun: "الترفيه",
+      deductBtn: "💸 خصم",
+      catBudgetsTitle: "📂 ميزانيات الفئات",
+      convHeader: "💱 محول العملات العالمي",
+      convSub: "تحويل العملات والعملات المشفرة فوراً.",
+      fromLbl: "المبلغ والعملة",
+      toLbl: "العملة المستهدفة",
+      breakdownTitle: "📊 التوزيع",
+      insightsTitle: "⚡ رؤى الإنفاق",
+      insightLogged: "العناصر المسجلة:",
+      insightSpent: "إجمالي المنفق:",
+      resetBtn: "💥 إعادة تعيين الملف",
+      wishAddTitle: "🛒 إضافة للأمنيات",
+      wishPlaceholder: "العنصر",
+      addBtn: "➕ إضافة",
+      wishGridTitle: "🎯 قائمة الأمنيات",
+      incomeAddTitle: "💼 تسجيل الدخل",
+      incomePlaceholder: "المصدر",
+      incomeBtn: "📥 إضافة",
+      incomeRecordsTitle: "📈 سجلات الدخل",
+      gameTitle: "🎮 حاسبة عملات الألعاب",
+      gameSub: "حساب تكلفة روبوكس وفورتنايت.",
+      estCost: "التكلفة المقدرة:",
+      warTitle: "🛡️ تسجيل الضمان",
+      prodPlaceholder: "اسم المنتج",
+      warBtn: "🛡️ تتبع",
+      warRecordsTitle: "⏳ الضمانات النشطة",
+      aiSub: "اسأل عن رصيدك وميزانيتك!",
+      aiWelcome: "👋 جلسة الملف الشخصي نشطة.",
+      aiPlaceholder: "اسأل الذكاء الاصطناعي...",
+      aiBtn: "💬 اسأل",
+      readyBuy: "🟩 جاهز للشراء!",
+      savingUp: "⏳ جاري التوفير...",
+      buyNow: "اشتري",
+      daysLeft: "أيام متبقية",
+      expired: "منتهي",
+      expiryDate: "التاريخ:"
+    }
+  };
+
+  var currentLang = localStorage.getItem('appLang') || 'en';
+  var selectedProfile = '';
+  var isSettingNewPin = false;
+
+  function changeLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('appLang', lang);
+    var body = document.getElementById('appBody');
+    if (lang === 'ar') {
+      body.setAttribute('dir', 'rtl');
+    } else {
+      body.setAttribute('dir', 'ltr');
+    }
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      var key = el.getAttribute('data-i18n');
+      if (translations[currentLang][key]) {
+        el.innerText = translations[currentLang][key];
+      }
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      var key = el.getAttribute('data-i18n-placeholder');
+      if (translations[currentLang][key]) {
+        el.setAttribute('placeholder', translations[currentLang][key]);
+      }
+    });
+  }
+
+  function selectProfilePrompt(profileName) {
+    selectedProfile = profileName;
+    document.getElementById('profileSelectOverlay').style.display = 'none';
+    document.getElementById('pinOverlay').style.display = 'flex';
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinError').innerText = '';
+
+    var existingPin = localStorage.getItem('pin_' + selectedProfile);
+    if (!existingPin) {
+      isSettingNewPin = true;
+      document.getElementById('pinTitle').innerText = "Create Password for " + selectedProfile;
+      document.getElementById('pinSub').innerText = "Set your personal passcode";
+      document.getElementById('pinActionBtn').innerText = "Save & Open";
+    } else {
+      isSettingNewPin = false;
+      document.getElementById('pinTitle').innerText = "Welcome back, " + selectedProfile;
+      document.getElementById('pinSub').innerText = "Enter your profile security passcode";
+      document.getElementById('pinActionBtn').innerText = "Unlock";
+    }
+    document.getElementById('pinInput').focus();
+  }
+
+  function backToProfiles() {
+    document.getElementById('pinOverlay').style.display = 'none';
+    document.getElementById('profileSelectOverlay').style.display = 'flex';
+  }
+
+  function checkPin() {
+    var val = document.getElementById('pinInput').value;
+    if (val.length >= 4) {
+      submitPin();
+    }
+  }
+
+  function submitPinBtn() {
+    submitPin();
+  }
+
+  function submitPin() {
+    var val = document.getElementById('pinInput').value;
+    if (isSettingNewPin) {
+      if (val.length < 4) {
+        document.getElementById('pinError').innerText = "Password must be at least 4 characters.";
+        return;
+      }
+      localStorage.setItem('pin_' + selectedProfile, val);
+      launchDashboard();
+    } else {
+      var correctPin = localStorage.getItem('pin_' + selectedProfile);
+      if (val === correctPin) {
+        launchDashboard();
+      } else {
+        document.getElementById('pinError').innerText = "Incorrect password. Try again.";
+      }
+    }
+  }
+
+  function logoutProfile() {
+    document.getElementById('dashboardCard').style.display = 'none';
+    document.getElementById('profileSelectOverlay').style.display = 'flex';
+  }
+
+  // APP DATA & STORAGE
+  var categories = [
+    { name: "Savings", budget: 3000, spent: 0, color: "#34d399" },
+    { name: "Emergency", budget: 2000, spent: 0, color: "#38bdf8" },
+    { name: "Bills", budget: 6000, spent: 0, color: "#fbbf24" },
+    { name: "Fun", budget: 4000, spent: 0, color: "#f87171" }
+  ];
+
+  function getStorageKey(key) { return selectedProfile + '_' + key; }
+
+  function loadProfileData() {
+    var savedBal = localStorage.getItem(getStorageKey('balance'));
+    if (savedBal !== null) {
+      balance = parseFloat(savedBal);
+    } else {
+      balance = 0;
+    }
+    
+    var savedCats = localStorage.getItem(getStorageKey('categories'));
+    if (savedCats) categories = JSON.parse(savedCats);
+
+    var savedTx = localStorage.getItem(getStorageKey('transactions'));
+    transactions = savedTx ? JSON.parse(savedTx) : [];
+
+    var savedWish = localStorage.getItem(getStorageKey('wishlist'));
+    wishlist = savedWish ? JSON.parse(savedWish) : [];
+
+    var savedInc = localStorage.getItem(getStorageKey('income'));
+    incomeList = savedInc ? JSON.parse(savedInc) : [];
+
+    var savedWar = localStorage.getItem(getStorageKey('warranty'));
+    warrantyList = savedWar ? JSON.parse(savedWar) : [];
+  }
+
+  function saveProfileData() {
+    localStorage.setItem(getStorageKey('balance'), balance);
+    localStorage.setItem(getStorageKey('categories'), JSON.stringify(categories));
+    localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
+    localStorage.setItem(getStorageKey('wishlist'), JSON.stringify(wishlist));
+    localStorage.setItem(getStorageKey('income'), JSON.stringify(incomeList));
+    localStorage.setItem(getStorageKey('warranty'), JSON.stringify(warrantyList));
+  }
+
+  var balance = 0;
+  var transactions = [];
+  var wishlist = [];
+  var incomeList = [];
+  var warrantyList = [];
+
+  function launchDashboard() {
+    document.getElementById('pinOverlay').style.display = 'none';
+    document.getElementById('dashboardCard').style.display = 'grid';
+    document.getElementById('currentProfileBadge').innerText = "👤 " + selectedProfile;
+    
+    loadProfileData();
+    changeLanguage(currentLang);
+    initConverterOptions();
+    updateUI();
+  }
+
+  function switchPage(pageId) {
+    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById('page-' + pageId).classList.add('active');
+    document.getElementById('tab-' + pageId).classList.add('active');
+  }
+
+  function updateUI() {
+    document.getElementById('grandTotal').innerText = balance.toLocaleString();
+    
+    // Daily pace approximation over 30 days
+    var dailyPace = Math.round(balance / 30);
+    document.getElementById('dailyPaceText').innerText = dailyPace.toLocaleString();
+
+    // Render Categories
+    var catContainer = document.getElementById('categoriesContainer');
+    catContainer.innerHTML = '';
+    categories.forEach((cat, idx) => {
+      var pct = cat.budget > 0 ? Math.min(100, Math.round((cat.spent / cat.budget) * 100)) : 0;
+      catContainer.innerHTML += `
+        <div class="category-card">
+          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
+            <span>${cat.name}</span>
+            <span>${cat.spent.toLocaleString()} / ${cat.budget.toLocaleString()} KZT</span>
+          </div>
+          <div class="progress-bg">
+            <div class="progress-fill" style="width:${pct}%; background:${cat.color};"></div>
+          </div>
+        </div>
+      `;
+    });
+
+    // Render Analytics Chart Bar
+    var chartBar = document.getElementById('chartBar');
+    chartBar.innerHTML = '';
+    var totalBudgetSum = categories.reduce((acc, c) => acc + c.budget, 0);
+    if (totalBudgetSum === 0) totalBudgetSum = 1;
+    categories.forEach(cat => {
+      var wPct = (cat.budget / totalBudgetSum) * 100;
+      chartBar.innerHTML += `<div class="stacked-segment" style="width:${wPct}%; background:${cat.color};" title="${cat.name}"></div>`;
+    });
+
+    var totalSpentAllTime = transactions.reduce((acc, t) => acc + t.amount, 0);
+    document.getElementById('analyticsCount').innerText = transactions.length;
+    document.getElementById('analyticsTotalSpent').innerText = totalSpentAllTime.toLocaleString() + " KZT";
+
+    renderWishlist();
+    renderIncome();
+    renderWarranty();
+    saveProfileData();
+  }
+
+  function addMonthlyAllowance() {
+    var amt = parseFloat(document.getElementById('monthlyInput').value);
+    if (isNaN(amt) || amt <= 0) return;
+    balance += amt;
+    document.getElementById('monthlyInput').value = '';
+    updateUI();
+  }
+
+  function logExpense() {
+    var name = document.getElementById('txName').value.trim();
+    var amt = parseFloat(document.getElementById('txAmount').value);
+    var catIdx = parseInt(document.getElementById('txCategory').value);
+
+    if (!name || isNaN(amt) || amt <= 0) return;
+
+    balance -= amt;
+    categories[catIdx].spent += amt;
+    transactions.unshift({ name: name, amount: amt, category: categories[catIdx].name });
+
+    document.getElementById('txName').value = '';
+    document.getElementById('txAmount').value = '';
+    updateUI();
+  }
+
+  // CURRENCY CONVERTER
+  var currencyRates = {
+    "KZT": 1, "USD": 450, "EUR": 490, "GBP": 570, "RUB": 5.0,
+    "BTC": 32000000, "ETH": 1800000, "Gold(g)": 30000, "Silver(g)": 350
+  };
+
+  function initConverterOptions() {
+    var fromSel = document.getElementById('convFromCurr');
+    var toSel = document.getElementById('convToCurr');
+    fromSel.innerHTML = '';
+    toSel.innerHTML = '';
+    for (var curr in currencyRates) {
+      fromSel.innerHTML += `<option value="${curr}">${curr}</option>`;
+      toSel.innerHTML += `<option value="${curr}">${curr}</option>`;
+    }
+    toSel.value = "USD";
+    convertCurrency();
+  }
+
+  function convertCurrency() {
+    var amt = parseFloat(document.getElementById('convInput').value) || 0;
+    var fromCurr = document.getElementById('convFromCurr').value;
+    var toCurr = document.getElementById('convToCurr').value;
+
+    var valInKzt = amt * currencyRates[fromCurr];
+    var finalVal = valInKzt / currencyRates[toCurr];
+
+    document.getElementById('convResultDisplay').innerText = finalVal.toLocaleString(undefined, {maximumFractionDigits: 2}) + " " + toCurr;
+  }
+
+  // WISHLIST
+  function addWishItem() {
+    var name = document.getElementById('wishName').value.trim();
+    var cost = parseFloat(document.getElementById('wishCost').value);
+    if (!name || isNaN(cost) || cost <= 0) return;
+
+    wishlist.push({ name: name, cost: cost });
+    document.getElementById('wishName').value = '';
+    document.getElementById('wishCost').value = '';
+    updateUI();
+  }
+
+  function renderWishlist() {
+    var container = document.getElementById('wishlistContainer');
+    container.innerHTML = '';
+    wishlist.forEach((item, idx) => {
+      var canBuy = balance >= item.cost;
+      container.innerHTML += `
+        <div class="grid-item-card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <b style="font-size:13px;">${item.name}</b><br>
+            <span style="font-size:11px; color:var(--text-secondary);">${item.cost.toLocaleString()} KZT</span><br>
+            <span style="font-size:10px; font-weight:700; color:${canBuy ? 'var(--accent-green)' : 'var(--accent-yellow)'};">${canBuy ? '🟩 Ready to buy!' : '⏳ Saving up...'}</span>
+          </div>
+          <button class="btn-action" onclick="buyWishItem(${idx})" ${canBuy ? '' : 'style="opacity:0.5;"'}>Buy Now</button>
+        </div>
+      `;
+    });
+  }
+
+  function buyWishItem(idx) {
+    var item = wishlist[idx];
+    if (balance >= item.cost) {
+      balance -= item.cost;
+      transactions.unshift({ name: "Wishlist: " + item.name, amount: item.cost, category: "Fun" });
+      wishlist.splice(idx, 1);
+      updateUI();
+    }
+  }
+
+  // INCOME
+  function addIncomeItem() {
+    var src = document.getElementById('incSource').value.trim();
+    var amt = parseFloat(document.getElementById('incAmount').value);
+    if (!src || isNaN(amt) || amt <= 0) return;
+
+    incomeList.unshift({ source: src, amount: amt });
+    balance += amt;
+    document.getElementById('incSource').value = '';
+    document.getElementById('incAmount').value = '';
+    updateUI();
+  }
+
+  function renderIncome() {
+    var container = document.getElementById('incomeListContainer');
+    container.innerHTML = '';
+    incomeList.forEach(inc => {
+      container.innerHTML += `
+        <div class="tx-item">
+          <span>💼 <b>${inc.source}</b></span>
+          <span style="color:var(--accent-green); font-weight:800;">+${inc.amount.toLocaleString()} KZT</span>
+        </div>
+      `;
+    });
+  }
+
+  // GAMING CALCULATOR
+  function calculateGameCurrency() {
+    var rate = parseFloat(document.getElementById('gameSelect').value);
+    var qty = parseFloat(document.getElementById('gameAmount').value) || 0;
+    var totalCost = rate * qty;
+    document.getElementById('gameResultCost').innerText = totalCost.toLocaleString(undefined, {maximumFractionDigits: 0});
+  }
+
+  // WARRANTY
+  function addWarrantyItem() {
+    var name = document.getElementById('warName').value.trim();
+    var expiry = document.getElementById('warExpiry').value;
+    if (!name || !expiry) return;
+
+    warrantyList.push({ name: name, expiry: expiry });
+    document.getElementById('warName').value = '';
+    document.getElementById('warExpiry').value = '';
+    updateUI();
+  }
+
+  function renderWarranty() {
+    var container = document.getElementById('warrantyContainer');
+    container.innerHTML = '';
+    warrantyList.forEach((w, idx) => {
+      var isExp = new Date(w.expiry) < new Date();
+      container.innerHTML += `
+        <div class="grid-item-card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <b style="font-size:13px;">🛡️ ${w.name}</b><br>
+            <span style="font-size:11px; color:var(--text-secondary);">Expiry Date: ${w.expiry}</span><br>
+            <span style="font-size:10px; font-weight:700; color:${isExp ? 'var(--accent-red)' : 'var(--accent-green)'};">${isExp ? 'Expired' : 'Active'}</span>
+          </div>
+          <button class="btn-secondary" onclick="removeWarranty(${idx})" style="color:var(--accent-red);">Remove</button>
+        </div>
+      `;
+    });
+  }
+
+  function removeWarranty(idx) {
+    warrantyList.splice(idx, 1);
+    updateUI();
+  }
+
+  function resetAll() {
+    if (confirm("Reset profile data?")) {
+      localStorage.removeItem(getStorageKey('balance'));
+      localStorage.removeItem(getStorageKey('categories'));
+      localStorage.removeItem(getStorageKey('transactions'));
+      localStorage.removeItem(getStorageKey('wishlist'));
+      localStorage.removeItem(getStorageKey('income'));
+      localStorage.removeItem(getStorageKey('warranty'));
+      location.reload();
+    }
+  }
+
+  // AI CHAT
+  function sendAiQuery() {
+    var input = document.getElementById('aiUserPrompt');
+    var text = input.value.trim();
+    if (!text) return;
+
+    var feed = document.getElementById('chatFeed');
+    feed.innerHTML += `<div class="chat-msg user">${text}</div>`;
+    input.value = '';
+    feed.scrollTop = feed.scrollHeight;
+
+    setTimeout(() => {
+      var reply = "I'm your Gemini AI assistant. Your current account balance is " + balance.toLocaleString() + " KZT.";
+      var lowText = text.toLowerCase();
+      if (lowText.includes("hello") || lowText.includes("hi")) {
+        reply = "Hello! How can I help you manage your family budget today?";
+      } else if (lowText.includes("balance") || lowText.includes("money")) {
+        reply = "You currently have " + balance.toLocaleString() + " KZT in your account.";
+      } else if (lowText.includes("spend") || lowText.includes("total")) {
+        var spentSum = transactions.reduce((a, b) => a + b.amount, 0);
+        reply = "You have spent a total of " + spentSum.toLocaleString() + " KZT across all-time transactions.";
+      }
+      feed.innerHTML += `<div class="chat-msg ai">${reply}</div>`;
+      feed.scrollTop = feed.scrollHeight;
+    }, 500);
+  }
+</script>
+</body>
+</html>
