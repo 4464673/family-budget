@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gemini Family Budget Command Center v10.0</title>
+    <title>Gemini Family Budget Command Center v10.1</title>
     <style>
         :root {
             --bg-color: #060911;
@@ -343,7 +343,7 @@
                 <h3>💰 Deposit Monthly Allowance</h3>
                 <div class="input-group">
                     <input type="number" id="deposit-input" placeholder="Amount">
-                    <button class="btn-action" onclick="depositMoney()">Deposit</button>
+                    <button class="btn-action" id="deposit-btn">Deposit</button>
                 </div>
             </div>
 
@@ -355,9 +355,8 @@
                         <input type="number" id="expense-amount" placeholder="Amount">
                     </div>
                     <div class="input-group">
-                        <select id="expense-category">
-                            </select>
-                        <button class="btn-action" onclick="logExpense()">Deduct</button>
+                        <select id="expense-category"></select>
+                        <button class="btn-action" id="deduct-btn">Deduct</button>
                     </div>
                 </div>
             </div>
@@ -375,7 +374,7 @@
             </div>
             <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Ask AI..." onkeypress="handleChatKey(event)">
-                <button class="chat-btn" onclick="sendChatMessage()">Ask</button>
+                <button class="chat-btn" id="chat-send-btn">Ask</button>
             </div>
         </div>
     </div>
@@ -388,8 +387,8 @@
             <label>Target Share Percentage (%)</label>
             <input type="number" id="editPercent" step="1">
             <div class="modal-buttons">
-                <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-save" onclick="saveCategoryChanges()">Save Changes</button>
+                <button class="btn btn-cancel" id="modal-cancel-btn">Cancel</button>
+                <button class="btn btn-save" id="modal-save-btn">Save Changes</button>
             </div>
         </div>
     </div>
@@ -412,7 +411,6 @@
             container.innerHTML = '';
 
             categories.forEach(cat => {
-                // Automatically calculate max money limit using the balance & percentage share
                 const targetMax = Math.round((balance * cat.percentShare) / 100);
                 const progressRatio = targetMax > 0 ? Math.min(Math.round((cat.current / targetMax) * 100), 100) : 0;
                 
@@ -427,7 +425,7 @@
                         <span class="category-name">${cat.name}</span>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span class="category-percent">${cat.percentShare}%</span>
-                            <button class="edit-btn" onclick="openModal('${cat.id}')">Edit</button>
+                            <button class="edit-btn" data-id="${cat.id}">Edit</button>
                         </div>
                     </div>
                     <div class="category-details">
@@ -438,6 +436,13 @@
                     </div>
                 `;
                 container.appendChild(card);
+            });
+
+            // Bind click events on newly created edit buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    openModal(e.target.getAttribute('data-id'));
+                });
             });
 
             const select = document.getElementById('expense-category');
@@ -523,7 +528,7 @@
             setTimeout(() => {
                 const aiBubble = document.createElement('div');
                 aiBubble.className = 'chat-bubble ai';
-                aiBubble.textContent = `Your total balance is ${balance.toLocaleString()} KZT and your category maximums are automatically calculated from your percentage shares!`;
+                aiBubble.textContent = `Your balance is ${balance.toLocaleString()} KZT and your category target maximums are updating automatically.`;
                 chatBox.appendChild(aiBubble);
                 chatBox.scrollTop = chatBox.scrollHeight;
             }, 500);
@@ -533,6 +538,14 @@
             if (e.key === 'Enter') sendChatMessage();
         }
 
+        // Event Listeners for buttons
+        document.getElementById('deposit-btn').addEventListener('click', depositMoney);
+        document.getElementById('deduct-btn').addEventListener('click', logExpense);
+        document.getElementById('chat-send-btn').addEventListener('click', sendChatMessage);
+        document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+        document.getElementById('modal-save-btn').addEventListener('click', saveCategoryChanges);
+
+        // Run on start
         updateUI();
     </script>
 </body>
