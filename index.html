@@ -3,252 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gemini Family Budget Command Center v11.0</title>
+    <title>Gemini Command Center - Ultra Pro</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
         :root {
-            --bg-color: #060911;
-            --card-bg: rgba(18, 24, 38, 0.9);
-            --inner-bg: rgba(28, 36, 56, 0.6);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --border-hover: rgba(56, 189, 248, 0.5);
+            --bg-color: #030712;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --inner-bg: rgba(31, 41, 55, 0.5);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(56, 189, 248, 0.4);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --accent-blue: #38bdf8;
-            --accent-green: #34d399;
-            --accent-yellow: #fbbf24;
-            --accent-red: #f87171;
-            --accent-purple: #c084fc;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #8b5cf6;
         }
 
-        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08), transparent 40%),
-                              radial-gradient(circle at 85% 85%, rgba(192, 132, 252, 0.08), transparent 40%);
+            background-image: 
+                radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 90% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            background-attachment: fixed;
             color: var(--text-primary);
-            padding: 16px;
-            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
         }
 
-        .main-layout {
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+        .app-container {
             display: grid;
-            grid-template-columns: 1fr 360px;
-            gap: 20px;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px;
         }
 
-        @media (max-width: 900px) {
-            .main-layout { grid-template-columns: 1fr; }
+        @media (max-width: 950px) {
+            .app-container { grid-template-columns: 1fr; }
         }
 
-        .dashboard-col {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+        /* Glassmorphism Cards */
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
+        /* Navigation */
         .nav-tabs {
             display: flex;
-            gap: 8px;
-            background: var(--card-bg);
-            padding: 8px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
+            gap: 10px;
             overflow-x: auto;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
         }
 
         .tab-btn {
-            background: transparent;
-            border: none;
+            background: var(--inner-bg);
+            border: 1px solid var(--border-color);
             color: var(--text-secondary);
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 12px;
             cursor: pointer;
             white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--border-glow);
+            color: var(--text-primary);
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, var(--accent-blue), #0284c7);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+            transform: translateY(-2px);
         }
 
+        /* Views */
         .view-section {
             display: none;
-            flex-direction: column;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .view-section.active { display: flex; flex-direction: column; gap: 20px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 16px;
         }
 
-        .view-section.active {
-            display: flex;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
         .metric-card {
-            background: var(--card-bg);
+            background: var(--inner-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 18px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent-blue);
+            border-radius: 4px 0 0 4px;
+        }
+        .metric-card.green::before { background: var(--accent-green); }
 
         .metric-label {
             font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 1px;
             color: var(--text-secondary);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .metric-value {
-            font-size: 1.6rem;
+            font-size: 2rem;
             font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
-        .metric-value.balance { color: var(--accent-green); }
-        .metric-value.pace { color: var(--accent-blue); }
-
-        .action-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 18px;
-        }
-
-        .action-card h3 {
-            font-size: 0.95rem;
-            margin-top: 0;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-
+        /* Inputs & Buttons */
+        .input-group { display: flex; gap: 12px; }
+        
         input, select {
-            background: var(--inner-bg);
+            background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border-color);
-            padding: 10px 14px;
+            padding: 12px 16px;
             color: var(--text-primary);
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 0.95rem;
             outline: none;
             width: 100%;
+            transition: all 0.2s;
         }
 
         input:focus, select:focus {
             border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
         }
 
         .btn-action {
-            background: linear-gradient(135deg, var(--accent-blue), #0284c7);
-            color: #ffffff;
+            background: var(--accent-blue);
+            color: #000;
             border: none;
-            padding: 10px 18px;
+            padding: 12px 20px;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 12px;
+            font-size: 0.9rem;
             white-space: nowrap;
+            transition: all 0.2s;
         }
-
-        .btn-action:hover { opacity: 0.9; }
-
-        .categories-section {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 18px;
+        .btn-action:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
         }
+        .btn-action.purple { background: var(--accent-purple); color: #fff; }
+        .btn-action.purple:hover { box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
 
-        .categories-section h2 {
-            font-size: 1rem;
-            margin-top: 0;
-            margin-bottom: 6px;
-        }
-
-        .category-card {
+        /* Categories & Lists */
+        .list-item {
             background: var(--inner-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 10px;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
         }
+        .list-item:hover { border-color: var(--border-glow); }
 
-        .category-header {
+        .item-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 10px;
         }
-
-        .category-name { font-weight: 600; font-size: 0.95rem; }
-        .category-percent { font-size: 0.85rem; font-weight: 600; color: var(--accent-blue); }
-
-        .edit-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 4px 8px;
-            font-size: 0.75rem;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .edit-btn:hover { background: var(--accent-blue); color: var(--bg-color); }
-
-        .category-details {
-            display: flex;
-            justify-content: space-between;
+        
+        .item-title { font-weight: 600; font-size: 1rem; }
+        .item-badge {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+            padding: 4px 10px;
+            border-radius: 20px;
             font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
+            font-weight: 700;
         }
 
-        .progress-bar-bg {
-            background: rgba(0, 0, 0, 0.3);
-            height: 6px;
-            border-radius: 4px;
+        .progress-track {
+            background: rgba(0, 0, 0, 0.4);
+            height: 8px;
+            border-radius: 6px;
             overflow: hidden;
+            margin-top: 8px;
         }
-
-        .progress-bar-fill {
+        .progress-fill {
             height: 100%;
-            border-radius: 4px;
-            width: 0%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
         }
 
+        /* Chat System */
         .chat-col {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 18px;
             display: flex;
             flex-direction: column;
-            height: 600px;
+            height: calc(100vh - 40px);
+            position: sticky;
+            top: 20px;
         }
 
         .chat-header {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .chat-header span {
+            display: inline-block;
+            width: 8px; height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-green);
         }
 
         .chat-box {
@@ -256,458 +270,518 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 12px;
-            padding-right: 4px;
+            gap: 12px;
+            padding-right: 8px;
+            margin-bottom: 16px;
         }
 
-        .chat-bubble {
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            line-height: 1.4;
+        .bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
             max-width: 85%;
+            animation: fadeIn 0.3s ease;
         }
 
-        .chat-bubble.ai {
+        .bubble.ai {
             background: var(--inner-bg);
             border: 1px solid var(--border-color);
+            border-bottom-left-radius: 4px;
             align-self: flex-start;
         }
 
-        .chat-bubble.user {
-            background: var(--accent-blue);
-            color: var(--bg-color);
-            font-weight: 500;
+        .bubble.user {
+            background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+            color: #fff;
+            border-bottom-right-radius: 4px;
             align-self: flex-end;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
         }
 
-        .chat-input-area {
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
             display: flex;
-            gap: 8px;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
         }
 
-        .chat-btn {
-            background: var(--accent-purple);
-            color: #ffffff;
-            border: none;
-            padding: 0 14px;
+        .toast {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--accent-green);
+            color: #fff;
+            padding: 14px 20px;
             border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            font-size: 0.9rem;
+            font-weight: 500;
+            animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        .toast.error { border-left-color: var(--accent-red); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateY(-10px); }
         }
 
+        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(6, 9, 17, 0.8);
+            background: rgba(0,0,0,0.6);
             backdrop-filter: blur(5px);
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            z-index: 500;
         }
-
-        .modal {
-            background: var(--card-bg);
-            border: 1px solid var(--border-hover);
-            padding: 24px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 380px;
-        }
-
-        .modal h3 { margin-top: 0; margin-bottom: 14px; font-size: 1.1rem; }
-        .modal label { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px; }
-        .modal input { margin-bottom: 12px; }
-        .modal-buttons { display: flex; justify-content: flex-end; gap: 8px; }
-        .btn { padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; border: none; }
-        .btn-cancel { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); }
-        .btn-save { background: var(--accent-blue); color: var(--bg-color); font-weight: 600; }
+        .modal-card { width: 90%; max-width: 400px; }
     </style>
 </head>
 <body>
 
-    <div class="main-layout">
-        <div class="dashboard-col">
+    <div class="app-container">
+        <div style="display: flex; flex-direction: column;">
+            
             <div class="nav-tabs">
-                <button class="tab-btn active" data-view="dash-view">Dash</button>
-                <button class="tab-btn" data-view="converter-view">Converter</button>
+                <button class="tab-btn active" data-view="dash-view">Dashboard</button>
+                <button class="tab-btn" data-view="wishlist-view">Wishlist Goals</button>
                 <button class="tab-btn" data-view="analytics-view">Analytics</button>
-                <button class="tab-btn" data-view="wishlist-view">Wishlist</button>
+                <button class="tab-btn" data-view="converter-view">Exchange</button>
                 <button class="tab-btn" data-view="income-view">Income</button>
             </div>
 
             <div id="dash-view" class="view-section active">
                 <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-label">Total Balance</div>
-                        <div class="metric-value balance" id="balance-display">14,500</div>
+                    <div class="metric-card green glass-panel">
+                        <div class="metric-label">Total Liquid (KZT)</div>
+                        <div class="metric-value balance" id="balance-display" style="color: var(--accent-green);">0</div>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-label">Daily Pace</div>
-                        <div class="metric-value pace" id="pace-display">483</div>
-                    </div>
-                </div>
-
-                <div class="action-card">
-                    <h3>💰 Deposit Monthly Allowance</h3>
-                    <div class="input-group">
-                        <input type="number" id="deposit-input" placeholder="Amount">
-                        <button class="btn-action" id="deposit-btn">Deposit</button>
+                    <div class="metric-card glass-panel">
+                        <div class="metric-label">Daily Burn Rate</div>
+                        <div class="metric-value pace" id="pace-display" style="color: var(--accent-blue);">0</div>
                     </div>
                 </div>
 
-                <div class="action-card">
-                    <h3>💸 Quick Log Expense</h3>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">⚡ Quick Actions</h3>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
                         <div class="input-group">
-                            <input type="text" id="expense-desc" placeholder="Item description">
-                            <input type="number" id="expense-amount" placeholder="Amount">
+                            <input type="number" id="deposit-input" placeholder="Amount to deposit...">
+                            <button class="btn-action" onclick="depositMoney()">Deposit</button>
+                        </div>
+                        <div style="height: 1px; background: var(--border-color);"></div>
+                        <div class="input-group">
+                            <input type="text" id="expense-desc" placeholder="What did you buy?">
+                            <input type="number" id="expense-amount" placeholder="Cost" style="max-width: 120px;">
                         </div>
                         <div class="input-group">
                             <select id="expense-category"></select>
-                            <button class="btn-action" id="deduct-btn">Deduct</button>
+                            <button class="btn-action purple" onclick="logExpense()">Log Expense</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="categories-section">
-                    <h2>📁 Category Budgets (% of Balance)</h2>
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">📂 Budget Distribution</h3>
                     <div id="categories-container"></div>
                 </div>
             </div>
 
-            <div id="converter-view" class="view-section">
-                <div class="action-card">
-                    <h3>💱 Live Currency Converter (KZT)</h3>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <div>
-                            <label style="font-size: 0.8rem; color: var(--text-secondary);">Amount in KZT</label>
-                            <input type="number" id="kzt-input" value="14500" placeholder="Enter KZT">
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div class="metric-card" style="padding: 12px;">
-                                <div class="metric-label">USD ($)</div>
-                                <div class="metric-value" id="usd-output" style="font-size: 1.2rem; color: var(--accent-blue);">--</div>
-                            </div>
-                            <div class="metric-card" style="padding: 12px;">
-                                <div class="metric-label">EUR (€)</div>
-                                <div class="metric-value" id="eur-output" style="font-size: 1.2rem; color: var(--accent-green);">--</div>
-                            </div>
-                        </div>
+            <div id="wishlist-view" class="view-section">
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 16px;">🎯 Target Goals</h3>
+                    <div class="input-group" style="margin-bottom: 20px;">
+                        <input type="text" id="wish-name" placeholder="Item Name">
+                        <input type="number" id="wish-price" placeholder="Cost" style="max-width: 120px;">
+                        <button class="btn-action" onclick="addWishlistGoal()">Add Goal</button>
                     </div>
+                    <div id="wishlist-container"></div>
                 </div>
             </div>
 
             <div id="analytics-view" class="view-section">
-                <div class="action-card">
-                    <h3>📊 Spending Analytics</h3>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <div class="metric-card" style="padding: 14px;">
-                            <div class="metric-label">Total Outflows Logged</div>
-                            <div class="metric-value" id="analytics-spent" style="font-size: 1.3rem; color: var(--accent-red);">0 KZT</div>
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 16px;">📈 Financial Logs</h3>
+                    <div class="metrics-grid" style="margin-bottom: 20px;">
+                        <div class="metric-card" style="padding: 12px; text-align: center;">
+                            <div class="metric-label">Total Outflow</div>
+                            <div id="analytics-spent" style="font-size: 1.4rem; color: var(--accent-red); font-weight: 700;">0</div>
                         </div>
-                        <div class="metric-card" style="padding: 14px;">
-                            <div class="metric-label">Health Status</div>
-                            <div class="metric-value" id="analytics-health" style="font-size: 1.2rem; color: var(--accent-green);">Optimal</div>
+                        <div class="metric-card" style="padding: 12px; text-align: center;">
+                            <div class="metric-label">System Health</div>
+                            <div id="analytics-health" style="font-size: 1.4rem; color: var(--accent-green); font-weight: 700;">Optimal</div>
                         </div>
                     </div>
+                    <h4 style="color: var(--text-secondary); margin-bottom: 10px;">Recent Transactions</h4>
+                    <div id="transaction-log-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 5px;"></div>
                 </div>
             </div>
 
-            <div id="wishlist-view" class="view-section">
-                <div class="action-card">
-                    <h3>🎁 Target Wishlist</h3>
-                    <div class="input-group" style="margin-bottom: 12px;">
-                        <input type="text" id="wish-item" placeholder="Item name (e.g., Headphones)">
-                        <input type="number" id="wish-cost" placeholder="Cost KZT">
-                        <button class="btn-action" id="add-wish-btn">Add</button>
+            <div id="converter-view" class="view-section">
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 16px;">💱 Live Conversion Matrix</h3>
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; display: block;">Base Amount (KZT)</label>
+                        <input type="number" id="conv-kzt" oninput="updateUI()" style="font-size: 1.2rem; font-weight: 700;">
                     </div>
-                    <div id="wishlist-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    <div class="metrics-grid">
+                        <div class="metric-card" style="padding: 16px;">
+                            <div class="metric-label">USD ($)</div>
+                            <div id="conv-usd" class="metric-value" style="color: var(--accent-blue);">0</div>
+                        </div>
+                        <div class="metric-card" style="padding: 16px;">
+                            <div class="metric-label">EUR (€)</div>
+                            <div id="conv-eur" class="metric-value" style="color: var(--accent-green);">0</div>
+                        </div>
+                        <div class="metric-card" style="padding: 16px;">
+                            <div class="metric-label">RUB (₽)</div>
+                            <div id="conv-rub" class="metric-value" style="color: var(--accent-yellow);">0</div>
+                        </div>
+                        <div class="metric-card" style="padding: 16px;">
+                            <div class="metric-label">CNY (¥)</div>
+                            <div id="conv-cny" class="metric-value" style="color: var(--accent-purple);">0</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div id="income-view" class="view-section">
-                <div class="action-card">
-                    <h3>💵 Recurring Income Streams</h3>
-                    <div class="input-group" style="margin-bottom: 12px;">
-                        <input type="text" id="income-name" placeholder="Source (e.g., Allowance)">
-                        <input type="number" id="income-val" placeholder="Monthly KZT">
-                        <button class="btn-action" id="add-income-btn">Add Stream</button>
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 16px;">💵 Automated Income Streams</h3>
+                    <div class="input-group" style="margin-bottom: 20px;">
+                        <input type="text" id="inc-source" placeholder="Source (e.g. Salary)">
+                        <input type="number" id="inc-amount" placeholder="KZT/mo" style="max-width: 120px;">
+                        <button class="btn-action" onclick="addIncomeStream()">Setup</button>
                     </div>
-                    <div id="income-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    <div id="income-container"></div>
                 </div>
             </div>
+
         </div>
 
-        <div class="chat-col">
-            <div class="chat-header">Ask anything about your account or budget!</div>
-            <div class="chat-box" id="chat-box">
-                <div class="chat-bubble ai">👋 Welcome! All tools are now fully synced and operational.</div>
+        <div class="glass-panel chat-col">
+            <div class="chat-header">
+                <span></span> PRO AI Advisor
             </div>
-            <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ask AI...">
-                <button class="chat-btn" id="chat-send-btn">Ask</button>
+            <div class="chat-box" id="chat-box">
+                <div class="bubble ai">System Online. Memory persistent. How can I assist you with your finances today?</div>
+            </div>
+            <div class="input-group">
+                <input type="text" id="chat-input" placeholder="Type a command..." onkeypress="handleChat(event)">
+                <button class="btn-action purple" onclick="sendChat()">Send</button>
             </div>
         </div>
     </div>
 
+    <div id="toast-container"></div>
+
     <div class="modal-overlay" id="editModal">
-        <div class="modal">
-            <h3>Edit Category</h3>
-            <label>Category Name</label>
-            <input type="text" id="editName">
-            <label>Target Share Percentage (%)</label>
-            <input type="number" id="editPercent" step="1" min="0" max="100">
-            <div class="modal-buttons">
-                <button class="btn btn-cancel" id="modal-cancel-btn">Cancel</button>
-                <button class="btn btn-save" id="modal-save-btn">Save Changes</button>
+        <div class="glass-panel modal-card">
+            <h3 style="margin-bottom: 16px;">Edit Category Split</h3>
+            <input type="text" id="editName" style="margin-bottom: 12px;">
+            <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target % Share</label>
+            <input type="number" id="editPercent" min="0" max="100" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn-action" style="background: transparent; border: 1px solid var(--border-color); color: #fff;" onclick="closeModal()">Cancel</button>
+                <button class="btn-action" onclick="saveCategoryChanges()">Apply Changes</button>
             </div>
         </div>
     </div>
 
     <script>
-        let balance = 14500;
-        let categories = [
-            { id: '1', name: 'Savings', current: 0, percentShare: 25 },
-            { id: '2', name: 'Emergency', current: 0, percentShare: 25 },
-            { id: '3', name: 'Bills', current: 0, percentShare: 25 },
-            { id: '4', name: 'Fun', current: 500, percentShare: 25 }
-        ];
+        // --- Core State & Local Storage ---
+        let appState = {
+            balance: 14500,
+            categories: [
+                { id: '1', name: 'Savings', current: 0, percentShare: 30 },
+                { id: '2', name: 'Emergency', current: 0, percentShare: 20 },
+                { id: '3', name: 'Subscriptions', current: 0, percentShare: 20 },
+                { id: '4', name: 'Fun Money', current: 500, percentShare: 30 }
+            ],
+            logs: [{ desc: 'Initial System Boot', amount: 14500, type: 'deposit', time: new Date().toLocaleTimeString() }],
+            wishlist: [{ id: 'w1', name: 'Sony Headphones', cost: 120000 }],
+            income: [{ id: 'i1', source: 'Monthly Allowance', amount: 25000 }]
+        };
 
-        let wishlist = [{ name: 'New Headset', cost: 12000 }];
-        let incomeStreams = [{ name: 'Monthly Allowance', amount: 15000 }];
+        // Load Memory
+        const savedData = localStorage.getItem('budgetProData');
+        if (savedData) {
+            appState = JSON.parse(savedData);
+        }
+
+        function saveState() {
+            localStorage.setItem('budgetProData', JSON.stringify(appState));
+            updateUI();
+        }
 
         let activeEditingId = null;
 
-        // Tab Switching Logic
+        // --- UI & Interactions ---
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Tabs
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.onclick = function() {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-
                 this.classList.add('active');
-                const targetViewId = this.getAttribute('data-view');
-                document.getElementById(targetViewId).classList.add('active');
+                document.getElementById(this.getAttribute('data-view')).classList.add('active');
             };
         });
 
         function updateUI() {
-            document.getElementById('balance-display').innerText = balance.toLocaleString();
-            document.getElementById('pace-display').innerText = Math.round(balance / 30).toLocaleString();
-            
-            // Currency Converter update
-            const kztVal = parseFloat(document.getElementById('kzt-input').value) || balance;
-            document.getElementById('usd-output').innerText = '$' + (kztVal / 480).toFixed(2);
-            document.getElementById('eur-output').innerText = '€' + (kztVal / 520).toFixed(2);
+            // Dashboard
+            document.getElementById('balance-display').innerText = appState.balance.toLocaleString();
+            document.getElementById('pace-display').innerText = Math.round(appState.balance / 30).toLocaleString();
 
-            // Analytics update
-            const totalSpent = categories.reduce((acc, c) => acc + c.current, 0);
-            document.getElementById('analytics-spent').innerText = totalSpent.toLocaleString() + ' KZT';
-
-            // Categories list update
-            const container = document.getElementById('categories-container');
-            container.innerHTML = '';
-
-            categories.forEach(cat => {
-                const targetMax = Math.round((balance * cat.percentShare) / 100);
-                const progressRatio = targetMax > 0 ? Math.min(Math.round((cat.current / targetMax) * 100), 100) : 0;
-                
-                let barColor = 'var(--accent-blue)';
-                if (progressRatio >= 100) barColor = 'var(--accent-red)';
-                else if (progressRatio > 75) barColor = 'var(--accent-yellow)';
-
-                const card = document.createElement('div');
-                card.className = 'category-card';
-                card.innerHTML = `
-                    <div class="category-header">
-                        <span class="category-name">${cat.name}</span>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span class="category-percent">${cat.percentShare}%</span>
-                            <button class="edit-btn" data-id="${cat.id}">Edit</button>
-                        </div>
-                    </div>
-                    <div class="category-details">
-                        <span>Spent: ${cat.current.toLocaleString()} / Target Max: ${targetMax.toLocaleString()} KZT</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" style="width: ${progressRatio}%; background: ${barColor};"></div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.onclick = function() {
-                    openModal(this.getAttribute('data-id'));
-                };
-            });
-
+            // Setup Select Dropdown
             const select = document.getElementById('expense-category');
             select.innerHTML = '';
-            categories.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat.name;
-                opt.textContent = cat.name;
-                select.appendChild(opt);
+            appState.categories.forEach(cat => {
+                select.innerHTML += `<option value="${cat.name}">${cat.name}</option>`;
             });
 
-            // Wishlist render
-            const wishContainer = document.getElementById('wishlist-container');
-            wishContainer.innerHTML = '';
-            wishlist.forEach(w => {
-                const div = document.createElement('div');
-                div.className = 'category-card';
-                div.style.marginBottom = '6px';
-                div.innerHTML = `<div class="category-header"><span class="category-name">${w.name}</span><span class="category-percent">${w.cost.toLocaleString()} KZT</span></div>`;
-                wishContainer.appendChild(div);
+            // Render Categories
+            const catContainer = document.getElementById('categories-container');
+            catContainer.innerHTML = '';
+            let totalSpentAll = 0;
+
+            appState.categories.forEach(cat => {
+                totalSpentAll += cat.current;
+                const targetMax = Math.round((appState.balance * cat.percentShare) / 100);
+                const progress = targetMax > 0 ? Math.min((cat.current / targetMax) * 100, 100) : 0;
+                let color = 'var(--accent-blue)';
+                if (progress > 80) color = 'var(--accent-red)';
+                else if (progress > 50) color = 'var(--accent-yellow)';
+
+                catContainer.innerHTML += `
+                    <div class="list-item">
+                        <div class="item-header">
+                            <span class="item-title">${cat.name} <span style="font-size:0.8rem; color:var(--text-secondary);">(${cat.percentShare}%)</span></span>
+                            <button class="btn-action" style="padding: 4px 10px; font-size: 0.75rem; background: rgba(255,255,255,0.1); color: #fff;" onclick="openModal('${cat.id}')">Edit</button>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary);">
+                            <span>Spent: ${cat.current.toLocaleString()}</span>
+                            <span>Limit: ${targetMax.toLocaleString()}</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: ${progress}%; background: ${color};"></div>
+                        </div>
+                    </div>
+                `;
             });
 
-            // Income render
-            const incContainer = document.getElementById('income-container');
-            incContainer.innerHTML = '';
-            incomeStreams.forEach(i => {
-                const div = document.createElement('div');
-                div.className = 'category-card';
-                div.style.marginBottom = '6px';
-                div.innerHTML = `<div class="category-header"><span class="category-name">${i.name}</span><span class="category-percent">+${i.amount.toLocaleString()} KZT/mo</span></div>`;
-                incContainer.appendChild(div);
+            // Analytics
+            document.getElementById('analytics-spent').innerText = totalSpentAll.toLocaleString() + ' KZT';
+            const health = document.getElementById('analytics-health');
+            if (totalSpentAll > appState.balance * 0.8) {
+                health.innerText = 'Critical'; health.style.color = 'var(--accent-red)';
+            } else {
+                health.innerText = 'Optimal'; health.style.color = 'var(--accent-green)';
+            }
+
+            const logsDiv = document.getElementById('transaction-log-container');
+            logsDiv.innerHTML = '';
+            [...appState.logs].reverse().forEach(log => {
+                const color = log.type === 'deposit' ? 'var(--accent-green)' : 'var(--accent-red)';
+                const sign = log.type === 'deposit' ? '+' : '-';
+                logsDiv.innerHTML += `
+                    <div class="list-item" style="padding: 12px; margin-bottom: 6px; display: flex; justify-content: space-between;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.9rem;">${log.desc}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">${log.time}</div>
+                        </div>
+                        <div style="color: ${color}; font-weight: 700;">${sign}${log.amount.toLocaleString()}</div>
+                    </div>
+                `;
+            });
+
+            // Converter
+            const convInput = document.getElementById('conv-kzt');
+            if (!convInput.value) convInput.value = appState.balance;
+            const kztVal = parseFloat(convInput.value) || 0;
+            document.getElementById('conv-usd').innerText = (kztVal / 480).toFixed(2);
+            document.getElementById('conv-eur').innerText = (kztVal / 520).toFixed(2);
+            document.getElementById('conv-rub').innerText = (kztVal / 5.2).toFixed(2);
+            document.getElementById('conv-cny').innerText = (kztVal / 66).toFixed(2);
+
+            // Wishlist
+            const wishDiv = document.getElementById('wishlist-container');
+            wishDiv.innerHTML = '';
+            appState.wishlist.forEach((w, index) => {
+                const afford = appState.balance >= w.cost;
+                const progress = afford ? 100 : (appState.balance / w.cost) * 100;
+                wishDiv.innerHTML += `
+                    <div class="list-item">
+                        <div class="item-header">
+                            <span class="item-title">${w.name}</span>
+                            <span class="item-badge" style="background: ${afford ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${afford ? 'var(--accent-green)' : 'var(--accent-yellow)'}">
+                                ${w.cost.toLocaleString()} KZT
+                            </span>
+                        </div>
+                        <div style="font-size: 0.8rem; margin-bottom: 6px; color: var(--text-secondary);">
+                            ${afford ? '✅ You can afford this!' : '⏳ Saving up...'}
+                        </div>
+                        <div class="progress-track"><div class="progress-fill" style="width: ${progress}%; background: ${afford ? 'var(--accent-green)' : 'var(--accent-yellow)'}"></div></div>
+                    </div>
+                `;
+            });
+
+            // Income
+            const incDiv = document.getElementById('income-container');
+            incDiv.innerHTML = '';
+            appState.income.forEach((inc, idx) => {
+                incDiv.innerHTML += `
+                    <div class="list-item" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="item-title">${inc.source}</span>
+                        <span style="color: var(--accent-green); font-weight: 700;">+${inc.amount.toLocaleString()} / mo</span>
+                    </div>
+                `;
             });
         }
 
-        document.getElementById('kzt-input').oninput = updateUI;
-
+        // --- Actions ---
         function depositMoney() {
-            const input = document.getElementById('deposit-input');
-            const val = parseFloat(input.value);
-            if (!isNaN(val) && val > 0) {
-                balance += val;
-                input.value = '';
-                updateUI();
+            const val = parseFloat(document.getElementById('deposit-input').value);
+            if (val > 0) {
+                appState.balance += val;
+                appState.logs.push({ desc: 'Manual Deposit', amount: val, type: 'deposit', time: new Date().toLocaleTimeString() });
+                document.getElementById('deposit-input').value = '';
+                showToast(`Successfully deposited ${val.toLocaleString()} KZT`);
+                saveState();
             }
         }
 
         function logExpense() {
-            const amountInput = document.getElementById('expense-amount');
-            const catSelect = document.getElementById('expense-category');
-            const val = parseFloat(amountInput.value);
+            const desc = document.getElementById('expense-desc').value || 'Misc Expense';
+            const val = parseFloat(document.getElementById('expense-amount').value);
+            const catName = document.getElementById('expense-category').value;
 
-            if (!isNaN(val) && val > 0) {
-                balance -= val;
-                const cat = categories.find(c => c.name === catSelect.value);
-                if (cat) {
-                    cat.current += val;
-                }
-                amountInput.value = '';
-                updateUI();
+            if (val > 0) {
+                appState.balance -= val;
+                const cat = appState.categories.find(c => c.name === catName);
+                if (cat) cat.current += val;
+                
+                appState.logs.push({ desc: `${desc} (${catName})`, amount: val, type: 'expense', time: new Date().toLocaleTimeString() });
+                document.getElementById('expense-desc').value = '';
+                document.getElementById('expense-amount').value = '';
+                
+                showToast(`Logged -${val} KZT to ${catName}`, 'error');
+                saveState();
             }
         }
 
-        function addWishlist() {
-            const name = document.getElementById('wish-item').value.trim();
-            const cost = parseFloat(document.getElementById('wish-cost').value);
-            if (name && !isNaN(cost) && cost > 0) {
-                wishlist.push({ name, cost });
-                document.getElementById('wish-item').value = '';
-                document.getElementById('wish-cost').value = '';
-                updateUI();
+        function addWishlistGoal() {
+            const name = document.getElementById('wish-name').value;
+            const cost = parseFloat(document.getElementById('wish-price').value);
+            if (name && cost > 0) {
+                appState.wishlist.push({ id: 'w'+Date.now(), name, cost });
+                document.getElementById('wish-name').value = '';
+                document.getElementById('wish-price').value = '';
+                showToast(`Added ${name} to Wishlist`);
+                saveState();
             }
         }
 
         function addIncomeStream() {
-            const name = document.getElementById('income-name').value.trim();
-            const amount = parseFloat(document.getElementById('income-val').value);
-            if (name && !isNaN(amount) && amount > 0) {
-                incomeStreams.push({ name, amount });
-                balance += amount;
-                document.getElementById('income-name').value = '';
-                document.getElementById('income-val').value = '';
-                updateUI();
+            const source = document.getElementById('inc-source').value;
+            const amount = parseFloat(document.getElementById('inc-amount').value);
+            if (source && amount > 0) {
+                appState.income.push({ id: 'i'+Date.now(), source, amount });
+                document.getElementById('inc-source').value = '';
+                document.getElementById('inc-amount').value = '';
+                showToast(`Income stream configured`);
+                saveState();
             }
         }
 
+        // --- Modals ---
         function openModal(id) {
             activeEditingId = id;
-            const cat = categories.find(c => c.id === id);
-            if (cat) {
-                document.getElementById('editName').value = cat.name;
-                document.getElementById('editPercent').value = cat.percentShare;
-                document.getElementById('editModal').style.display = 'flex';
-            }
+            const cat = appState.categories.find(c => c.id === id);
+            document.getElementById('editName').value = cat.name;
+            document.getElementById('editPercent').value = cat.percentShare;
+            document.getElementById('editModal').style.display = 'flex';
         }
 
         function closeModal() {
             document.getElementById('editModal').style.display = 'none';
-            activeEditingId = null;
         }
 
         function saveCategoryChanges() {
-            const newName = document.getElementById('editName').value.trim();
-            const newPercent = parseInt(document.getElementById('editPercent').value, 10);
+            const newName = document.getElementById('editName').value;
+            const newPercent = parseInt(document.getElementById('editPercent').value);
 
-            if (activeEditingId && newName && !isNaN(newPercent) && newPercent >= 0 && newPercent <= 100) {
-                const targetCat = categories.find(c => c.id === activeEditingId);
-                if (targetCat) {
-                    const oldPercent = targetCat.percentShare;
-                    const diff = newPercent - oldPercent;
+            if (activeEditingId && newPercent >= 0 && newPercent <= 100) {
+                const cat = appState.categories.find(c => c.id === activeEditingId);
+                const diff = newPercent - cat.percentShare;
+                
+                cat.name = newName;
+                cat.percentShare = newPercent;
 
-                    targetCat.name = newName;
-                    targetCat.percentShare = newPercent;
-
-                    const otherCats = categories.filter(c => c.id !== activeEditingId);
-                    if (otherCats.length > 0) {
-                        let adjustmentPerCat = diff / otherCats.length;
-                        otherCats.forEach(c => {
-                            c.percentShare = Math.round(Math.max(0, c.percentShare - adjustmentPerCat));
-                        });
-
-                        let currentSum = categories.reduce((sum, c) => sum + c.percentShare, 0);
-                        if (currentSum !== 100) {
-                            otherCats[0].percentShare += (100 - currentSum);
-                        }
-                    }
-                }
+                // Auto balance others
+                const others = appState.categories.filter(c => c.id !== activeEditingId);
+                others.forEach(c => c.percentShare = Math.max(0, Math.round(c.percentShare - (diff/others.length))));
+                
                 closeModal();
-                updateUI();
+                showToast('Category updated and re-balanced');
+                saveState();
             }
         }
 
-        function sendChatMessage() {
+        // --- AI Chat ---
+        function handleChat(e) { if (e.key === 'Enter') sendChat(); }
+
+        function sendChat() {
             const input = document.getElementById('chat-input');
-            const text = input.value.trim();
+            const text = input.value.trim().toLowerCase();
             if (!text) return;
 
             const chatBox = document.getElementById('chat-box');
-            const userBubble = document.createElement('div');
-            userBubble.className = 'chat-bubble user';
-            userBubble.textContent = text;
-            chatBox.appendChild(userBubble);
-            
+            chatBox.innerHTML += `<div class="bubble user">${input.value}</div>`;
             input.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
             setTimeout(() => {
-                const aiBubble = document.createElement('div');
-                aiBubble.className = 'chat-bubble ai';
-                aiBubble.textContent = `All tabs now have full calculators and dynamic tools running smoothly!`;
-                chatBox.appendChild(aiBubble);
+                let aiResponse = "I've logged that. Everything is running optimally in Pro Mode.";
+                
+                if (text.includes('balance') || text.includes('money')) {
+                    aiResponse = `You currently have ${appState.balance.toLocaleString()} KZT available liquid capital.`;
+                } else if (text.includes('spend') || text.includes('expense')) {
+                    aiResponse = "Use the Quick Actions on the dashboard to log your expenses. I'll automatically track it against your limits.";
+                } else if (text.includes('hello') || text.includes('hi')) {
+                    aiResponse = "Hello! I am monitoring your financial state. All systems green.";
+                } else if (text.includes('wishlist') || text.includes('buy')) {
+                    aiResponse = "Check the Wishlist tab! I've calculated your exact progress toward your goals based on your current balance.";
+                }
+
+                chatBox.innerHTML += `<div class="bubble ai">${aiResponse}</div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
-            }, 500);
+            }, 600);
         }
 
-        document.getElementById('deposit-btn').onclick = depositMoney;
-        document.getElementById('deduct-btn').onclick = logExpense;
-        document.getElementById('add-wish-btn').onclick = addWishlist;
-        document.getElementById('add-income-btn').onclick = addIncomeStream;
-        document.getElementById('chat-send-btn').onclick = sendChatMessage;
-        document.getElementById('modal-cancel-btn').onclick = closeModal;
-        document.getElementById('modal-save-btn').onclick = saveCategoryChanges;
-
-        document.getElementById('chat-input').onkeypress = function(e) {
-            if (e.key === 'Enter') sendChatMessage();
-        };
-
+        // Init
         updateUI();
     </script>
 </body>
