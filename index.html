@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gemini Family Budget Command Center v10.4</title>
+    <title>Gemini Family Budget Command Center v10.5</title>
     <style>
         :root {
             --bg-color: #060911;
@@ -78,6 +78,16 @@
             background: linear-gradient(135deg, var(--accent-blue), #0284c7);
             color: #ffffff;
             box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .view-section {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .view-section.active {
+            display: flex;
         }
 
         .metrics-grid {
@@ -223,6 +233,15 @@
             width: 0%;
         }
 
+        .placeholder-view {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
         .chat-col {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -321,49 +340,79 @@
     <div class="main-layout">
         <div class="dashboard-col">
             <div class="nav-tabs">
-                <button class="tab-btn active">Dash</button>
-                <button class="tab-btn">Converter</button>
-                <button class="tab-btn">Analytics</button>
-                <button class="tab-btn">Wishlist</button>
-                <button class="tab-btn">Income</button>
+                <button class="tab-btn active" data-target="dash-view">Dash</button>
+                <button class="tab-btn" data-target="converter-view">Converter</button>
+                <button class="tab-btn" data-target="analytics-view">Analytics</button>
+                <button class="tab-btn" data-target="wishlist-view">Wishlist</button>
+                <button class="tab-btn" data-target="income-view">Income</button>
             </div>
 
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-label">Total Balance</div>
-                    <div class="metric-value balance" id="balance-display">14,500</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Daily Pace</div>
-                    <div class="metric-value pace" id="pace-display">483</div>
-                </div>
-            </div>
-
-            <div class="action-card">
-                <h3>💰 Deposit Monthly Allowance</h3>
-                <div class="input-group">
-                    <input type="number" id="deposit-input" placeholder="Amount">
-                    <button class="btn-action" id="deposit-btn">Deposit</button>
-                </div>
-            </div>
-
-            <div class="action-card">
-                <h3>💸 Quick Log Expense</h3>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <div class="input-group">
-                        <input type="text" id="expense-desc" placeholder="Item description">
-                        <input type="number" id="expense-amount" placeholder="Amount">
+            <div id="dash-view" class="view-section active">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Total Balance</div>
+                        <div class="metric-value balance" id="balance-display">14,500</div>
                     </div>
-                    <div class="input-group">
-                        <select id="expense-category"></select>
-                        <button class="btn-action" id="deduct-btn">Deduct</button>
+                    <div class="metric-card">
+                        <div class="metric-label">Daily Pace</div>
+                        <div class="metric-value pace" id="pace-display">483</div>
                     </div>
                 </div>
+
+                <div class="action-card">
+                    <h3>💰 Deposit Monthly Allowance</h3>
+                    <div class="input-group">
+                        <input type="number" id="deposit-input" placeholder="Amount">
+                        <button class="btn-action" id="deposit-btn">Deposit</button>
+                    </div>
+                </div>
+
+                <div class="action-card">
+                    <h3>💸 Quick Log Expense</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="input-group">
+                            <input type="text" id="expense-desc" placeholder="Item description">
+                            <input type="number" id="expense-amount" placeholder="Amount">
+                        </div>
+                        <div class="input-group">
+                            <select id="expense-category"></select>
+                            <button class="btn-action" id="deduct-btn">Deduct</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="categories-section">
+                    <h2>📁 Category Budgets (% of Balance)</h2>
+                    <div id="categories-container"></div>
+                </div>
             </div>
 
-            <div class="categories-section">
-                <h2>📁 Category Budgets (% of Balance)</h2>
-                <div id="categories-container"></div>
+            <div id="converter-view" class="view-section">
+                <div class="placeholder-view">
+                    <h3>💱 Currency Converter</h3>
+                    <p>Quickly convert your KZT balance to USD, EUR, or other currencies.</p>
+                </div>
+            </div>
+
+            <div id="analytics-view" class="view-section">
+                <div class="placeholder-view">
+                    <h3>📊 Analytics & Reports</h3>
+                    <p>Deep dive into your spending trends and history.</p>
+                </div>
+            </div>
+
+            <div id="wishlist-view" class="view-section">
+                <div class="placeholder-view">
+                    <h3>🎁 Wishlist Items</h3>
+                    <p>Track things you want to save up for!</p>
+                </div>
+            </div>
+
+            <div id="income-view" class="view-section">
+                <div class="placeholder-view">
+                    <h3>💵 Income Streams</h3>
+                    <p>Manage your recurring sources of income and allowances.</p>
+                </div>
             </div>
         </div>
 
@@ -403,6 +452,18 @@
         ];
 
         let activeEditingId = null;
+
+        // Working Tab Switcher Logic
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.onclick = function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+
+                this.classList.add('active');
+                const targetId = this.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+            };
+        });
 
         function updateUI() {
             document.getElementById('balance-display').innerText = balance.toLocaleString();
@@ -503,12 +564,12 @@
                 const targetCat = categories.find(c => c.id === activeEditingId);
                 if (targetCat) {
                     const oldPercent = targetCat.percentShare;
-                    const diff = newPercent - oldPercent; // how much was added or taken away
+                    const diff = newPercent - oldPercent;
 
                     targetCat.name = newName;
                     targetCat.percentShare = newPercent;
 
-                    // Smart auto-balance the remaining categories proportionally or evenly
+                    // Smart auto-balance remaining categories
                     const otherCats = categories.filter(c => c.id !== activeEditingId);
                     if (otherCats.length > 0) {
                         let adjustmentPerCat = diff / otherCats.length;
@@ -516,7 +577,7 @@
                             c.percentShare = Math.round(Math.max(0, c.percentShare - adjustmentPerCat));
                         });
 
-                        // Fine-tune to lock total sum strictly at 100%
+                        // Fine-tune sum strictly to 100%
                         let currentSum = categories.reduce((sum, c) => sum + c.percentShare, 0);
                         if (currentSum !== 100) {
                             otherCats[0].percentShare += (100 - currentSum);
@@ -545,7 +606,7 @@
             setTimeout(() => {
                 const aiBubble = document.createElement('div');
                 aiBubble.className = 'chat-bubble ai';
-                aiBubble.textContent = `Smart auto-balancing is active! Your percentages will automatically adjust to always maintain a total of 100%.`;
+                aiBubble.textContent = `All tabs and auto-balancing features are fully up and running!`;
                 chatBox.appendChild(aiBubble);
                 chatBox.scrollTop = chatBox.scrollHeight;
             }, 500);
