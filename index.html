@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gemini Family Budget Command Center v9.9</title>
+    <title>Gemini Family Budget Command Center v10.0</title>
     <style>
         :root {
             --bg-color: #060911;
@@ -53,7 +53,6 @@
             gap: 16px;
         }
 
-        /* Nav tabs */
         .nav-tabs {
             display: flex;
             gap: 8px;
@@ -82,7 +81,6 @@
             box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
         }
 
-        /* Metrics grid */
         .metrics-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -112,7 +110,6 @@
         .metric-value.balance { color: var(--accent-green); }
         .metric-value.pace { color: var(--accent-blue); }
 
-        /* Action Cards */
         .action-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -162,7 +159,6 @@
 
         .btn-action:hover { opacity: 0.9; }
 
-        /* Categories Section */
         .categories-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -227,7 +223,6 @@
             width: 0%;
         }
 
-        /* AI Chat Column */
         .chat-col {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -292,7 +287,6 @@
             font-weight: 600;
         }
 
-        /* Modal Styles */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -336,7 +330,7 @@
 
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="metric-label">Balance</div>
+                    <div class="metric-label">Total Balance</div>
                     <div class="metric-value balance" id="balance-display">14,500</div>
                 </div>
                 <div class="metric-card">
@@ -362,20 +356,15 @@
                     </div>
                     <div class="input-group">
                         <select id="expense-category">
-                            <option value="Savings">Savings</option>
-                            <option value="Emergency">Emergency</option>
-                            <option value="Bills">Bills</option>
-                            <option value="Fun">Fun</option>
-                        </select>
+                            </select>
                         <button class="btn-action" onclick="logExpense()">Deduct</button>
                     </div>
                 </div>
             </div>
 
             <div class="categories-section">
-                <h2>📁 Category Budgets</h2>
-                <div id="categories-container">
-                    </div>
+                <h2>📁 Category Budgets (% of Balance)</h2>
+                <div id="categories-container"></div>
             </div>
         </div>
 
@@ -396,8 +385,8 @@
             <h3>Edit Category</h3>
             <label>Category Name</label>
             <input type="text" id="editName">
-            <label>Maximum Money (KZT)</label>
-            <input type="number" id="editMax">
+            <label>Target Share Percentage (%)</label>
+            <input type="number" id="editPercent" step="1">
             <div class="modal-buttons">
                 <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-save" onclick="saveCategoryChanges()">Save Changes</button>
@@ -406,13 +395,12 @@
     </div>
 
     <script>
-        // Core State Data
         let balance = 14500;
         let categories = [
-            { id: '1', name: 'Savings', current: 0, max: 3000 },
-            { id: '2', name: 'Emergency', current: 0, max: 2000 },
-            { id: '3', name: 'Bills', current: 0, max: 6000 },
-            { id: '4', name: 'Fun', current: 500, max: 4000 }
+            { id: '1', name: 'Savings', current: 0, percentShare: 20 },
+            { id: '2', name: 'Emergency', current: 0, percentShare: 15 },
+            { id: '3', name: 'Bills', current: 0, percentShare: 40 },
+            { id: '4', name: 'Fun', current: 500, percentShare: 25 }
         ];
 
         let activeEditingId = null;
@@ -424,12 +412,13 @@
             container.innerHTML = '';
 
             categories.forEach(cat => {
-                const max = cat.max > 0 ? cat.max : 1;
-                const percent = Math.min(Math.round((cat.current / max) * 100), 100);
+                // Automatically calculate max money limit using the balance & percentage share
+                const targetMax = Math.round((balance * cat.percentShare) / 100);
+                const progressRatio = targetMax > 0 ? Math.min(Math.round((cat.current / targetMax) * 100), 100) : 0;
                 
                 let barColor = 'var(--accent-blue)';
-                if (percent >= 100) barColor = 'var(--accent-red)';
-                else if (percent > 75) barColor = 'var(--accent-yellow)';
+                if (progressRatio >= 100) barColor = 'var(--accent-red)';
+                else if (progressRatio > 75) barColor = 'var(--accent-yellow)';
 
                 const card = document.createElement('div');
                 card.className = 'category-card';
@@ -437,21 +426,20 @@
                     <div class="category-header">
                         <span class="category-name">${cat.name}</span>
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <span class="category-percent">${percent}%</span>
+                            <span class="category-percent">${cat.percentShare}%</span>
                             <button class="edit-btn" onclick="openModal('${cat.id}')">Edit</button>
                         </div>
                     </div>
                     <div class="category-details">
-                        <span>${cat.current.toLocaleString()} / ${cat.max.toLocaleString()} KZT</span>
+                        <span>Spent: ${cat.current.toLocaleString()} / Target Max: ${targetMax.toLocaleString()} KZT</span>
                     </div>
                     <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" style="width: ${percent}%; background: ${barColor};"></div>
+                        <div class="progress-bar-fill" style="width: ${progressRatio}%; background: ${barColor};"></div>
                     </div>
                 `;
                 container.appendChild(card);
             });
 
-            // Update select dropdown options dynamically
             const select = document.getElementById('expense-category');
             select.innerHTML = '';
             categories.forEach(cat => {
@@ -493,7 +481,7 @@
             const cat = categories.find(c => c.id === id);
             if (cat) {
                 document.getElementById('editName').value = cat.name;
-                document.getElementById('editMax').value = cat.max;
+                document.getElementById('editPercent').value = cat.percentShare;
                 document.getElementById('editModal').style.display = 'flex';
             }
         }
@@ -505,13 +493,13 @@
 
         function saveCategoryChanges() {
             const newName = document.getElementById('editName').value.trim();
-            const newMax = parseFloat(document.getElementById('editMax').value);
+            const newPercent = parseFloat(document.getElementById('editPercent').value);
 
-            if (activeEditingId && newName && !isNaN(newMax)) {
+            if (activeEditingId && newName && !isNaN(newPercent)) {
                 const cat = categories.find(c => c.id === activeEditingId);
                 if (cat) {
                     cat.name = newName;
-                    cat.max = newMax;
+                    cat.percentShare = newPercent;
                 }
                 closeModal();
                 updateUI();
@@ -524,8 +512,6 @@
             if (!text) return;
 
             const chatBox = document.getElementById('chat-box');
-            
-            // User bubble
             const userBubble = document.createElement('div');
             userBubble.className = 'chat-bubble user';
             userBubble.textContent = text;
@@ -534,11 +520,10 @@
             input.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // AI reply mockup
             setTimeout(() => {
                 const aiBubble = document.createElement('div');
                 aiBubble.className = 'chat-bubble ai';
-                aiBubble.textContent = `I've analyzed your question. Your current balance is ${balance.toLocaleString()} KZT and everything looks balanced!`;
+                aiBubble.textContent = `Your total balance is ${balance.toLocaleString()} KZT and your category maximums are automatically calculated from your percentage shares!`;
                 chatBox.appendChild(aiBubble);
                 chatBox.scrollTop = chatBox.scrollHeight;
             }, 500);
@@ -548,7 +533,6 @@
             if (e.key === 'Enter') sendChatMessage();
         }
 
-        // Initial launch render
         updateUI();
     </script>
 </body>
