@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gemini Family Budget Command Center v10.1</title>
+    <title>Gemini Family Budget Command Center v10.3</title>
     <style>
         :root {
             --bg-color: #060911;
@@ -18,7 +18,6 @@
             --accent-yellow: #fbbf24;
             --accent-red: #f87171;
             --accent-purple: #c084fc;
-            --glow-shadow: 0 0 35px rgba(56, 189, 248, 0.15);
         }
 
         * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -169,6 +168,12 @@
         .categories-section h2 {
             font-size: 1rem;
             margin-top: 0;
+            margin-bottom: 6px;
+        }
+
+        .total-percent-warning {
+            font-size: 0.8rem;
+            color: var(--accent-yellow);
             margin-bottom: 14px;
         }
 
@@ -363,6 +368,7 @@
 
             <div class="categories-section">
                 <h2>📁 Category Budgets (% of Balance)</h2>
+                <div class="total-percent-warning" id="total-warning">Total Allocation: 100%</div>
                 <div id="categories-container"></div>
             </div>
         </div>
@@ -373,7 +379,7 @@
                 <div class="chat-bubble ai">👋 Welcome! Your profile session is active and secure.</div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ask AI..." onkeypress="handleChatKey(event)">
+                <input type="text" id="chat-input" placeholder="Ask AI...">
                 <button class="chat-btn" id="chat-send-btn">Ask</button>
             </div>
         </div>
@@ -385,7 +391,7 @@
             <label>Category Name</label>
             <input type="text" id="editName">
             <label>Target Share Percentage (%)</label>
-            <input type="number" id="editPercent" step="1">
+            <input type="number" id="editPercent" step="1" min="0" max="100">
             <div class="modal-buttons">
                 <button class="btn btn-cancel" id="modal-cancel-btn">Cancel</button>
                 <button class="btn btn-save" id="modal-save-btn">Save Changes</button>
@@ -396,9 +402,9 @@
     <script>
         let balance = 14500;
         let categories = [
-            { id: '1', name: 'Savings', current: 0, percentShare: 20 },
-            { id: '2', name: 'Emergency', current: 0, percentShare: 15 },
-            { id: '3', name: 'Bills', current: 0, percentShare: 40 },
+            { id: '1', name: 'Savings', current: 0, percentShare: 25 },
+            { id: '2', name: 'Emergency', current: 0, percentShare: 25 },
+            { id: '3', name: 'Bills', current: 0, percentShare: 25 },
             { id: '4', name: 'Fun', current: 500, percentShare: 25 }
         ];
 
@@ -407,6 +413,12 @@
         function updateUI() {
             document.getElementById('balance-display').innerText = balance.toLocaleString();
             
+            // Calculate total percentage to check balance
+            let totalPct = categories.reduce((sum, cat) => sum + cat.percentShare, 0);
+            const warningEl = document.getElementById('total-warning');
+            warningEl.innerText = `Total Allocation: ${totalPct}%`;
+            warningEl.style.color = totalPct === 100 ? 'var(--accent-green)' : 'var(--accent-yellow)';
+
             const container = document.getElementById('categories-container');
             container.innerHTML = '';
 
@@ -438,11 +450,10 @@
                 container.appendChild(card);
             });
 
-            // Bind click events on newly created edit buttons
             document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    openModal(e.target.getAttribute('data-id'));
-                });
+                btn.onclick = function() {
+                    openModal(this.getAttribute('data-id'));
+                };
             });
 
             const select = document.getElementById('expense-category');
@@ -500,11 +511,30 @@
             const newName = document.getElementById('editName').value.trim();
             const newPercent = parseFloat(document.getElementById('editPercent').value);
 
-            if (activeEditingId && newName && !isNaN(newPercent)) {
-                const cat = categories.find(c => c.id === activeEditingId);
-                if (cat) {
-                    cat.name = newName;
-                    cat.percentShare = newPercent;
+            if (activeEditingId && newName && !isNaN(newPercent) && newPercent >= 0 && newPercent <= 100) {
+                const targetCat = categories.find(c => c.id === activeEditingId);
+                if (targetCat) {
+                    const oldPercent = targetCat.percentShare;
+                    const diff = newPercent - oldPercent; // e.g., -10% if dropping from 25 to 15
+
+                    targetCat.name = newName;
+                    targetCat.percentShare = newPercent;
+
+                    // Smart auto-balance the remaining categories so total stays 100%
+                    const otherCats = categories.filter(c => c.id !== activeEditingId);
+                    if (otherCats.length > 0) {
+                        // Distribute the difference proportionally or evenly across other categories
+                        let adjustmentPerCat = diff / otherCats.length;
+                        otherCats.forEach(c => {
+                            c.percentShare = Math.round(Math.max(0, c.percentShare - adjustmentPerCat));
+                        });
+
+                        // Fine-tune rounding errors to ensure exact 100% match
+                        let currentSum = categories.reduce((sum, c) => sum + c.percentShare, 0);
+                        if (currentSum !== 100 && otherCats.length > 0) {
+                            otherCats[0].percentShare += (100 - currentSum);
+                        }
+                    }
                 }
                 closeModal();
                 updateUI();
@@ -528,24 +558,22 @@
             setTimeout(() => {
                 const aiBubble = document.createElement('div');
                 aiBubble.className = 'chat-bubble ai';
-                aiBubble.textContent = `Your balance is ${balance.toLocaleString()} KZT and your category target maximums are updating automatically.`;
+                aiBubble.textContent = `Smart auto-balancing is active! Your percentages will always balance out to 100%.`;
                 chatBox.appendChild(aiBubble);
                 chatBox.scrollTop = chatBox.scrollHeight;
             }, 500);
         }
 
-        function handleChatKey(e) {
+        document.getElementById('deposit-btn').onclick = depositMoney;
+        document.getElementById('deduct-btn').onclick = logExpense;
+        document.getElementById('chat-send-btn').onclick = sendChatMessage;
+        document.getElementById('modal-cancel-btn').onclick = closeModal;
+        document.getElementById('modal-save-btn').onclick = saveCategoryChanges;
+
+        document.getElementById('chat-input').onkeypress = function(e) {
             if (e.key === 'Enter') sendChatMessage();
-        }
+        };
 
-        // Event Listeners for buttons
-        document.getElementById('deposit-btn').addEventListener('click', depositMoney);
-        document.getElementById('deduct-btn').addEventListener('click', logExpense);
-        document.getElementById('chat-send-btn').addEventListener('click', sendChatMessage);
-        document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
-        document.getElementById('modal-save-btn').addEventListener('click', saveCategoryChanges);
-
-        // Run on start
         updateUI();
     </script>
 </body>
