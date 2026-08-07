@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gemini Family Budget Command Center v9.8</title>
+    <title>Gemini Family Budget Command Center v9.9</title>
     <style>
         :root {
             --bg-color: #060911;
@@ -29,99 +29,267 @@
             background-image: radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08), transparent 40%),
                               radial-gradient(circle at 85% 85%, rgba(192, 132, 252, 0.08), transparent 40%);
             color: var(--text-primary);
-            padding: 24px;
+            padding: 16px;
             margin: 0;
             display: flex;
             justify-content: center;
         }
 
-        .container {
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 20px;
             width: 100%;
-            max-width: 600px;
+            max-width: 1100px;
         }
 
-        h2 {
-            font-size: 1.15rem;
-            font-weight: 600;
-            margin-bottom: 16px;
+        @media (max-width: 900px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        .dashboard-col {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Nav tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--accent-blue), #0284c7);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Metrics grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .metric-value.balance { color: var(--accent-green); }
+        .metric-value.pace { color: var(--accent-blue); }
+
+        /* Action Cards */
+        .action-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .action-card h3 {
+            font-size: 0.95rem;
+            margin-top: 0;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .category-card {
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input, select {
+            background: var(--inner-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            color: var(--text-primary);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--accent-blue), #0284c7);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .btn-action:hover { opacity: 0.9; }
+
+        /* Categories Section */
+        .categories-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 18px;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .category-card:hover {
-            border-color: var(--border-hover);
+        .categories-section h2 {
+            font-size: 1rem;
+            margin-top: 0;
+            margin-bottom: 14px;
+        }
+
+        .category-card {
+            background: var(--inner-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
         }
 
         .category-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
-        .category-name {
-            font-weight: 600;
-            font-size: 1.05rem;
-        }
-
-        .category-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .category-percent {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--accent-blue);
-        }
+        .category-name { font-weight: 600; font-size: 0.95rem; }
+        .category-percent { font-size: 0.85rem; font-weight: 600; color: var(--accent-blue); }
 
         .edit-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
-            padding: 5px 10px;
-            font-size: 0.8rem;
-            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 6px;
             cursor: pointer;
         }
 
-        .edit-btn:hover {
-            background: var(--accent-blue);
-            color: var(--bg-color);
-            border-color: var(--accent-blue);
-        }
+        .edit-btn:hover { background: var(--accent-blue); color: var(--bg-color); }
 
         .category-details {
             display: flex;
             justify-content: space-between;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .progress-bar-bg {
-            background: var(--inner-bg);
-            height: 8px;
-            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            height: 6px;
+            border-radius: 4px;
             overflow: hidden;
         }
 
         .progress-bar-fill {
             height: 100%;
-            background: var(--accent-blue);
-            border-radius: 6px;
+            border-radius: 4px;
             width: 0%;
+        }
+
+        /* AI Chat Column */
+        .chat-col {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-right: 4px;
+        }
+
+        .chat-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            max-width: 85%;
+        }
+
+        .chat-bubble.ai {
+            background: var(--inner-bg);
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+        }
+
+        .chat-bubble.user {
+            background: var(--accent-blue);
+            color: var(--bg-color);
+            font-weight: 500;
+            align-self: flex-end;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-btn {
+            background: var(--accent-purple);
+            color: #ffffff;
+            border: none;
+            padding: 0 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
         }
 
         /* Modal Styles */
@@ -142,79 +310,94 @@
             padding: 24px;
             border-radius: 20px;
             width: 90%;
-            max-width: 400px;
-            box-shadow: var(--glow-shadow);
+            max-width: 380px;
         }
 
-        .modal h3 { margin-top: 0; margin-bottom: 16px; font-size: 1.2rem; }
-
-        .modal label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-
-        .modal input {
-            width: 100%;
-            background: var(--inner-bg);
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            color: var(--text-primary);
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 1rem;
-        }
-
-        .modal input:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-        }
-
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-cancel {
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-save {
-            background: var(--accent-blue);
-            color: var(--bg-color);
-            font-weight: 600;
-        }
+        .modal h3 { margin-top: 0; margin-bottom: 14px; font-size: 1.1rem; }
+        .modal label { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px; }
+        .modal input { margin-bottom: 12px; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 8px; }
+        .btn { padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; border: none; }
+        .btn-cancel { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .btn-save { background: var(--accent-blue); color: var(--bg-color); font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>📁 Category Budgets</h2>
-        <div id="categories-container">
+    <div class="main-layout">
+        <div class="dashboard-col">
+            <div class="nav-tabs">
+                <button class="tab-btn active">Dash</button>
+                <button class="tab-btn">Converter</button>
+                <button class="tab-btn">Analytics</button>
+                <button class="tab-btn">Wishlist</button>
+                <button class="tab-btn">Income</button>
             </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Balance</div>
+                    <div class="metric-value balance" id="balance-display">14,500</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Daily Pace</div>
+                    <div class="metric-value pace" id="pace-display">483</div>
+                </div>
+            </div>
+
+            <div class="action-card">
+                <h3>💰 Deposit Monthly Allowance</h3>
+                <div class="input-group">
+                    <input type="number" id="deposit-input" placeholder="Amount">
+                    <button class="btn-action" onclick="depositMoney()">Deposit</button>
+                </div>
+            </div>
+
+            <div class="action-card">
+                <h3>💸 Quick Log Expense</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="input-group">
+                        <input type="text" id="expense-desc" placeholder="Item description">
+                        <input type="number" id="expense-amount" placeholder="Amount">
+                    </div>
+                    <div class="input-group">
+                        <select id="expense-category">
+                            <option value="Savings">Savings</option>
+                            <option value="Emergency">Emergency</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Fun">Fun</option>
+                        </select>
+                        <button class="btn-action" onclick="logExpense()">Deduct</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="categories-section">
+                <h2>📁 Category Budgets</h2>
+                <div id="categories-container">
+                    </div>
+            </div>
+        </div>
+
+        <div class="chat-col">
+            <div class="chat-header">Ask anything about your account or budget!</div>
+            <div class="chat-box" id="chat-box">
+                <div class="chat-bubble ai">👋 Welcome! Your profile session is active and secure.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask AI..." onkeypress="handleChatKey(event)">
+                <button class="chat-btn" onclick="sendChatMessage()">Ask</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal-overlay" id="editModal">
         <div class="modal">
             <h3>Edit Category</h3>
-            <label for="editName">Category Name</label>
+            <label>Category Name</label>
             <input type="text" id="editName">
-            
-            <label for="editMax">Maximum Money (KZT)</label>
+            <label>Maximum Money (KZT)</label>
             <input type="number" id="editMax">
-            
             <div class="modal-buttons">
                 <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-save" onclick="saveCategoryChanges()">Save Changes</button>
@@ -223,7 +406,8 @@
     </div>
 
     <script>
-        // Initial Mock Data matching your requirements
+        // Core State Data
+        let balance = 14500;
         let categories = [
             { id: '1', name: 'Savings', current: 0, max: 3000 },
             { id: '2', name: 'Emergency', current: 0, max: 2000 },
@@ -233,7 +417,9 @@
 
         let activeEditingId = null;
 
-        function renderCategories() {
+        function updateUI() {
+            document.getElementById('balance-display').innerText = balance.toLocaleString();
+            
             const container = document.getElementById('categories-container');
             container.innerHTML = '';
 
@@ -241,7 +427,6 @@
                 const max = cat.max > 0 ? cat.max : 1;
                 const percent = Math.min(Math.round((cat.current / max) * 100), 100);
                 
-                // Dynamic progress bar coloring
                 let barColor = 'var(--accent-blue)';
                 if (percent >= 100) barColor = 'var(--accent-red)';
                 else if (percent > 75) barColor = 'var(--accent-yellow)';
@@ -251,7 +436,7 @@
                 card.innerHTML = `
                     <div class="category-header">
                         <span class="category-name">${cat.name}</span>
-                        <div class="category-actions">
+                        <div style="display: flex; align-items: center; gap: 10px;">
                             <span class="category-percent">${percent}%</span>
                             <button class="edit-btn" onclick="openModal('${cat.id}')">Edit</button>
                         </div>
@@ -265,6 +450,42 @@
                 `;
                 container.appendChild(card);
             });
+
+            // Update select dropdown options dynamically
+            const select = document.getElementById('expense-category');
+            select.innerHTML = '';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat.name;
+                opt.textContent = cat.name;
+                select.appendChild(opt);
+            });
+        }
+
+        function depositMoney() {
+            const input = document.getElementById('deposit-input');
+            const val = parseFloat(input.value);
+            if (!isNaN(val) && val > 0) {
+                balance += val;
+                input.value = '';
+                updateUI();
+            }
+        }
+
+        function logExpense() {
+            const amountInput = document.getElementById('expense-amount');
+            const catSelect = document.getElementById('expense-category');
+            const val = parseFloat(amountInput.value);
+
+            if (!isNaN(val) && val > 0) {
+                balance -= val;
+                const cat = categories.find(c => c.name === catSelect.value);
+                if (cat) {
+                    cat.current += val;
+                }
+                amountInput.value = '';
+                updateUI();
+            }
         }
 
         function openModal(id) {
@@ -293,12 +514,42 @@
                     cat.max = newMax;
                 }
                 closeModal();
-                renderCategories();
+                updateUI();
             }
         }
 
-        // Initial render on page load
-        renderCategories();
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatBox = document.getElementById('chat-box');
+            
+            // User bubble
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble user';
+            userBubble.textContent = text;
+            chatBox.appendChild(userBubble);
+            
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // AI reply mockup
+            setTimeout(() => {
+                const aiBubble = document.createElement('div');
+                aiBubble.className = 'chat-bubble ai';
+                aiBubble.textContent = `I've analyzed your question. Your current balance is ${balance.toLocaleString()} KZT and everything looks balanced!`;
+                chatBox.appendChild(aiBubble);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 500);
+        }
+
+        function handleChatKey(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        }
+
+        // Initial launch render
+        updateUI();
     </script>
 </body>
 </html>
