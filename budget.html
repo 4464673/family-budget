@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Gemini Pro Command Center v9.9</title>
+<style>
+  :root {
+    --bg-color: #060911;
+    --card-bg: rgba(18, 24, 38, 0.9);
+    --inner-bg: rgba(28, 36, 56, 0.6);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(56, 189, 248, 0.5);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-blue: #38bdf8;
+    --accent-green: #34d399;
+    --accent-yellow: #fbbf24;
+    --accent-red: #f87171;
+    --accent-purple: #c084fc;
+    --glow-shadow: 0 0 35px rgba(56, 189, 248, 0.15);
+  }
+
+  * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08), transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(192, 132, 252, 0.08), transparent 40%);
+    color: var(--text-primary);
+    padding: 16px 10px;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  body[dir="rtl"] { direction: rtl; text-align: right; }
+
+  /* DASHBOARD GRID */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+    width: 100%;
+    max-width: 1240px;
+  }
+
+  @media (max-width: 980px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    body { padding: 8px 4px; }
+  }
+
+  .card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 20px 16px;
+    box-shadow: var(--glow-shadow), 0 10px 30px rgba(0,0,0,0.5);
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* SCROLLABLE NAV TABS */
+  .nav-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--inner-bg);
+    padding: 6px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-tabs::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .nav-btn:hover { color: var(--text-primary); }
+
+  .nav-btn.active {
+    background: var(--accent-blue);
+    color: #060911;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .badge {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--accent-blue);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .stat-card {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .stat-title { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+  .stat-value { font-size: 20px; font-weight: 800; margin-top: 4px; word-break: break-all; }
+
+  .section-box {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  input, select {
+    background: var(--bg-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    width: 100%;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+  }
+
+  .btn-action {
+    background: linear-gradient(135deg, #38bdf8, #0284c7);
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+    white-space: nowrap;
+  }
+
+  .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--accent-red);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .stacked-bar {
+    display: flex;
+    height: 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    margin-top: 10px;
+  }
+
+  .stacked-segment { height: 100%; transition: width 0.5s ease-in-out; }
+
+  .category-card, .grid-item-card {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .progress-bg {
+    background: var(--bg-color);
+    border-radius: 8px;
+    height: 8px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .progress-fill { height: 100%; border-radius: 8px; transition: width 0.5s ease; }
+
+  .tx-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tx-item {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    padding: 10px 14px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .delete-tx { color: var(--accent-red); cursor: pointer; font-size: 14px; margin-left: 8px; }
+
+  .converter-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+  }
+  @media (max-width: 600px) {
+    .converter-grid { grid-template-columns: 1fr; }
+  }
+
+  /* AI SIDEBAR */
+  .ai-sidebar {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--glow-shadow);
+  }
+
+  .chat-feed {
+    background: var(--inner-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    height: 280px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  @media (min-width: 981px) {
+    .chat-feed { height: 380px; }
+  }
+
+  .chat-msg { padding: 8px 12px; border-radius: 12px; max-width: 90%; word-break: break-word; }
+  .chat-msg.user { background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent-blue); align-self: flex-end; }
+  .chat-msg.ai { background: rgba(192, 132, 252, 0.15); border: 1px solid var(--accent-purple); align-self: flex-start; }
+
+  .page-view { display: none; }
+  .page-view.active { display: block; animation: fadeIn 0.3s ease-out; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body id="appBody">
+
+<div class="dashboard-grid" id="dashboardCard">
+  
+  <div class="card">
+    <div class="header">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <h2 style="margin:0; color:var(--accent-blue); font-size:18px;">💳 Gemini Pro Command Center</h2>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+        <span class="badge">👤 Active</span>
+        <select id="langSelector" onchange="changeLanguage(this.value)" style="padding:6px 8px; font-size:11px; width:auto;">
+          <option value="en">EN</option>
+          <option value="ru">RU</option>
+          <option value="kz">KZ</option>
+          <option value="ar">AR</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-btn active" id="tab-dash" onclick="switchPage('dash')" data-i18n="tabDash">📊 Dash</button>
+      <button class="nav-btn" id="tab-converter" onclick="switchPage('converter')" data-i18n="tabConverter">💱 Converter</button>
+      <button class="nav-btn" id="tab-analytics" onclick="switchPage('analytics')" data-i18n="tabAnalytics">📈 Analytics</button>
+      <button class="nav-btn" id="tab-wishlist" onclick="switchPage('wishlist')" data-i18n="tabWishlist">🛒 Wishlist</button>
+      <button class="nav-btn" id="tab-income" onclick="switchPage('income')" data-i18n="tabIncome">💼 Income</button>
+      <button class="nav-btn" id="tab-gaming" onclick="switchPage('gaming')" data-i18n="tabGaming">🎮 Gaming</button>
+      <button class="nav-btn" id="tab-warranty" onclick="switchPage('warranty')" data-i18n="tabWarranty">🛡️ Returns</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title" data-i18n="statBalance">Balance</div>
+        <div class="stat-value" id="grandTotal" style="color:var(--accent-green);">15,000</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title" data-i18n="statPace">Daily Pace</div>
+        <div class="stat-value" id="dailyPaceText" style="color:var(--accent-blue);">600</div>
+      </div>
+    </div>
+
+    <div class="page-view active" id="page-dash">
+      <div class="section-box">
+        <b data-i18n="depositTitle" style="font-size:13px;">💰 Deposit Monthly Allowance</b>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <input type="number" id="monthlyInput" value="15000" style="flex:1;" placeholder="Amount">
+          <button class="btn-action" onclick="addMonthlyAllowance()" data-i18n="depositBtn">➕ Deposit</button>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <b data-i18n="quickLogTitle" style="font-size:13px;">🧾 Quick Log Expense</b>
+        <div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+          <input type="text" id="txName" data-i18n-placeholder="descPlaceholder" placeholder="Item description" style="flex:2; min-width:110px;">
+          <input type="number" id="txAmount" data-i18n-placeholder="amountPlaceholder" placeholder="Amount" style="flex:1; min-width:80px;">
+          <select id="txCategory" style="flex:1; min-width:100px;">
+            <option value="0" data-i18n="catSavings">Savings</option>
+            <option value="1" data-i18n="catEmergency">Emergency</option>
+            <option value="2" selected data-i18n="catBills">Bills</option>
+            <option value="3" data-i18n="catFun">Fun</option>
+          </select>
+          <button class="btn-action" onclick="logExpense()" data-i18n="deductBtn">💸 Deduct</button>
+        </div>
+      </div>
+
+      <b data-i18n="catBudgetsTitle" style="font-size:13px;">📂 Category Budgets</b>
+      <div id="categoriesContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="page-view" id="page-converter">
+      <div class="section-box">
+        <b data-i18n="convHeader" style="font-size:13px;">💱 Global Currency Converter</b>
+        <p style="font-size:11px; color:var(--text-secondary); margin-top:4px;" data-i18n="convSub">Convert across dozens of currencies, crypto coins, and precious metals instantly.</p>
+        
+        <div class="converter-grid">
+          <div>
+            <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:4px;" data-i18n="fromLbl">From Amount & Currency</label>
+            <input type="number" id="convInput" value="500" style="width:100%; margin-bottom:6px;" oninput="convertCurrency()">
+            <select id="convFromCurr" style="width:100%;" onchange="convertCurrency()"></select>
+          </div>
+          <div style="text-align:center; font-size:20px; color:var(--accent-blue); padding-top:10px;">➔</div>
+          <div>
+            <label style="font-size:10px; color:var(--text-secondary); display:block; margin-bottom:4px;" data-i18n="toLbl">To Currency</label>
+            <div id="convResultDisplay" style="background:var(--bg-color); border:1px solid var(--border-color); border-radius:12px; padding:10px 12px; font-size:14px; font-weight:800; color:var(--accent-green); margin-bottom:6px; min-height:41px; display:flex; align-items:center;">0.00</div>
+            <select id="convToCurr" style="width:100%;" onchange="convertCurrency()"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-view" id="page-analytics">
+      <div class="section-box">
+        <b data-i18n="breakdownTitle" style="font-size:13px;">📊 Visual Allocation Breakdown</b>
+        <div class="stacked-bar" id="chartBar"></div>
+      </div>
+      <div class="section-box">
+        <b data-i18n="insightsTitle" style="font-size:13px;">⚡ Spending Insights</b>
+        <div style="margin-top:10px; font-size:12px; line-height:1.7;">
+          • <span data-i18n="insightLogged">Total Logged Items:</span> <b id="analyticsCount">0</b><br>
+          • <span data-i18n="insightSpent">Total Spent All-Time:</span> <b id="analyticsTotalSpent" style="color:var(--accent-red);">0 KZT</b>
+        </div>
+      </div>
+      <button class="btn-danger" onclick="resetAll()" data-i18n="resetBtn">💥 Reset Data</button>
+    </div>
+
+    <div class="page-view" id="page-wishlist">
+      <div class="section-box">
+        <b data-i18n="wishAddTitle" style="font-size:13px;">🛒 Add Item to Wishlist</b>
+        <div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+          <input type="text" id="wishName" data-i18n-placeholder="wishPlaceholder" placeholder="Item (e.g. GPU, Shoes)" style="flex:2; min-width:110px;">
+          <input type="number" id="wishCost" placeholder="Cost KZT" style="flex:1; min-width:80px;">
+          <button class="btn-action" onclick="addWishItem()" data-i18n="addBtn">➕ Add</button>
+        </div>
+      </div>
+      <b data-i18n="wishGridTitle" style="font-size:13px;">🎯 Wishlist Market Grid</b>
+      <div id="wishlistContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="page-view" id="page-income">
+      <div class="section-box">
+        <b data-i18n="incomeAddTitle" style="font-size:13px;">💼 Log Income / Side Hustle</b>
+        <div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+          <input type="text" id="incSource" data-i18n-placeholder="incomePlaceholder" placeholder="Source" style="flex:2; min-width:110px;">
+          <input type="number" id="incAmount" placeholder="Amount KZT" style="flex:1; min-width:80px;">
+          <button class="btn-action" onclick="addIncomeItem()" data-i18n="incomeBtn">📥 Add Funds</button>
+        </div>
+      </div>
+      <b data-i18n="incomeRecordsTitle" style="font-size:13px;">📈 Income Records</b>
+      <div class="tx-list" id="incomeListContainer" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="page-view" id="page-gaming">
+      <div class="section-box">
+        <b data-i18n="gameTitle" style="font-size:13px;">🎮 Virtual Game Currency Calculator</b>
+        <p style="font-size:11px; color:var(--text-secondary); margin-top:4px;" data-i18n="gameSub">Check how much Robux, V-Bucks, or RP cost in KZT.</p>
+        
+        <div style="display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap;">
+          <select id="gameSelect" style="flex:2; min-width:140px;" onchange="calculateGameCurrency()">
+            <option value="4.8">Robux (Roblox) — ~4.8 KZT</option>
+            <option value="3.5">V-Bucks (Fortnite) — ~3.5 KZT</option>
+            <option value="3.2">Valorant Points — ~3.2 KZT</option>
+          </select>
+          <input type="number" id="gameAmount" value="1000" style="flex:1; min-width:80px;" placeholder="Quantity" oninput="calculateGameCurrency()">
+        </div>
+        <div style="margin-top:12px; background:var(--bg-color); padding:12px; border-radius:12px; border:1px solid var(--border-color); font-weight:800; color:var(--accent-yellow); font-size:12px;">
+          <span data-i18n="estCost">Estimated Cost:</span> <span id="gameResultCost">4,800</span> KZT
+        </div>
+      </div>
+    </div>
+
+    <div class="page-view" id="page-warranty">
+      <div class="section-box">
+        <b data-i18n="warTitle" style="font-size:13px;">🛡️ Register Product Warranty / Return</b>
+        <div style="display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;">
+          <input type="text" id="warName" data-i18n-placeholder="prodPlaceholder" placeholder="Product name" style="flex:2; min-width:110px;">
+          <input type="date" id="warExpiry" style="flex:1; min-width:110px;">
+          <button class="btn-action" onclick="addWarrantyItem()" data-i18n="warBtn">🛡️ Track Return</button>
+        </div>
+      </div>
+      <b data-i18n="warRecordsTitle" style="font-size:13px;">⏳ Active Warranties & Returns</b>
+      <div id="warrantyContainer" style="margin-top:10px;"></div>
+    </div>
+
+  </div>
+
+  <div class="ai-sidebar">
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <h3 style="margin:0; color:var(--accent-purple); font-size:15px;">🤖 Gemini AI</h3>
+        <span class="badge" style="background:rgba(192, 132, 252, 0.1); color:var(--accent-purple);">ONLINE</span>
+      </div>
+      <p style="font-size:10px; color:var(--text-secondary); margin-top:4px;" data-i18n="aiSub">Ask anything about your account or budget!</p>
+      <div class="chat-feed" id="chatFeed">
+        <div class="chat-msg ai" id="aiWelcomeMsg">👋 Welcome! Your command center is ready.</div>
+      </div>
+    </div>
+    <div style="margin-top:12px; display:flex; gap:6px;">
+      <input type="text" id="aiUserPrompt" data-i18n-placeholder="aiPlaceholder" placeholder="Ask AI..." style="flex:1;" onkeypress="if(event.key==='Enter') sendAiQuery()">
+      <button class="btn-action" style="background:linear-gradient(135deg, #c084fc, #9333ea);" onclick="sendAiQuery()" data-i18n="aiBtn">💬 Ask</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // TRANSLATIONS DICTIONARY
+  var translations = {
+    en: {
+      tabDash: "📊 Dash",
+      tabConverter: "💱 Converter",
+      tabAnalytics: "📈 Analytics",
+      tabWishlist: "🛒 Wishlist",
+      tabIncome: "💼 Income",
+      tabGaming: "🎮 Gaming",
+      tabWarranty: "🛡️ Returns",
+      statBalance: "Balance",
+      statPace: "Daily Pace",
+      depositTitle: "💰 Deposit Monthly Allowance",
+      depositBtn: "➕ Deposit",
+      quickLogTitle: "🧾 Quick Log Expense",
+      descPlaceholder: "Item description",
+      amountPlaceholder: "Amount",
+      catSavings: "Savings",
+      catEmergency: "Emergency",
+      catBills: "Bills",
+      catFun: "Fun",
+      deductBtn: "💸 Deduct",
+      catBudgetsTitle: "📂 Category Budgets",
+      convHeader: "💱 Global Currency Converter",
+      convSub: "Convert across dozens of currencies, crypto coins, and precious metals instantly.",
+      fromLbl: "From Amount & Currency",
+      toLbl: "To Currency",
+      breakdownTitle: "📊 Visual Allocation Breakdown",
+      insightsTitle: "⚡ Spending Insights",
+      insightLogged: "Total Logged Items:",
+      insightSpent: "Total Spent All-Time:",
+      resetBtn: "💥 Reset Data",
+      wishAddTitle: "🛒 Add Item to Wishlist",
+      wishPlaceholder: "Item (e.g. GPU, Shoes)",
+      addBtn: "➕ Add",
+      wishGridTitle: "🎯 Wishlist Market Grid",
+      incomeAddTitle: "💼 Log Income / Side Hustle",
+      incomePlaceholder: "Source",
+      incomeBtn: "📥 Add Funds",
+      incomeRecordsTitle: "📈 Income Records",
+      gameTitle: "🎮 Virtual Game Currency Calculator",
+      gameSub: "Check how much Robux, V-Bucks, or RP cost in KZT.",
+      estCost: "Estimated Cost:",
+      warTitle: "🛡️ Register Product Warranty / Return",
+      prodPlaceholder: "Product name",
+      warBtn: "🛡️ Track Return",
+      warRecordsTitle: "⏳ Active Warranties & Returns",
+      aiSub: "Ask anything about your account or budget!",
+      aiWelcome: "👋 Welcome! Your command center is ready.",
+      aiPlaceholder: "Ask AI...",
+      aiBtn: "💬 Ask",
+      readyBuy: "🟩 Ready to buy!",
+      savingUp: "⏳ Saving up...",
+      buyNow: "Buy Now",
+      daysLeft: "days left",
+      expired: "Expired",
+      expiryDate: "Expiry Date:"
+    },
+    ru: {
+      tabDash: "📊 Главная",
+      tabConverter: "💱 Конвертер",
+      tabAnalytics: "📈 Аналитика",
+      tabWishlist: "🛒 Желания",
+      tabIncome: "💼 Доходы",
+      tabGaming: "🎮 Игры",
+      tabWarranty: "🛡️ Возвраты",
+      statBalance: "Баланс",
+      statPace: "Лимит на день",
+      depositTitle: "💰 Пополнить бюджет",
+      depositBtn: "➕ Пополнить",
+      quickLogTitle: "🧾 Быстрый расход",
+      descPlaceholder: "Описание товара",
+      amountPlaceholder: "Сумма",
+      catSavings: "Сбережения",
+      catEmergency: "Резерв",
+      catBills: "Счета",
+      catFun: "Развлечения",
+      deductBtn: "💸 Списать",
+      catBudgetsTitle: "📂 Бюджет категорий",
+      convHeader: "💱 Конвертер мировых валют",
+      convSub: "Мгновенная конвертация валют, криптовалюты и металлов.",
+      fromLbl: "Сумма и валюта",
+      toLbl: "Целевая валюта",
+      breakdownTitle: "📊 Распределение",
+      insightsTitle: "⚡ Анализ расходов",
+      insightLogged: "Всего записей:",
+      insightSpent: "Всего потрачено:",
+      resetBtn: "💥 Сбросить данные",
+      wishAddTitle: "🛒 Добавить в желания",
+      wishPlaceholder: "Товар (напр. обувь)",
+      addBtn: "➕ Добавить",
+      wishGridTitle: "🎯 Сетка желаний",
+      incomeAddTitle: "💼 Записать доход",
+      incomePlaceholder: "Источник",
+      incomeBtn: "📥 Добавить",
+      incomeRecordsTitle: "📈 История доходов",
+      gameTitle: "🎮 Калькулятор игровой валюты",
+      gameSub: "Стоимость Robux, V-Bucks или RP в тенге.",
+      estCost: "Примерная стоимость:",
+      warTitle: "🛡️ Регистрация возврата",
+      prodPlaceholder: "Название товара",
+      warBtn: "🛡️ Отслеживать",
+      warRecordsTitle: "⏳ Активные гарантии",
+      aiSub: "Задавайте вопросы по вашему счету!",
+      aiWelcome: "👋 Сессия активна.",
+      aiPlaceholder: "Спросите ИИ...",
+      aiBtn: "💬 Спросить",
+      readyBuy: "🟩 Можно покупать!",
+      savingUp: "⏳ Копим...",
+      buyNow: "Купить",
+      daysLeft: "дней осталось",
+      expired: "Истекло",
+      expiryDate: "Окончание:"
+    },
+    kz: {
+      tabDash: "📊 Басты",
+      tabConverter: "💱 Конвертер",
+      tabAnalytics: "📈 Аналитика",
+      tabWishlist: "🛒 Армандар",
+      tabIncome: "💼 Кіріс",
+      tabGaming: "🎮 Ойындар",
+      tabWarranty: "🛡️ Қайтару",
+      statBalance: "Баланс",
+      statPace: "Күндік лимит",
+      depositTitle: "💰 Бюджетті толықтыру",
+      depositBtn: "➕ Салу",
+      quickLogTitle: "🧾 Шығынды тіркеу",
+      descPlaceholder: "Сипаттамасы",
+      amountPlaceholder: "Сомасы",
+      catSavings: "Жинақ",
+      catEmergency: "Төтенше",
+      catBills: "Шоттар",
+      catFun: "Қызық",
+      deductBtn: "💸 Азайту",
+      catBudgetsTitle: "📂 Санаттар бюджеті",
+      convHeader: "💱 Әлемдік валюталар конвертері",
+      convSub: "Валюталар мен криптоны лезде айырбастаңыз.",
+      fromLbl: "Бастапқы сома мен валюта",
+      toLbl: "Мақсатты валюта",
+      breakdownTitle: "📊 Бөлініс",
+      insightsTitle: "⚡ Талдау",
+      insightLogged: "Барлық жазбалар:",
+      insightSpent: "Барлық жұмсалғаны:",
+      resetBtn: "💥 Деректерді тазарту",
+      wishAddTitle: "🛒 Армандарға қосу",
+      wishPlaceholder: "Зат",
+      addBtn: "➕ Қосу",
+      wishGridTitle: "🎯 Армандар торлары",
+      incomeAddTitle: "💼 Кіріс қосу",
+      incomePlaceholder: "Қайдан",
+      incomeBtn: "📥 Қосу",
+      incomeRecordsTitle: "📈 Кіріс тарихы",
+      gameTitle: "🎮 Ойын валютасының калькуляторы",
+      gameSub: "Robux немесе V-Bucks теңге бағасы.",
+      estCost: "Құны:",
+      warTitle: "🛡️ Кепілдік немесе қайтару",
+      prodPlaceholder: "Өнім атауы",
+      warBtn: "🛡️ Бақылау",
+      warRecordsTitle: "⏳ Белсенді кепілдіктер",
+      aiSub: "Есептік жазбаңыз туралы сұраңыз!",
+      aiWelcome: "👋 Сессия қосылды.",
+      aiPlaceholder: "AI-дан сұраңыз...",
+      aiBtn: "💬 Сұрау",
+      readyBuy: "🟩 Сатып алуға болады!",
+      savingUp: "⏳ Жинақталуда...",
+      buyNow: "Сатып алу",
+      daysLeft: "күн қалды",
+      expired: "Мерзімі өтті",
+      expiryDate: "Аяқталуы:"
+    },
+    ar: {
+      tabDash: "📊 الرئيسية",
+      tabConverter: "💱 المحول",
+      tabAnalytics: "📈 التحليلات",
+      tabWishlist: "🛒 الأمنيات",
+      tabIncome: "💼 الدخل",
+      tabGaming: "🎮 الألعاب",
+      tabWarranty: "🛡️ المرتجعات",
+      statBalance: "الرصيد",
+      statPace: "المعدل اليومي",
+      depositTitle: "💰 إيداع المصروف",
+      depositBtn: "➕ إيداع",
+      quickLogTitle: "🧾 تسجيل مصروف",
+      descPlaceholder: "الوصف",
+      amountPlaceholder: "المبلغ",
+      catSavings: "الادخار",
+      catEmergency: "الطوارئ",
+      catBills: "الفواتير",
+      catFun: "الترفيه",
+      deductBtn: "💸 خصم",
+      catBudgetsTitle: "📂 ميزانيات الفئات",
+      convHeader: "💱 محول العملات العالمي",
+      convSub: "تحويل العملات والعملات المشفرة فوراً.",
+      fromLbl: "المبلغ والعملة",
+      toLbl: "العملة المستهدفة",
+      breakdownTitle: "📊 التوزيع",
+      insightsTitle: "⚡ رؤى الإنفاق",
+      insightLogged: "العناصر المسجلة:",
+      insightSpent: "إجمالي المنفق:",
+      resetBtn: "💥 إعادة التعيين",
+      wishAddTitle: "🛒 إضافة للأمنيات",
+      wishPlaceholder: "العنصر",
+      addBtn: "➕ إضافة",
+      wishGridTitle: "🎯 قائمة الأمنيات",
+      incomeAddTitle: "💼 تسجيل الدخل",
+      incomePlaceholder: "المصدر",
+      incomeBtn: "📥 إضافة",
+      incomeRecordsTitle: "📈 سجلات الدخل",
+      gameTitle: "🎮 حاسبة عملات الألعاب",
+      gameSub: "حساب تكلفة روبوكس وفورتنايت.",
+      estCost: "التكلفة المقدرة:",
+      warTitle: "🛡️ تسجيل الضمان",
+      prodPlaceholder: "اسم المنتج",
+      warBtn: "🛡️ تتبع",
+      warRecordsTitle: "⏳ الضمانات النشطة",
+      aiSub: "اسأل عن رصيدك وميزانيتك!",
+      aiWelcome: "👋 الجلسة نشطة.",
+      aiPlaceholder: "اسأل الذكاء الاصطناعي...",
+      aiBtn: "💬 اسأل",
+      readyBuy: "🟩 جاهز للشراء!",
+      savingUp: "⏳ جاري التوفير...",
+      buyNow: "اشتري",
+      daysLeft: "أيام متبقية",
+      expired: "منتهي",
+      expiryDate: "التاريخ:"
+    }
+  };
+
+  var currentLang = localStorage.getItem('appLang') || 'en';
+
+  function changeLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('appLang', lang);
+    var body = document.getElementById('appBody');
+    if (lang === 'ar') {
+      body.setAttribute('dir', 'rtl');
+    } else {
+      body.setAttribute('dir', 'ltr');
+    }
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      var key = el.getAttribute('data-i18n');
+      if (translations[currentLang][key]) {
+        el.innerText = translations[currentLang][key];
+      }
+    });
+
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      var key = el.getAttribute('data-i18n-placeholder');
+      if (translations[currentLang][key]) {
+        el.setAttribute('placeholder', translations[currentLang][key]);
+      }
+    });
+  }
+
+  // --- APP DATA STORAGE ---
+  var wishlist = [];
+  var incomeList = [];
+  var warrantyList = [];
+  var transactions = [];
+  var startBalances = [2250, 4500, 6000, 2250];
+  var spentValues = [0, 0, 0, 0];
+
+  function loadAppData() {
+    wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    incomeList = JSON.parse(localStorage.getItem('incomeList')) || [];
+    warrantyList = JSON.parse(localStorage.getItem('warrantyList')) || [];
+    transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    startBalances = JSON.parse(localStorage.getItem('startBalances')) || [2250, 4500, 6000, 2250];
+    spentValues = JSON.parse(localStorage.getItem('spentValues')) || [0, 0, 0, 0];
+  }
+
+  function saveAppData() {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    localStorage.setItem('incomeList', JSON.stringify(incomeList));
+    localStorage.setItem('warrantyList', JSON.stringify(warrantyList));
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+    localStorage.setItem('startBalances', JSON.stringify(startBalances));
+    localStorage.setItem('spentValues', JSON.stringify(spentValues));
+  }
+
+  // EXTENDED EXCHANGE RATES
+  var exchangeRates = {
+    KZT: 1, USD: 485, EUR: 525, RUB: 5.3, GBP: 615, CNY: 67, JPY: 3.2,
+    AED: 132, TRY: 14.5, CAD: 355, AUD: 315, CHF: 550, INR: 5.8, KRW: 0.35,
+    BTC: 31500000, ETH: 1550000, GOLD: 78000, SILVER: 920
+  };
+
+  var currencyNames = {
+    KZT: "KZT (Tenge)", USD: "USD (US Dollar)", EUR: "EUR (Euro)",
+    RUB: "RUB (Ruble)", GBP: "GBP (Pound)", CNY: "CNY (Yuan)",
+    JPY: "JPY (Yen)", AED: "AED (Dirham)", TRY: "TRY (Lira)",
+    CAD: "CAD (Canadian Dollar)", AUD: "AUD (Australian Dollar)",
+    CHF: "CHF (Swiss Franc)", INR: "INR (Rupee)", KRW: "KRW (Won)",
+    BTC: "BTC (Bitcoin)", ETH: "ETH (Ethereum)", GOLD: "GOLD (Gold Gram)", SILVER: "SILVER (Silver Gram)"
+  };
+
+  function populateCurrencySelectors() {
+    var fromSelect = document.getElementById('convFromCurr');
+    var toSelect = document.getElementById('convToCurr');
+    if (!fromSelect || !toSelect) return;
+
+    var optionsHtml = '';
+    for (var code in exchangeRates) {
+      optionsHtml += '<option value="' + code + '">' + currencyNames[code] + '</option>';
+    }
+    fromSelect.innerHTML = optionsHtml;
+    toSelect.innerHTML = optionsHtml;
+    fromSelect.value = 'KZT';
+    toSelect.value = 'USD';
+  }
+
+  function convertCurrency() {
+    var amount = Number(document.getElementById('convInput').value) || 0;
+    var fromCurr = document.getElementById('convFromCurr').value;
+    var toCurr = document.getElementById('convToCurr').value;
+    var display = document.getElementById('convResultDisplay');
+    if (!display) return;
+
+    var valueInKzt = amount * (exchangeRates[fromCurr] || 1);
+    var finalResult = valueInKzt / (exchangeRates[toCurr] || 1);
+    var decimals = (toCurr === 'BTC' || toCurr === 'ETH') ? 6 : 2;
+    display.innerText = finalResult.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + " " + toCurr;
+  }
+
+  function switchPage(pageId) {
+    document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
+    document.getElementById('tab-' + pageId).classList.add('active');
+    if (pageId === 'analytics') updateAnalyticsPage();
+  }
+
+  function buildUI() {
+    var container = document.getElementById('categoriesContainer');
+    if (!container) return;
+    var categories = [
+      { nameKey: "catSavings", pct: 15, color: "#38bdf8" },
+      { nameKey: "catEmergency", pct: 30, color: "#34d399" },
+      { nameKey: "catBills", pct: 40, color: "#fbbf24" },
+      { nameKey: "catFun", pct: 15, color: "#c084fc" }
+    ];
+
+    var html = '';
+    for (var i = 0; i < categories.length; i++) {
+      var catName = translations[currentLang][categories[i].nameKey] || categories[i].nameKey;
+      html += '<div class="category-card">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">' +
+          '<b>' + catName + ' (' + categories[i].pct + '%)</b>' +
+          '<span id="rem_' + i + '" style="color:' + categories[i].color + '; font-weight:800;">0 KZT</span>' +
+        '</div>' +
+        '<div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-secondary); margin-top:6px; align-items:center;">' +
+          '<span>Allocated: <span id="start_' + i + '">' + startBalances[i] + '</span> KZT</span>' +
+          '<div>Spent: <input type="number" id="spent_' + i + '" value="' + spentValues[i] + '" style="width:70px; padding:3px 6px; font-size:11px;" oninput="updateCat(' + i + ')"></div>' +
+        '</div>' +
+        '<div class="progress-bg"><div class="progress-fill" id="bar_' + i + '" style="background:' + categories[i].color + ';"></div></div>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+
+    for (var i = 0; i < categories.length; i++) {
+      updateCat(i);
+    }
+  }
+
+  function updateCat(i) {
+    var totalBudget = startBalances[i];
+    var spentInput = document.getElementById('spent_' + i);
+    var spent = spentInput ? Number(spentInput.value) || 0 : spentValues[i];
+    
+    spentValues[i] = spent;
+    saveAppData();
+
+    var rem = totalBudget - spent;
+    var startElem = document.getElementById('start_' + i);
+    var remElem = document.getElementById('rem_' + i);
+    
+    if (startElem) startElem.innerText = totalBudget.toLocaleString();
+    if (remElem) remElem.innerText = rem.toLocaleString() + ' KZT';
+
+    var bar = document.getElementById('bar_' + i);
+    var pctLeft = totalBudget > 0 ? (rem / totalBudget) * 100 : 0;
+    if (bar) bar.style.width = Math.max(0, pctLeft) + '%';
+    
+    updateGrandTotal(); 
+    renderChart(); 
+    calculateDailyPace();
+  }
+
+  function logExpense() {
+    var name = document.getElementById('txName').value || 'Item';
+    var amt = Number(document.getElementById('txAmount').value) || 0;
+    var catIdx = Number(document.getElementById('txCategory').value);
+    if (amt <= 0) return;
+
+    spentValues[catIdx] += amt;
+    var spentInput = document.getElementById('spent_' + catIdx);
+    if (spentInput) spentInput.value = spentValues[catIdx];
+
+    updateCat(catIdx);
+    transactions.unshift({ id: Date.now(), name: name, amt: amt });
+    saveAppData();
+    
+    document.getElementById('txName').value = ''; 
+    document.getElementById('txAmount').value = '';
+  }
+
+  // WISHLIST LOGIC
+  function addWishItem() {
+    var name = document.getElementById('wishName').value;
+    var cost = Number(document.getElementById('wishCost').value) || 0;
+    if (!name || cost <= 0) return;
+    wishlist.push({ id: Date.now(), name: name, cost: cost });
+    saveAppData();
+    document.getElementById('wishName').value = ''; document.getElementById('wishCost').value = '';
+    renderWishlist();
+  }
+
+  function renderWishlist() {
+    var container = document.getElementById('wishlistContainer');
+    if (!container) return;
+    if (wishlist.length === 0) {
+      container.innerHTML = '<span style="font-size:11px; color:var(--text-secondary);">No items in wishlist.</span>';
+      return;
+    }
+    var grandTotal = Number(document.getElementById('grandTotal').innerText.replace(/,/g, '')) || 0;
+    var t = translations[currentLang];
+    var html = '';
+    wishlist.forEach(w => {
+      var canAfford = grandTotal >= w.cost;
+      var pct = Math.min(100, (grandTotal / w.cost) * 100);
+      html += '<div class="grid-item-card">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">' +
+          '<b>' + w.name + '</b>' +
+          '<span style="color:' + (canAfford ? 'var(--accent-green)' : 'var(--accent-yellow)') + '; font-weight:800;">' + w.cost.toLocaleString() + ' KZT</span>' +
+        '</div>' +
+        '<div class="progress-bg"><div class="progress-fill" style="width:' + pct + '%; background:' + (canAfford ? 'var(--accent-green)' : 'var(--accent-purple)') + ';"></div></div>' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">' +
+          '<span style="font-size:10px; color:var(--text-secondary);">' + (canAfford ? t.readyBuy : t.savingUp) + '</span>' +
+          '<div>' + (canAfford ? '<button class="btn-secondary" style="padding:4px 8px; font-size:10px; color:var(--accent-green);" onclick="buyWishItem(' + w.id + ',' + w.cost + ')">' + t.buyNow + '</button> ' : '') +
+          '<span class="delete-tx" onclick="deleteWish(' + w.id + ')">✕</span></div>' +
+        '</div>' +
+      '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  function deleteWish(id) {
+    wishlist = wishlist.filter(w => w.id !== id);
+    saveAppData();
+    renderWishlist();
+  }
+
+  function buyWishItem(id, cost) {
+    if (confirm("Deduct " + cost.toLocaleString() + " KZT for this item?")) {
+      spentValues[2] += cost;
+      var spentInput = document.getElementById('spent_2');
+      if (spentInput) spentInput.value = spentValues[2];
+      updateCat(2);
+      deleteWish(id);
+    }
+  }
+
+  // INCOME LOGIC
+  function addIncomeItem() {
+    var source = document.getElementById('incSource').value;
+    var amt = Number(document.getElementById('incAmount').value) || 0;
+    if (!source || amt <= 0) return;
+    incomeList.unshift({ id: Date.now(), source: source, amt: amt, date: new Date().toLocaleDateString() });
+    saveAppData();
+    document.getElementById('incSource').value = ''; document.getElementById('incAmount').value = '';
+    renderIncome();
+  }
+
+  function renderIncome() {
+    var container = document.getElementById('incomeListContainer');
+    if (!container) return;
+    if (incomeList.length === 0) {
+      container.innerHTML = '<span style="font-size:11px; color:var(--text-secondary);">No income recorded.</span>';
+      return;
+    }
+    var html = '';
+    incomeList.forEach(inc => {
+      html += '<div class="tx-item">' +
+        '<div><b>' + inc.source + '</b><div style="font-size:9px; color:var(--text-secondary);">' + inc.date + '</div></div>' +
+        '<span style="color:var(--accent-green); font-weight:800;">+ ' + inc.amt.toLocaleString() + ' KZT</span>' +
+      '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  // GAMING CURRENCY HUB
+  function calculateGameCurrency() {
+    var sel = document.getElementById('gameSelect');
+    var qtyElem = document.getElementById('gameAmount');
+    var resElem = document.getElementById('gameResultCost');
+    if (!sel || !qtyElem || !resElem) return;
+    var rate = Number(sel.value);
+    var qty = Number(qtyElem.value) || 0;
+    resElem.innerText = Math.round(rate * qty).toLocaleString();
+  }
+
+  // WARRANTY VAULT
+  function addWarrantyItem() {
+    var name = document.getElementById('warName').value;
+    var expiry = document.getElementById('warExpiry').value;
+    if (!name || !expiry) return;
+    warrantyList.push({ id: Date.now(), name: name, expiry: expiry });
+    saveAppData();
+    document.getElementById('warName').value = ''; document.getElementById('warExpiry').value = '';
+    renderWarranty();
+  }
+
+  function renderWarranty() {
+    var container = document.getElementById('warrantyContainer');
+    if (!container) return;
+    if (warrantyList.length === 0) {
+      container.innerHTML = '<span style="font-size:11px; color:var(--text-secondary);">No active warranties tracked.</span>';
+      return;
+    }
+    var today = new Date();
+    var t = translations[currentLang];
+    var html = '';
+    warrantyList.forEach(w => {
+      var expDate = new Date(w.expiry);
+      var diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+      html += '<div class="grid-item-card">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">' +
+          '<b>' + w.name + '</b>' +
+          '<span style="color:' + (diffDays > 0 ? 'var(--accent-blue)' : 'var(--accent-red)') + '; font-weight:800;">' + (diffDays > 0 ? diffDays + ' ' + t.daysLeft : t.expired) + '</span>' +
+        '</div>' +
+        '<div style="font-size:10px; color:var(--text-secondary); margin-top:4px;">' + t.expiryDate + ' ' + w.expiry + '</div>' +
+      '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  function updateAnalyticsPage() {
+    var countElem = document.getElementById('analyticsCount');
+    var totalElem = document.getElementById('analyticsTotalSpent');
+    if (!countElem || !totalElem) return;
+    countElem.innerText = transactions.length;
+    var totalSpent = transactions.reduce((sum, t) => sum + t.amt, 0);
+    totalElem.innerText = totalSpent.toLocaleString() + " KZT";
+  }
+
+  function calculateDailyPace() {
+    var paceElem = document.getElementById('dailyPaceText');
+    if (!paceElem) return;
+    var today = new Date();
+    var lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    var daysLeft = Math.max(1, lastDay - today.getDate() + 1);
+    var totalRem = 0;
+    for (var i = 0; i < 4; i++) {
+      var spent = spentValues[i] || 0;
+      totalRem += Math.max(0, startBalances[i] - spent);
+    }
+    paceElem.innerText = Math.round(totalRem / daysLeft).toLocaleString();
+  }
+
+  function addMonthlyAllowance() {
+    var inputElem = document.getElementById('monthlyInput');
+    if (!inputElem) return;
+    var added = Number(inputElem.value) || 0;
+    if (added <= 0) return;
+    var pcts = [15, 30, 40, 15];
+    for (var i = 0; i < 4; i++) {
+      startBalances[i] += (added * pcts[i]) / 100;
+      updateCat(i);
+    }
+    saveAppData();
+  }
+
+  function updateGrandTotal() {
+    var grandTotalElem = document.getElementById('grandTotal');
+    if (!grandTotalElem) return;
+    var grandTotal = 0;
+    for (var i = 0; i < 4; i++) {
+      var spent = spentValues[i] || 0;
+      grandTotal += (startBalances[i] - spent);
+    }
+    grandTotalElem.innerText = grandTotal.toLocaleString();
+    renderWishlist();
+  }
+
+  function renderChart() {
+    var chartBar = document.getElementById('chartBar');
+    if (!chartBar) return;
+    var totalRem = 0, rems = [];
+    var colors = ["#38bdf8", "#34d399", "#fbbf24", "#c084fc"];
+    for (var i = 0; i < 4; i++) {
+      var spent = spentValues[i] || 0;
+      var rem = Math.max(0, startBalances[i] - spent);
+      rems.push(rem); totalRem += rem;
+    }
+    var barHtml = '';
+    for (var j = 0; j < 4; j++) {
+      var pct = totalRem > 0 ? (rems[j] / totalRem) * 100 : 25;
+      barHtml += '<div class="stacked-segment" style="width:' + pct + '%; background:' + colors[j] + ';"></div>';
+    }
+    chartBar.innerHTML = barHtml;
+  }
+
+  function sendAiQuery() {
+    var input = document.getElementById('aiUserPrompt');
+    if (!input) return;
+    var query = input.value.trim();
+    if (!query) return;
+    var queryLower = query.toLowerCase();
+    
+    var feed = document.getElementById('chatFeed');
+    feed.innerHTML += '<div class="chat-msg user">' + query + '</div>';
+    
+    var grandTotal = Number(document.getElementById('grandTotal').innerText.replace(/,/g, '')) || 0;
+    var reply = "";
+
+    if (queryLower.includes('can i buy') || queryLower.includes('buy') || queryLower.includes('cost') || queryLower.includes('price')) {
+      var match = query.match(/\d+/);
+      if (match) {
+        var itemCost = Number(match[0]);
+        if (grandTotal >= itemCost) {
+          reply = "✅ Yes! You have <b>" + grandTotal.toLocaleString() + " KZT</b>, which is enough to cover the <b>" + itemCost.toLocaleString() + " KZT</b> cost. You'll have <b>" + (grandTotal - itemCost).toLocaleString() + " KZT</b> left over.";
+        } else {
+          reply = "❌ Not quite yet. You need <b>" + (itemCost - grandTotal).toLocaleString() + " KZT</b> more to afford this right now (Current balance: " + grandTotal.toLocaleString() + " KZT).";
+        }
+      } else {
+        var matchedWish = wishlist.find(function(w) { return queryLower.includes(w.name.toLowerCase()); });
+        if (matchedWish) {
+          if (grandTotal >= matchedWish.cost) {
+            reply = "✅ Yes! Your wishlist item \"<b>" + matchedWish.name + "</b>\" costs <b>" + matchedWish.cost.toLocaleString() + " KZT</b>, and your balance is <b>" + grandTotal.toLocaleString() + " KZT</b>.";
+          } else {
+            reply = "⏳ \"<b>" + matchedWish.name + "</b>\" costs <b>" + matchedWish.cost.toLocaleString() + " KZT</b>, but your balance is <b>" + grandTotal.toLocaleString() + " KZT</b>. You need <b>" + (matchedWish.cost - grandTotal).toLocaleString() + " KZT</b> more.";
+          }
+        } else {
+          reply = "💡 Mention an amount or a specific wishlist item (e.g., \"can I buy 5000\" or check your wishlist) so I can calculate it for you! Your current balance is <b>" + grandTotal.toLocaleString() + " KZT</b>.";
+        }
+      }
+    } else if (queryLower.includes('hello') || queryLower.includes('hi')) {
+      reply = "👋 Hello! Your current available balance is <b>" + grandTotal.toLocaleString() + " KZT</b>. How can I help you manage your funds today?";
+    } else {
+      reply = "💡 Your current balance is <b>" + grandTotal.toLocaleString() + " KZT</b>. You can ask me if you can afford specific amounts or items!";
+    }
+
+    feed.innerHTML += '<div class="chat-msg ai">' + reply + '</div>';
+    feed.scrollTop = feed.scrollHeight;
+    input.value = '';
+  }
+
+  function resetAll() {
+    if (confirm("Reset all saved local data?")) {
+      localStorage.clear();
+      location.reload();
+    }
+  }
+
+  // Initialize App on load
+  window.onload = function() {
+    loadAppData();
+    populateCurrencySelectors();
+    changeLanguage(currentLang);
+    buildUI();
+    renderWishlist();
+    renderIncome();
+    renderWarranty();
+    convertCurrency();
+  };
+</script>
+
+</body>
+</html>
