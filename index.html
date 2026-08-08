@@ -550,6 +550,21 @@
             }
         }
 
+        // Auto-recalculate category spent values strictly based on logs to purge any ghost values from storage
+        function syncCategoriesWithLogs() {
+            if (!appState.categories) return;
+            appState.categories.forEach(cat => cat.current = 0);
+            if (Array.isArray(appState.logs)) {
+                appState.logs.forEach(l => {
+                    if (l.type === 'expense') {
+                        const match = appState.categories.find(c => l.desc.includes(`(${c.name})`));
+                        if (match) match.current += l.amount;
+                    }
+                });
+            }
+        }
+        syncCategoriesWithLogs();
+
         function saveState() {
             localStorage.setItem('budgetProData', JSON.stringify(appState));
             updateUI();
@@ -558,9 +573,7 @@
         function resetSystemData() {
             if (confirm("Reset all data to defaults?")) {
                 localStorage.removeItem('budgetProData');
-                appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
-                saveState();
-                showToast("System reset successfully!");
+                location.reload();
             }
         }
 
@@ -601,14 +614,8 @@
             // Remove item from logs
             appState.logs.splice(index, 1);
 
-            // Recalculate spent category totals directly from remaining logs
-            appState.categories.forEach(cat => cat.current = 0);
-            appState.logs.forEach(l => {
-                if (l.type === 'expense') {
-                    const match = appState.categories.find(c => l.desc.includes(`(${c.name})`));
-                    if (match) match.current += l.amount;
-                }
-            });
+            // Re-sync spending
+            syncCategoriesWithLogs();
 
             showToast('Transaction removed', 'error');
             saveState();
