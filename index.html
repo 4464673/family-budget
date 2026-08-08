@@ -547,7 +547,6 @@
                 const parsed = JSON.parse(savedData);
                 appState = { ...DEFAULT_STATE, ...parsed };
                 
-                // Ensure targetLimit exists on all loaded categories
                 if (Array.isArray(appState.categories)) {
                     appState.categories.forEach(cat => {
                         if (cat.targetLimit === undefined || cat.targetLimit === null) {
@@ -627,9 +626,6 @@
             document.getElementById('balance-display').innerText = appState.balance.toLocaleString();
             document.getElementById('pace-display').innerText = Math.round(appState.balance / 30).toLocaleString();
 
-            // FIXED: Sort categories by ID so position order never changes!
-            appState.categories.sort((a, b) => Number(a.id) - Number(b.id));
-
             const select = document.getElementById('expense-category');
             select.innerHTML = '';
             appState.categories.forEach(cat => {
@@ -643,7 +639,6 @@
             appState.categories.forEach(cat => {
                 totalSpentAll += cat.current;
                 
-                // Target limit priority check
                 const targetMax = (cat.targetLimit !== undefined && cat.targetLimit !== null) 
                     ? cat.targetLimit 
                     : Math.round((appState.balance * cat.percentShare) / 100);
@@ -830,15 +825,23 @@
 
         function onAmountInput(val) {
             const amount = parseFloat(val) || 0;
-            if (appState.balance > 0) {
-                const percent = ((amount / appState.balance) * 100).toFixed(1);
+            const totalLimits = appState.categories.reduce((sum, c) => sum + (c.targetLimit || 0), 0);
+            const base = appState.balance > 0 ? appState.balance : totalLimits;
+            
+            if (base > 0) {
+                const percent = ((amount / base) * 100).toFixed(1);
                 document.getElementById('editPercent').value = percent;
+            } else {
+                document.getElementById('editPercent').value = 0;
             }
         }
 
         function onPercentInput(val) {
             const percent = parseFloat(val) || 0;
-            const amount = Math.round((appState.balance * percent) / 100);
+            const totalLimits = appState.categories.reduce((sum, c) => sum + (c.targetLimit || 0), 0);
+            const base = appState.balance > 0 ? appState.balance : totalLimits;
+            
+            const amount = Math.round((base * percent) / 100);
             document.getElementById('editAmount').value = amount;
         }
 
