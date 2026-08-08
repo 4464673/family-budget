@@ -42,6 +42,7 @@
             min-height: 100vh;
         }
 
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
@@ -55,6 +56,7 @@
             max-width: 1200px;
         }
 
+        /* Glassmorphism Cards */
         .glass-panel {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -65,6 +67,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
+        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
             gap: 10px;
@@ -103,6 +106,7 @@
             transform: translateY(-2px);
         }
 
+        /* Views */
         .view-section {
             display: none;
             animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -114,6 +118,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Metrics Grid */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -154,6 +159,7 @@
             word-break: break-word;
         }
 
+        /* Inputs & Buttons */
         .input-group { display: flex; gap: 10px; }
         
         input, select {
@@ -194,6 +200,7 @@
         .btn-action.danger { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.4); }
         .btn-action.danger:hover { background: var(--accent-red); color: #fff; }
 
+        /* Lists */
         .list-item {
             background: var(--inner-bg);
             border: 1px solid var(--border-color);
@@ -234,6 +241,7 @@
             transition: width 0.5s ease;
         }
 
+        /* Chat System */
         .chat-col {
             display: flex;
             flex-direction: column;
@@ -295,6 +303,7 @@
             box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
         }
 
+        /* Toast Notifications */
         #toast-container {
             position: fixed;
             bottom: 20px;
@@ -331,6 +340,7 @@
             to { opacity: 0; transform: translateY(-10px); }
         }
 
+        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -342,7 +352,7 @@
             z-index: 500;
             padding: 16px;
         }
-        .modal-card { width: 100%; max-width: 420px; }
+        .modal-card { width: 100%; max-width: 400px; }
 
         @media (max-width: 950px) {
             body { padding: 12px; }
@@ -401,10 +411,7 @@
                 </div>
 
                 <div class="glass-panel">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3 style="font-size: 1.1rem;">📂 Budget Distribution</h3>
-                        <button class="btn-action" style="padding: 6px 12px; font-size: 0.8rem; width: auto;" onclick="validateAndAutoBalance()">Check Balance (% Total)</button>
-                    </div>
+                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">📂 Budget Distribution</h3>
                     <div id="categories-container"></div>
                 </div>
             </div>
@@ -499,24 +506,13 @@
 
     <div class="modal-overlay" id="editModal">
         <div class="glass-panel modal-card">
-            <h3 style="margin-bottom: 16px;">Edit Category Target</h3>
-            <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Category Name</label>
-            <input type="text" id="editName" style="margin-bottom: 16px;">
-            
-            <div style="display: flex; gap: 12px; margin-bottom: 20px;">
-                <div style="flex: 1;">
-                    <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target Limit (KZT)</label>
-                    <input type="number" id="editMoney" oninput="syncFromMoney()">
-                </div>
-                <div style="flex: 1;">
-                    <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target Share (%)</label>
-                    <input type="number" id="editPercent" min="0" max="100" oninput="syncFromPercent()">
-                </div>
-            </div>
-
+            <h3 style="margin-bottom: 16px;">Edit Category Split</h3>
+            <input type="text" id="editName" style="margin-bottom: 12px;">
+            <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target % Share</label>
+            <input type="number" id="editPercent" min="0" max="100" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
                 <button class="btn-action" style="background: transparent; border: 1px solid var(--border-color); color: #fff; width: auto;" onclick="closeModal()">Cancel</button>
-                <button class="btn-action" style="width: auto;" onclick="saveCategoryChanges()">Save Changes</button>
+                <button class="btn-action" style="width: auto;" onclick="saveCategoryChanges()">Apply Changes</button>
             </div>
         </div>
     </div>
@@ -614,7 +610,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary);">
                             <span>Spent: ${cat.current.toLocaleString()}</span>
-                            <span>Limit: ${targetMax.toLocaleString()} KZT</span>
+                            <span>Limit: ${targetMax.toLocaleString()}</span>
                         </div>
                         <div class="progress-track">
                             <div class="progress-fill" style="width: ${progress}%; background: ${color};"></div>
@@ -787,11 +783,6 @@
             const cat = appState.categories.find(c => c.id === id);
             document.getElementById('editName').value = cat.name;
             document.getElementById('editPercent').value = cat.percentShare;
-            
-            // Calculate money based on balance
-            const initialMoney = Math.round((appState.balance * cat.percentShare) / 100);
-            document.getElementById('editMoney').value = initialMoney;
-            
             document.getElementById('editModal').style.display = 'flex';
         }
 
@@ -799,42 +790,23 @@
             document.getElementById('editModal').style.display = 'none';
         }
 
-        // Live syncing between Money and Percent inputs
-        function syncFromMoney() {
-            const moneyVal = parseFloat(document.getElementById('editMoney').value) || 0;
-            if (appState.balance > 0) {
-                const calcPercent = (moneyVal / appState.balance) * 100;
-                document.getElementById('editPercent').value = Math.min(100, Math.round(calcPercent * 10) / 10);
-            }
-        }
-
-        function syncFromPercent() {
-            const percentVal = parseFloat(document.getElementById('editPercent').value) || 0;
-            const calcMoney = (appState.balance * percentVal) / 100;
-            document.getElementById('editMoney').value = Math.round(calcMoney);
-        }
-
         function saveCategoryChanges() {
             const newName = document.getElementById('editName').value;
-            const newPercent = parseFloat(document.getElementById('editPercent').value);
+            const newPercent = parseInt(document.getElementById('editPercent').value);
 
             if (activeEditingId && newPercent >= 0 && newPercent <= 100) {
                 const cat = appState.categories.find(c => c.id === activeEditingId);
+                const diff = newPercent - cat.percentShare;
+                
                 cat.name = newName;
                 cat.percentShare = newPercent;
+
+                const others = appState.categories.filter(c => c.id !== activeEditingId);
+                others.forEach(c => c.percentShare = Math.max(0, Math.round(c.percentShare - (diff/others.length))));
                 
                 closeModal();
-                showToast('Category updated!');
+                showToast('Category updated and re-balanced');
                 saveState();
-            }
-        }
-
-        function validateAndAutoBalance() {
-            const total = appState.categories.reduce((acc, c) => acc + c.percentShare, 0);
-            if (total === 100) {
-                showToast(`Percentages are balanced! Total: 100%`);
-            } else {
-                showToast(`Total % is currently ${total.toFixed(1)}%. Adjust manually or check settings.`, 'error');
             }
         }
 
