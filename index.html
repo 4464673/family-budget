@@ -213,6 +213,13 @@
         
         .item-title { font-weight: 600; font-size: 0.95rem; }
 
+        .item-badge {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
         .progress-track {
             background: rgba(0, 0, 0, 0.4);
             height: 8px;
@@ -524,6 +531,23 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="editWishModal">
+        <div class="glass-panel modal-card">
+            <h3 style="margin-bottom: 16px;">Edit Target Goal</h3>
+            
+            <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Item Name</label>
+            <input type="text" id="editWishName" style="margin-bottom: 16px;">
+
+            <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Cost (KZT)</label>
+            <input type="number" id="editWishCost" style="margin-bottom: 20px;">
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn-action" style="background: transparent; border: 1px solid var(--border-color); color: #fff; width: auto;" onclick="closeWishModal()">Cancel</button>
+                <button class="btn-action" style="width: auto;" onclick="saveWishlistChanges()">Save Goal</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const DEFAULT_STATE = {
             balance: 15000,
@@ -550,7 +574,6 @@
             }
         }
 
-        // Auto-recalculate category spent values strictly based on logs to purge any ghost values from storage
         function syncCategoriesWithLogs() {
             if (!appState.categories) return;
             appState.categories.forEach(cat => cat.current = 0);
@@ -578,6 +601,7 @@
         }
 
         let activeEditingId = null;
+        let activeWishId = null;
 
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -611,10 +635,7 @@
                 appState.balance += log.amount;
             }
 
-            // Remove item from logs
             appState.logs.splice(index, 1);
-
-            // Re-sync spending
             syncCategoriesWithLogs();
 
             showToast('Transaction removed', 'error');
@@ -732,9 +753,12 @@
                     <div class="list-item">
                         <div class="item-header">
                             <span class="item-title">${w.name}</span>
-                            <span class="item-badge" style="background: ${afford ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${afford ? 'var(--accent-green)' : 'var(--accent-yellow)'}">
-                                ${w.cost.toLocaleString()} KZT
-                            </span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="item-badge" style="background: ${afford ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${afford ? 'var(--accent-green)' : 'var(--accent-yellow)'}">
+                                    ${w.cost.toLocaleString()} KZT
+                                </span>
+                                <button class="btn-action" style="padding: 4px 10px; font-size: 0.75rem; background: rgba(255,255,255,0.1); color: #fff; width: auto;" onclick="openWishModal('${w.id}')">Edit</button>
+                            </div>
                         </div>
                         <div style="font-size: 0.8rem; margin-bottom: 6px; color: var(--text-secondary);">
                             ${afford ? '✅ You can afford this!' : '⏳ Saving up...'}
@@ -795,6 +819,36 @@
                 document.getElementById('wish-price').value = '';
                 showToast(`Added ${name} to Wishlist`);
                 saveState();
+            }
+        }
+
+        function openWishModal(id) {
+            activeWishId = id;
+            const goal = appState.wishlist.find(w => w.id === id);
+            if (goal) {
+                document.getElementById('editWishName').value = goal.name;
+                document.getElementById('editWishCost').value = goal.cost;
+                document.getElementById('editWishModal').style.display = 'flex';
+            }
+        }
+
+        function closeWishModal() {
+            document.getElementById('editWishModal').style.display = 'none';
+        }
+
+        function saveWishlistChanges() {
+            const newName = document.getElementById('editWishName').value.trim();
+            const newCost = parseFloat(document.getElementById('editWishCost').value);
+
+            if (activeWishId && newName && newCost > 0) {
+                const goal = appState.wishlist.find(w => w.id === activeWishId);
+                if (goal) {
+                    goal.name = newName;
+                    goal.cost = newCost;
+                    closeWishModal();
+                    showToast('Target Goal updated');
+                    saveState();
+                }
             }
         }
 
@@ -881,7 +935,7 @@
                 } else if (text.includes('hello') || text.includes('hi')) {
                     aiResponse = "Hello! I am monitoring your financial state. All systems green.";
                 } else if (text.includes('wishlist') || text.includes('buy')) {
-                    aiResponse = "Check the Wishlist tab! I've calculated your exact progress toward your goals based on your current balance.";
+                    aiResponse = "Check the Wishlist tab! You can add or edit your target goals directly there.";
                 }
 
                 chatBox.innerHTML += `<div class="bubble ai">${aiResponse}</div>`;
