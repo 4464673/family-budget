@@ -36,14 +36,14 @@
                 radial-gradient(circle at 90% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
             background-attachment: fixed;
             color: var(--text-primary);
-            padding: 20px;
+            padding: 16px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
         }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
@@ -51,13 +51,9 @@
         .app-container {
             display: grid;
             grid-template-columns: 1fr 380px;
-            gap: 24px;
+            gap: 20px;
             width: 100%;
             max-width: 1200px;
-        }
-
-        @media (max-width: 950px) {
-            .app-container { grid-template-columns: 1fr; }
         }
 
         /* Glassmorphism Cards */
@@ -71,14 +67,17 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        /* Navigation */
+        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
             gap: 10px;
             overflow-x: auto;
-            padding-bottom: 5px;
-            margin-bottom: 20px;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Hide scrollbar Firefox */
         }
+        .nav-tabs::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
 
         .tab-btn {
             background: var(--inner-bg);
@@ -91,6 +90,7 @@
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .tab-btn:hover {
@@ -118,18 +118,18 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Metrics */
+        /* Metrics Grid */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
         }
 
         .metric-card {
             background: var(--inner-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 20px;
+            padding: 16px;
             position: relative;
             overflow: hidden;
         }
@@ -153,18 +153,19 @@
         }
 
         .metric-value {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             letter-spacing: -0.5px;
+            word-break: break-word;
         }
 
         /* Inputs & Buttons */
-        .input-group { display: flex; gap: 12px; }
+        .input-group { display: flex; gap: 10px; }
         
         input, select {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border-color);
-            padding: 12px 16px;
+            padding: 12px 14px;
             color: var(--text-primary);
             border-radius: 12px;
             font-size: 0.95rem;
@@ -182,7 +183,7 @@
             background: var(--accent-blue);
             color: #000;
             border: none;
-            padding: 12px 20px;
+            padding: 12px 18px;
             border-radius: 12px;
             cursor: pointer;
             font-weight: 700;
@@ -197,12 +198,12 @@
         .btn-action.purple { background: var(--accent-purple); color: #fff; }
         .btn-action.purple:hover { box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
 
-        /* Categories & Lists */
+        /* Lists */
         .list-item {
             background: var(--inner-bg);
             border: 1px solid var(--border-color);
             border-radius: 14px;
-            padding: 16px;
+            padding: 14px;
             margin-bottom: 12px;
             transition: all 0.2s;
         }
@@ -215,7 +216,7 @@
             margin-bottom: 10px;
         }
         
-        .item-title { font-weight: 600; font-size: 1rem; }
+        .item-title { font-weight: 600; font-size: 0.95rem; }
         .item-badge {
             background: rgba(56, 189, 248, 0.1);
             color: var(--accent-blue);
@@ -273,6 +274,7 @@
             gap: 12px;
             padding-right: 8px;
             margin-bottom: 16px;
+            min-height: 200px;
         }
 
         .bubble {
@@ -304,10 +306,12 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
+            left: 20px;
             display: flex;
             flex-direction: column;
             gap: 10px;
             z-index: 1000;
+            pointer-events: none;
         }
 
         .toast {
@@ -321,13 +325,14 @@
             font-size: 0.9rem;
             font-weight: 500;
             animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            pointer-events: auto;
         }
         
         .toast.error { border-left-color: var(--accent-red); }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         @keyframes fadeOut {
             to { opacity: 0; transform: translateY(-10px); }
@@ -343,8 +348,53 @@
             justify-content: center;
             align-items: center;
             z-index: 500;
+            padding: 16px;
         }
-        .modal-card { width: 90%; max-width: 400px; }
+        .modal-card { width: 100%; max-width: 400px; }
+
+        /* ========================================================
+           MOBILE & TABLET RESPONSIVE STYLES
+        ======================================================== */
+        @media (max-width: 950px) {
+            body {
+                padding: 12px;
+            }
+
+            .app-container { 
+                grid-template-columns: 1fr; 
+                gap: 16px;
+            }
+
+            .chat-col {
+                height: auto;
+                position: static;
+                margin-top: 10px;
+            }
+
+            .chat-box {
+                max-height: 300px;
+            }
+
+            .input-group {
+                flex-wrap: wrap;
+            }
+
+            .input-group input[style*="max-width"],
+            .input-group select {
+                max-width: 100% !important;
+            }
+
+            .btn-action {
+                width: 100%;
+                text-align: center;
+            }
+
+            #toast-container {
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -382,7 +432,7 @@
                         <div style="height: 1px; background: var(--border-color);"></div>
                         <div class="input-group">
                             <input type="text" id="expense-desc" placeholder="What did you buy?">
-                            <input type="number" id="expense-amount" placeholder="Cost" style="max-width: 120px;">
+                            <input type="number" id="expense-amount" placeholder="Cost">
                         </div>
                         <div class="input-group">
                             <select id="expense-category"></select>
@@ -402,7 +452,7 @@
                     <h3 style="margin-bottom: 16px;">🎯 Target Goals</h3>
                     <div class="input-group" style="margin-bottom: 20px;">
                         <input type="text" id="wish-name" placeholder="Item Name">
-                        <input type="number" id="wish-price" placeholder="Cost" style="max-width: 120px;">
+                        <input type="number" id="wish-price" placeholder="Cost">
                         <button class="btn-action" onclick="addWishlistGoal()">Add Goal</button>
                     </div>
                     <div id="wishlist-container"></div>
@@ -460,7 +510,7 @@
                     <h3 style="margin-bottom: 16px;">💵 Automated Income Streams</h3>
                     <div class="input-group" style="margin-bottom: 20px;">
                         <input type="text" id="inc-source" placeholder="Source (e.g. Salary)">
-                        <input type="number" id="inc-amount" placeholder="KZT/mo" style="max-width: 120px;">
+                        <input type="number" id="inc-amount" placeholder="KZT/mo">
                         <button class="btn-action" onclick="addIncomeStream()">Setup</button>
                     </div>
                     <div id="income-container"></div>
@@ -492,8 +542,8 @@
             <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target % Share</label>
             <input type="number" id="editPercent" min="0" max="100" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button class="btn-action" style="background: transparent; border: 1px solid var(--border-color); color: #fff;" onclick="closeModal()">Cancel</button>
-                <button class="btn-action" onclick="saveCategoryChanges()">Apply Changes</button>
+                <button class="btn-action" style="background: transparent; border: 1px solid var(--border-color); color: #fff; width: auto;" onclick="closeModal()">Cancel</button>
+                <button class="btn-action" style="width: auto;" onclick="saveCategoryChanges()">Apply Changes</button>
             </div>
         </div>
     </div>
@@ -513,7 +563,6 @@
             income: [{ id: 'i1', source: 'Monthly Allowance', amount: 25000 }]
         };
 
-        // Load Memory
         const savedData = localStorage.getItem('budgetProData');
         if (savedData) {
             appState = JSON.parse(savedData);
@@ -526,7 +575,6 @@
 
         let activeEditingId = null;
 
-        // --- UI & Interactions ---
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -551,18 +599,15 @@
         });
 
         function updateUI() {
-            // Dashboard
             document.getElementById('balance-display').innerText = appState.balance.toLocaleString();
             document.getElementById('pace-display').innerText = Math.round(appState.balance / 30).toLocaleString();
 
-            // Setup Select Dropdown
             const select = document.getElementById('expense-category');
             select.innerHTML = '';
             appState.categories.forEach(cat => {
                 select.innerHTML += `<option value="${cat.name}">${cat.name}</option>`;
             });
 
-            // Render Categories
             const catContainer = document.getElementById('categories-container');
             catContainer.innerHTML = '';
             let totalSpentAll = 0;
@@ -579,7 +624,7 @@
                     <div class="list-item">
                         <div class="item-header">
                             <span class="item-title">${cat.name} <span style="font-size:0.8rem; color:var(--text-secondary);">(${cat.percentShare}%)</span></span>
-                            <button class="btn-action" style="padding: 4px 10px; font-size: 0.75rem; background: rgba(255,255,255,0.1); color: #fff;" onclick="openModal('${cat.id}')">Edit</button>
+                            <button class="btn-action" style="padding: 4px 10px; font-size: 0.75rem; background: rgba(255,255,255,0.1); color: #fff; width: auto;" onclick="openModal('${cat.id}')">Edit</button>
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary);">
                             <span>Spent: ${cat.current.toLocaleString()}</span>
@@ -592,7 +637,6 @@
                 `;
             });
 
-            // Analytics
             document.getElementById('analytics-spent').innerText = totalSpentAll.toLocaleString() + ' KZT';
             const health = document.getElementById('analytics-health');
             if (totalSpentAll > appState.balance * 0.8) {
@@ -617,7 +661,6 @@
                 `;
             });
 
-            // Converter
             const convInput = document.getElementById('conv-kzt');
             if (!convInput.value) convInput.value = appState.balance;
             const kztVal = parseFloat(convInput.value) || 0;
@@ -626,10 +669,9 @@
             document.getElementById('conv-rub').innerText = (kztVal / 5.2).toFixed(2);
             document.getElementById('conv-cny').innerText = (kztVal / 66).toFixed(2);
 
-            // Wishlist
             const wishDiv = document.getElementById('wishlist-container');
             wishDiv.innerHTML = '';
-            appState.wishlist.forEach((w, index) => {
+            appState.wishlist.forEach((w) => {
                 const afford = appState.balance >= w.cost;
                 const progress = afford ? 100 : (appState.balance / w.cost) * 100;
                 wishDiv.innerHTML += `
@@ -648,10 +690,9 @@
                 `;
             });
 
-            // Income
             const incDiv = document.getElementById('income-container');
             incDiv.innerHTML = '';
-            appState.income.forEach((inc, idx) => {
+            appState.income.forEach((inc) => {
                 incDiv.innerHTML += `
                     <div class="list-item" style="display: flex; justify-content: space-between; align-items: center;">
                         <span class="item-title">${inc.source}</span>
@@ -661,7 +702,6 @@
             });
         }
 
-        // --- Actions ---
         function depositMoney() {
             const val = parseFloat(document.getElementById('deposit-input').value);
             if (val > 0) {
@@ -716,7 +756,6 @@
             }
         }
 
-        // --- Modals ---
         function openModal(id) {
             activeEditingId = id;
             const cat = appState.categories.find(c => c.id === id);
@@ -740,7 +779,6 @@
                 cat.name = newName;
                 cat.percentShare = newPercent;
 
-                // Auto balance others
                 const others = appState.categories.filter(c => c.id !== activeEditingId);
                 others.forEach(c => c.percentShare = Math.max(0, Math.round(c.percentShare - (diff/others.length))));
                 
@@ -750,7 +788,6 @@
             }
         }
 
-        // --- AI Chat ---
         function handleChat(e) { if (e.key === 'Enter') sendChat(); }
 
         function sendChat() {
@@ -781,7 +818,6 @@
             }, 600);
         }
 
-        // Init
         updateUI();
     </script>
 </body>
