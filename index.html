@@ -509,11 +509,11 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                 <div>
                     <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target Limit (KZT)</label>
-                    <input type="number" id="editAmount" onkeyup="onAmountInput(this.value)" oninput="onAmountInput(this.value)">
+                    <input type="number" id="editAmount" oninput="onAmountInput(this.value)">
                 </div>
                 <div>
                     <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target Share (%)</label>
-                    <input type="number" id="editPercent" min="0" max="100" onkeyup="onPercentInput(this.value)" oninput="onPercentInput(this.value)">
+                    <input type="number" id="editPercent" min="0" max="100" step="any" oninput="onPercentInput(this.value)">
                 </div>
             </div>
 
@@ -540,22 +540,13 @@
 
         let appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
 
-        // Load & Auto-Migrate Old Data
         const savedData = localStorage.getItem('budgetProData');
         if (savedData) {
             try {
                 const parsed = JSON.parse(savedData);
                 appState = { ...DEFAULT_STATE, ...parsed };
-                
-                if (Array.isArray(appState.categories)) {
-                    appState.categories.forEach(cat => {
-                        if (cat.targetLimit === undefined || cat.targetLimit === null) {
-                            cat.targetLimit = Math.round((appState.balance * (cat.percentShare || 0)) / 100);
-                        }
-                    });
-                }
             } catch (e) {
-                console.error("Storage parse error, resetting...", e);
+                console.error("Storage parse error", e);
             }
         }
 
@@ -611,9 +602,7 @@
                 if (startIdx !== -1 && endIdx !== -1) {
                     const catName = log.desc.substring(startIdx + 1, endIdx);
                     const cat = appState.categories.find(c => c.name === catName);
-                    if (cat) {
-                        cat.current = Math.max(0, cat.current - log.amount);
-                    }
+                    if (cat) cat.current = Math.max(0, cat.current - log.amount);
                 }
             }
 
@@ -816,7 +805,9 @@
             const cat = appState.categories.find(c => c.id === id);
             document.getElementById('editName').value = cat.name;
             
-            const limit = cat.targetLimit !== undefined ? cat.targetLimit : Math.round((appState.balance * cat.percentShare) / 100);
+            const baseBalance = appState.balance > 0 ? appState.balance : 15000;
+            const limit = (cat.targetLimit !== undefined && cat.targetLimit !== null) ? cat.targetLimit : Math.round((baseBalance * cat.percentShare) / 100);
+            
             document.getElementById('editAmount').value = limit;
             document.getElementById('editPercent').value = cat.percentShare;
             
