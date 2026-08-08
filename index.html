@@ -223,7 +223,7 @@
         .progress-fill {
             height: 100%;
             border-radius: 6px;
-            transition: width 0.5s ease;
+            transition: width 0.3s ease;
         }
 
         .chat-col {
@@ -509,11 +509,11 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                 <div>
                     <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target Limit (KZT)</label>
-                    <input type="number" id="editAmount" oninput="onAmountInput(this.value)">
+                    <input type="number" id="editAmount" onkeyup="onAmountInput(this.value)" oninput="onAmountInput(this.value)">
                 </div>
                 <div>
                     <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target Share (%)</label>
-                    <input type="number" id="editPercent" min="0" max="100" oninput="onPercentInput(this.value)">
+                    <input type="number" id="editPercent" min="0" max="100" onkeyup="onPercentInput(this.value)" oninput="onPercentInput(this.value)">
                 </div>
             </div>
 
@@ -825,22 +825,14 @@
 
         function onAmountInput(val) {
             const amount = parseFloat(val) || 0;
-            const totalLimits = appState.categories.reduce((sum, c) => sum + (c.targetLimit || 0), 0);
-            const base = appState.balance > 0 ? appState.balance : totalLimits;
-            
-            if (base > 0) {
-                const percent = ((amount / base) * 100).toFixed(1);
-                document.getElementById('editPercent').value = percent;
-            } else {
-                document.getElementById('editPercent').value = 0;
-            }
+            const base = appState.balance > 0 ? appState.balance : 15000;
+            const percent = ((amount / base) * 100).toFixed(1);
+            document.getElementById('editPercent').value = percent;
         }
 
         function onPercentInput(val) {
             const percent = parseFloat(val) || 0;
-            const totalLimits = appState.categories.reduce((sum, c) => sum + (c.targetLimit || 0), 0);
-            const base = appState.balance > 0 ? appState.balance : totalLimits;
-            
+            const base = appState.balance > 0 ? appState.balance : 15000;
             const amount = Math.round((base * percent) / 100);
             document.getElementById('editAmount').value = amount;
         }
