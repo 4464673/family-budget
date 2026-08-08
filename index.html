@@ -881,7 +881,7 @@
         function onAmountInput(val) {
             const amount = parseFloat(val) || 0;
             const base = appState.balance > 0 ? appState.balance : 15000;
-            const percent = ((amount / base) * 100).toFixed(1);
+            const percent = base > 0 ? ((amount / base) * 100).toFixed(1) : 0;
             document.getElementById('editPercent').value = percent;
         }
 
