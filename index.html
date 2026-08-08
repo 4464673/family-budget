@@ -75,9 +75,9 @@
             padding-bottom: 8px;
             margin-bottom: 16px;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Hide scrollbar Firefox */
+            scrollbar-width: none;
         }
-        .nav-tabs::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
+        .nav-tabs::-webkit-scrollbar { display: none; }
 
         .tab-btn {
             background: var(--inner-bg);
@@ -197,6 +197,8 @@
         }
         .btn-action.purple { background: var(--accent-purple); color: #fff; }
         .btn-action.purple:hover { box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
+        .btn-action.danger { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.4); }
+        .btn-action.danger:hover { background: var(--accent-red); color: #fff; }
 
         /* Lists */
         .list-item {
@@ -352,48 +354,15 @@
         }
         .modal-card { width: 100%; max-width: 400px; }
 
-        /* ========================================================
-           MOBILE & TABLET RESPONSIVE STYLES
-        ======================================================== */
         @media (max-width: 950px) {
-            body {
-                padding: 12px;
-            }
-
-            .app-container { 
-                grid-template-columns: 1fr; 
-                gap: 16px;
-            }
-
-            .chat-col {
-                height: auto;
-                position: static;
-                margin-top: 10px;
-            }
-
-            .chat-box {
-                max-height: 300px;
-            }
-
-            .input-group {
-                flex-wrap: wrap;
-            }
-
-            .input-group input[style*="max-width"],
-            .input-group select {
-                max-width: 100% !important;
-            }
-
-            .btn-action {
-                width: 100%;
-                text-align: center;
-            }
-
-            #toast-container {
-                left: 12px;
-                right: 12px;
-                bottom: 12px;
-            }
+            body { padding: 12px; }
+            .app-container { grid-template-columns: 1fr; gap: 16px; }
+            .chat-col { height: auto; position: static; margin-top: 10px; }
+            .chat-box { max-height: 300px; }
+            .input-group { flex-wrap: wrap; }
+            .input-group input[style*="max-width"], .input-group select { max-width: 100% !important; }
+            .btn-action { width: 100%; text-align: center; }
+            #toast-container { left: 12px; right: 12px; bottom: 12px; }
         }
     </style>
 </head>
@@ -548,8 +517,21 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="editWishlistModal">
+        <div class="glass-panel modal-card">
+            <h3 style="margin-bottom: 16px;">Edit Target Goal</h3>
+            <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Item Name</label>
+            <input type="text" id="editWishName" style="margin-bottom: 12px;">
+            <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Cost (KZT)</label>
+            <input type="number" id="editWishCost" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn-action" style="background: transparent; border: 1px solid var(--border-color); color: #fff; width: auto;" onclick="closeWishlistModal()">Cancel</button>
+                <button class="btn-action" style="width: auto;" onclick="saveWishlistChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- Core State & Local Storage ---
         let appState = {
             balance: 14500,
             categories: [
@@ -574,6 +556,7 @@
         }
 
         let activeEditingId = null;
+        let activeEditingWishId = null;
 
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -588,7 +571,6 @@
             }, 3000);
         }
 
-        // Tabs
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.onclick = function() {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -678,9 +660,13 @@
                     <div class="list-item">
                         <div class="item-header">
                             <span class="item-title">${w.name}</span>
-                            <span class="item-badge" style="background: ${afford ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${afford ? 'var(--accent-green)' : 'var(--accent-yellow)'}">
-                                ${w.cost.toLocaleString()} KZT
-                            </span>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <span class="item-badge" style="background: ${afford ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color: ${afford ? 'var(--accent-green)' : 'var(--accent-yellow)'}">
+                                    ${w.cost.toLocaleString()} KZT
+                                </span>
+                                <button class="btn-action" style="padding: 4px 10px; font-size: 0.75rem; background: rgba(255,255,255,0.1); color: #fff; width: auto;" onclick="openWishlistModal('${w.id}')">Edit</button>
+                                <button class="btn-action danger" style="padding: 4px 10px; font-size: 0.75rem; width: auto;" onclick="deleteWishlistGoal('${w.id}')">Delete</button>
+                            </div>
                         </div>
                         <div style="font-size: 0.8rem; margin-bottom: 6px; color: var(--text-secondary);">
                             ${afford ? '✅ You can afford this!' : '⏳ Saving up...'}
@@ -741,6 +727,42 @@
                 document.getElementById('wish-price').value = '';
                 showToast(`Added ${name} to Wishlist`);
                 saveState();
+            }
+        }
+
+        function deleteWishlistGoal(id) {
+            appState.wishlist = appState.wishlist.filter(w => w.id !== id);
+            showToast('Goal removed', 'error');
+            saveState();
+        }
+
+        function openWishlistModal(id) {
+            activeEditingWishId = id;
+            const goal = appState.wishlist.find(w => w.id === id);
+            if (goal) {
+                document.getElementById('editWishName').value = goal.name;
+                document.getElementById('editWishCost').value = goal.cost;
+                document.getElementById('editWishlistModal').style.display = 'flex';
+            }
+        }
+
+        function closeWishlistModal() {
+            document.getElementById('editWishlistModal').style.display = 'none';
+        }
+
+        function saveWishlistChanges() {
+            const newName = document.getElementById('editWishName').value;
+            const newCost = parseFloat(document.getElementById('editWishCost').value);
+
+            if (activeEditingWishId && newName && newCost > 0) {
+                const goal = appState.wishlist.find(w => w.id === activeEditingWishId);
+                if (goal) {
+                    goal.name = newName;
+                    goal.cost = newCost;
+                    closeWishlistModal();
+                    showToast('Goal updated');
+                    saveState();
+                }
             }
         }
 
