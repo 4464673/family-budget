@@ -411,7 +411,10 @@
                 </div>
 
                 <div class="glass-panel">
-                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">📂 Budget Distribution</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="font-size: 1.1rem;">📂 Budget Distribution</h3>
+                        <button class="btn-action" style="padding: 6px 12px; font-size: 0.8rem; width: auto;" onclick="validateAndAutoBalance()">Check Balance (% Total)</button>
+                    </div>
                     <div id="categories-container"></div>
                 </div>
             </div>
@@ -512,7 +515,7 @@
             <input type="number" id="editPercent" min="0" max="100" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: flex-end; gap: 10px;">
                 <button class="btn-action" style="background: transparent; border: 1px solid var(--border-color); color: #fff; width: auto;" onclick="closeModal()">Cancel</button>
-                <button class="btn-action" style="width: auto;" onclick="saveCategoryChanges()">Apply Changes</button>
+                <button class="btn-action" style="width: auto;" onclick="saveCategoryChanges()">Save Changes</button>
             </div>
         </div>
     </div>
@@ -790,23 +793,29 @@
             document.getElementById('editModal').style.display = 'none';
         }
 
+        // FIXED: Only changes the category you are editing, without touching the others!
         function saveCategoryChanges() {
             const newName = document.getElementById('editName').value;
             const newPercent = parseInt(document.getElementById('editPercent').value);
 
             if (activeEditingId && newPercent >= 0 && newPercent <= 100) {
                 const cat = appState.categories.find(c => c.id === activeEditingId);
-                const diff = newPercent - cat.percentShare;
-                
                 cat.name = newName;
                 cat.percentShare = newPercent;
-
-                const others = appState.categories.filter(c => c.id !== activeEditingId);
-                others.forEach(c => c.percentShare = Math.max(0, Math.round(c.percentShare - (diff/others.length))));
                 
                 closeModal();
-                showToast('Category updated and re-balanced');
+                showToast('Category updated!');
                 saveState();
+            }
+        }
+
+        // Checks if all categories equal 100%
+        function validateAndAutoBalance() {
+            const total = appState.categories.reduce((acc, c) => acc + c.percentShare, 0);
+            if (total === 100) {
+                showToast(`Percentages are balanced! Total: 100%`);
+            } else {
+                showToast(`Total % is currently ${total}%. Adjust manually or check settings.`, 'error');
             }
         }
 
