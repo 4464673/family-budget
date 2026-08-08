@@ -596,17 +596,20 @@
                 appState.balance -= log.amount;
             } else if (log.type === 'expense') {
                 appState.balance += log.amount;
-                
-                const startIdx = log.desc.lastIndexOf('(');
-                const endIdx = log.desc.lastIndexOf(')');
-                if (startIdx !== -1 && endIdx !== -1) {
-                    const catName = log.desc.substring(startIdx + 1, endIdx);
-                    const cat = appState.categories.find(c => c.name === catName);
-                    if (cat) cat.current = Math.max(0, cat.current - log.amount);
-                }
             }
 
+            // Remove item from logs
             appState.logs.splice(index, 1);
+
+            // Recalculate spent category totals directly from remaining logs
+            appState.categories.forEach(cat => cat.current = 0);
+            appState.logs.forEach(l => {
+                if (l.type === 'expense') {
+                    const match = appState.categories.find(c => l.desc.includes(`(${c.name})`));
+                    if (match) match.current += l.amount;
+                }
+            });
+
             showToast('Transaction removed', 'error');
             saveState();
         }
