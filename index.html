@@ -212,14 +212,6 @@
         }
         
         .item-title { font-weight: 600; font-size: 0.95rem; }
-        .item-badge {
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--accent-blue);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
 
         .progress-track {
             background: rgba(0, 0, 0, 0.4);
@@ -401,7 +393,10 @@
                 </div>
 
                 <div class="glass-panel">
-                    <h3 style="margin-bottom: 16px; font-size: 1.1rem;">📂 Budget Distribution</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="font-size: 1.1rem;">📂 Budget Distribution</h3>
+                        <button class="btn-action danger" style="padding: 4px 10px; font-size: 0.75rem; width: auto;" onclick="resetSystemData()">Reset All Data</button>
+                    </div>
                     <div id="categories-container"></div>
                 </div>
             </div>
@@ -530,7 +525,7 @@
     </div>
 
     <script>
-        let appState = {
+        const DEFAULT_STATE = {
             balance: 15000,
             categories: [
                 { id: '1', name: 'Savings (DO NOT TOUCH)', current: 0, percentShare: 10, targetLimit: 1500 },
@@ -543,14 +538,40 @@
             income: [{ id: 'i1', source: 'Monthly Allowance', amount: 25000 }]
         };
 
+        let appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+        // Load & Auto-Migrate Old Data
         const savedData = localStorage.getItem('budgetProData');
         if (savedData) {
-            appState = JSON.parse(savedData);
+            try {
+                const parsed = JSON.parse(savedData);
+                appState = { ...DEFAULT_STATE, ...parsed };
+                
+                // Ensure targetLimit exists on all loaded categories
+                if (Array.isArray(appState.categories)) {
+                    appState.categories.forEach(cat => {
+                        if (cat.targetLimit === undefined || cat.targetLimit === null) {
+                            cat.targetLimit = Math.round((appState.balance * (cat.percentShare || 0)) / 100);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Storage parse error, resetting...", e);
+            }
         }
 
         function saveState() {
             localStorage.setItem('budgetProData', JSON.stringify(appState));
             updateUI();
+        }
+
+        function resetSystemData() {
+            if (confirm("Reset all data to defaults?")) {
+                localStorage.removeItem('budgetProData');
+                appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                saveState();
+                showToast("System reset successfully!");
+            }
         }
 
         let activeEditingId = null;
@@ -606,6 +627,9 @@
             document.getElementById('balance-display').innerText = appState.balance.toLocaleString();
             document.getElementById('pace-display').innerText = Math.round(appState.balance / 30).toLocaleString();
 
+            // FIXED: Sort categories by ID so position order never changes!
+            appState.categories.sort((a, b) => Number(a.id) - Number(b.id));
+
             const select = document.getElementById('expense-category');
             select.innerHTML = '';
             appState.categories.forEach(cat => {
@@ -619,7 +643,7 @@
             appState.categories.forEach(cat => {
                 totalSpentAll += cat.current;
                 
-                // FIXED: Check targetLimit first before calculating from percent
+                // Target limit priority check
                 const targetMax = (cat.targetLimit !== undefined && cat.targetLimit !== null) 
                     ? cat.targetLimit 
                     : Math.round((appState.balance * cat.percentShare) / 100);
@@ -822,7 +846,6 @@
             document.getElementById('editModal').style.display = 'none';
         }
 
-        // FIXED: Save both percentShare AND targetLimit explicitly
         function saveCategoryChanges() {
             const newName = document.getElementById('editName').value;
             const newPercent = parseFloat(document.getElementById('editPercent').value);
@@ -835,7 +858,7 @@
                 cat.targetLimit = isNaN(newAmount) ? 0 : newAmount;
                 
                 closeModal();
-                showToast('Category target updated');
+                showToast('Category updated');
                 saveState();
             }
         }
