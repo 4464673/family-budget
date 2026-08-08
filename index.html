@@ -42,7 +42,6 @@
             min-height: 100vh;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
@@ -56,7 +55,6 @@
             max-width: 1200px;
         }
 
-        /* Glassmorphism Cards */
         .glass-panel {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -67,7 +65,6 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
             gap: 10px;
@@ -106,7 +103,6 @@
             transform: translateY(-2px);
         }
 
-        /* Views */
         .view-section {
             display: none;
             animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -118,7 +114,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Metrics Grid */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -159,7 +154,6 @@
             word-break: break-word;
         }
 
-        /* Inputs & Buttons */
         .input-group { display: flex; gap: 10px; }
         
         input, select {
@@ -197,8 +191,9 @@
         }
         .btn-action.purple { background: var(--accent-purple); color: #fff; }
         .btn-action.purple:hover { box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
+        .btn-action.danger { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.4); }
+        .btn-action.danger:hover { background: var(--accent-red); color: #fff; }
 
-        /* Lists */
         .list-item {
             background: var(--inner-bg);
             border: 1px solid var(--border-color);
@@ -239,7 +234,6 @@
             transition: width 0.5s ease;
         }
 
-        /* Chat System */
         .chat-col {
             display: flex;
             flex-direction: column;
@@ -301,7 +295,6 @@
             box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
         }
 
-        /* Toast Notifications */
         #toast-container {
             position: fixed;
             bottom: 20px;
@@ -338,7 +331,6 @@
             to { opacity: 0; transform: translateY(-10px); }
         }
 
-        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -350,7 +342,7 @@
             z-index: 500;
             padding: 16px;
         }
-        .modal-card { width: 100%; max-width: 420px; }
+        .modal-card { width: 100%; max-width: 440px; }
 
         @media (max-width: 950px) {
             body { padding: 12px; }
@@ -374,6 +366,7 @@
                 <button class="tab-btn" data-view="analytics-view">Analytics</button>
                 <button class="tab-btn" data-view="converter-view">Exchange</button>
                 <button class="tab-btn" data-view="income-view">Income</button>
+                <button class="tab-btn" data-view="history-view">History</button>
             </div>
 
             <div id="dash-view" class="view-section active">
@@ -483,6 +476,16 @@
                 </div>
             </div>
 
+            <div id="history-view" class="view-section">
+                <div class="glass-panel">
+                    <h3 style="margin-bottom: 16px;">📜 Transaction History</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+                        Manage or remove any logged transaction below to adjust spent amounts.
+                    </p>
+                    <div id="full-history-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+            </div>
+
         </div>
 
         <div class="glass-panel chat-col">
@@ -530,10 +533,10 @@
         let appState = {
             balance: 15000,
             categories: [
-                { id: '1', name: 'Savings (DO NOT TOUCH)', current: 0, percentShare: 10 },
-                { id: '2', name: 'Emergency', current: 0, percentShare: 17 },
-                { id: '3', name: 'Needs (Clothes, Pen, Book, etc.)', current: 0, percentShare: 40 },
-                { id: '4', name: 'Fun Money', current: 500, percentShare: 33 }
+                { id: '1', name: 'Savings (DO NOT TOUCH)', current: 0, percentShare: 10, targetLimit: 1500 },
+                { id: '2', name: 'Emergency', current: 0, percentShare: 17, targetLimit: 2550 },
+                { id: '3', name: 'Needs (Clothes, Pen, Book, etc.)', current: 0, percentShare: 40, targetLimit: 6000 },
+                { id: '4', name: 'Fun Money', current: 0, percentShare: 33, targetLimit: 4950 }
             ],
             logs: [{ desc: 'Initial System Boot', amount: 15000, type: 'deposit', time: new Date().toLocaleTimeString() }],
             wishlist: [{ id: 'w1', name: 'Sony Headphones', cost: 120000 }],
@@ -574,6 +577,31 @@
             };
         });
 
+        function deleteLog(index) {
+            const log = appState.logs[index];
+            if (!log) return;
+
+            if (log.type === 'deposit') {
+                appState.balance -= log.amount;
+            } else if (log.type === 'expense') {
+                appState.balance += log.amount;
+                
+                const startIdx = log.desc.lastIndexOf('(');
+                const endIdx = log.desc.lastIndexOf(')');
+                if (startIdx !== -1 && endIdx !== -1) {
+                    const catName = log.desc.substring(startIdx + 1, endIdx);
+                    const cat = appState.categories.find(c => c.name === catName);
+                    if (cat) {
+                        cat.current = Math.max(0, cat.current - log.amount);
+                    }
+                }
+            }
+
+            appState.logs.splice(index, 1);
+            showToast('Transaction removed', 'error');
+            saveState();
+        }
+
         function updateUI() {
             document.getElementById('balance-display').innerText = appState.balance.toLocaleString();
             document.getElementById('pace-display').innerText = Math.round(appState.balance / 30).toLocaleString();
@@ -590,7 +618,12 @@
 
             appState.categories.forEach(cat => {
                 totalSpentAll += cat.current;
-                const targetMax = Math.round((appState.balance * cat.percentShare) / 100);
+                
+                // FIXED: Check targetLimit first before calculating from percent
+                const targetMax = (cat.targetLimit !== undefined && cat.targetLimit !== null) 
+                    ? cat.targetLimit 
+                    : Math.round((appState.balance * cat.percentShare) / 100);
+
                 const progress = targetMax > 0 ? Math.min((cat.current / targetMax) * 100, 100) : 0;
                 let color = 'var(--accent-blue)';
                 if (progress > 80) color = 'var(--accent-red)';
@@ -603,7 +636,7 @@
                             <button class="btn-action" style="padding: 4px 10px; font-size: 0.75rem; background: rgba(255,255,255,0.1); color: #fff; width: auto;" onclick="openModal('${cat.id}')">Edit</button>
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary);">
-                            <span>Spent: ${cat.current.toLocaleString()}</span>
+                            <span>Spent: ${cat.current.toLocaleString()} KZT</span>
                             <span>Limit: ${targetMax.toLocaleString()} KZT</span>
                         </div>
                         <div class="progress-track">
@@ -630,12 +663,39 @@
                     <div class="list-item" style="padding: 12px; margin-bottom: 6px; display: flex; justify-content: space-between;">
                         <div>
                             <div style="font-weight: 600; font-size: 0.9rem;">${log.desc}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-secondary);">${log.time}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">${log.time || 'N/A'}</div>
                         </div>
                         <div style="color: ${color}; font-weight: 700;">${sign}${log.amount.toLocaleString()}</div>
                     </div>
                 `;
             });
+
+            const historyDiv = document.getElementById('full-history-container');
+            if (historyDiv) {
+                historyDiv.innerHTML = '';
+                if (appState.logs.length === 0) {
+                    historyDiv.innerHTML = '<div style="color: var(--text-secondary);">No transactions logged yet.</div>';
+                } else {
+                    [...appState.logs].reverse().forEach((log, reversedIdx) => {
+                        const actualIdx = appState.logs.length - 1 - reversedIdx;
+                        const color = log.type === 'deposit' ? 'var(--accent-green)' : 'var(--accent-red)';
+                        const sign = log.type === 'deposit' ? '+' : '-';
+
+                        historyDiv.innerHTML += `
+                            <div class="list-item" style="padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.9rem;">${log.desc}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">${log.time || 'N/A'}</div>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <span style="color: ${color}; font-weight: 700;">${sign}${log.amount.toLocaleString()} KZT</span>
+                                    <button class="btn-action danger" style="padding: 4px 10px; font-size: 0.75rem; width: auto;" onclick="deleteLog(${actualIdx})">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            }
 
             const convInput = document.getElementById('conv-kzt');
             if (!convInput.value) convInput.value = appState.balance;
@@ -737,7 +797,7 @@
             const cat = appState.categories.find(c => c.id === id);
             document.getElementById('editName').value = cat.name;
             
-            const limit = Math.round((appState.balance * cat.percentShare) / 100);
+            const limit = cat.targetLimit !== undefined ? cat.targetLimit : Math.round((appState.balance * cat.percentShare) / 100);
             document.getElementById('editAmount').value = limit;
             document.getElementById('editPercent').value = cat.percentShare;
             
@@ -762,14 +822,17 @@
             document.getElementById('editModal').style.display = 'none';
         }
 
+        // FIXED: Save both percentShare AND targetLimit explicitly
         function saveCategoryChanges() {
             const newName = document.getElementById('editName').value;
             const newPercent = parseFloat(document.getElementById('editPercent').value);
+            const newAmount = parseFloat(document.getElementById('editAmount').value);
 
-            if (activeEditingId && !isNaN(newPercent) && newPercent >= 0) {
+            if (activeEditingId) {
                 const cat = appState.categories.find(c => c.id === activeEditingId);
                 cat.name = newName;
-                cat.percentShare = newPercent;
+                cat.percentShare = isNaN(newPercent) ? 0 : newPercent;
+                cat.targetLimit = isNaN(newAmount) ? 0 : newAmount;
                 
                 closeModal();
                 showToast('Category target updated');
