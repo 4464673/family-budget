@@ -879,7 +879,10 @@
         }
 
         function onAmountInput(val) {
-            if (val === '') return;
+            if (val === '') {
+                document.getElementById('editPercent').value = '';
+                return;
+            }
             const amount = parseFloat(val) || 0;
             const base = appState.balance > 0 ? appState.balance : 15000;
             const percent = base > 0 ? ((amount / base) * 100).toFixed(1) : 0;
@@ -887,7 +890,10 @@
         }
 
         function onPercentInput(val) {
-            if (val === '') return;
+            if (val === '') {
+                document.getElementById('editAmount').value = '';
+                return;
+            }
             const percent = parseFloat(val) || 0;
             const base = appState.balance > 0 ? appState.balance : 15000;
             const amount = Math.round((base * percent) / 100);
