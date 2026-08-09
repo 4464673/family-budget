@@ -737,7 +737,7 @@
             }
 
             const convInput = document.getElementById('conv-kzt');
-            if (!convInput.value) convInput.value = appState.balance;
+            if (!convInput.value && convInput.value !== '0') convInput.value = appState.balance;
             const kztVal = parseFloat(convInput.value) || 0;
             document.getElementById('conv-usd').innerText = (kztVal / 480).toFixed(2);
             document.getElementById('conv-eur').innerText = (kztVal / 520).toFixed(2);
@@ -840,7 +840,7 @@
             const newName = document.getElementById('editWishName').value.trim();
             const newCost = parseFloat(document.getElementById('editWishCost').value);
 
-            if (activeWishId && newName && newCost > 0) {
+            if (activeWishId && newName && newCost >= 0) {
                 const goal = appState.wishlist.find(w => w.id === activeWishId);
                 if (goal) {
                     goal.name = newName;
@@ -855,7 +855,7 @@
         function addIncomeStream() {
             const source = document.getElementById('inc-source').value;
             const amount = parseFloat(document.getElementById('inc-amount').value);
-            if (source && amount > 0) {
+            if (source && amount >= 0) {
                 appState.income.push({ id: 'i'+Date.now(), source, amount });
                 document.getElementById('inc-source').value = '';
                 document.getElementById('inc-amount').value = '';
@@ -879,6 +879,7 @@
         }
 
         function onAmountInput(val) {
+            if (val === '') return;
             const amount = parseFloat(val) || 0;
             const base = appState.balance > 0 ? appState.balance : 15000;
             const percent = base > 0 ? ((amount / base) * 100).toFixed(1) : 0;
@@ -886,6 +887,7 @@
         }
 
         function onPercentInput(val) {
+            if (val === '') return;
             const percent = parseFloat(val) || 0;
             const base = appState.balance > 0 ? appState.balance : 15000;
             const amount = Math.round((base * percent) / 100);
@@ -898,8 +900,11 @@
 
         function saveCategoryChanges() {
             const newName = document.getElementById('editName').value;
-            const newPercent = parseFloat(document.getElementById('editPercent').value);
-            const newAmount = parseFloat(document.getElementById('editAmount').value);
+            const newPercentInput = document.getElementById('editPercent').value;
+            const newAmountInput = document.getElementById('editAmount').value;
+
+            const newPercent = newPercentInput === '' ? 0 : parseFloat(newPercentInput);
+            const newAmount = newAmountInput === '' ? 0 : parseFloat(newAmountInput);
 
             if (activeEditingId) {
                 const cat = appState.categories.find(c => c.id === activeEditingId);
