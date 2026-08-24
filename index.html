@@ -37,7 +37,6 @@
         [data-theme="royal"] { --a1: #a78bfa; --a2: #c084fc; --g1: rgba(167,139,250,0.25); --g2: rgba(192,132,252,0.25); }
         [data-theme="lava"] { --a1: #f97316; --a2: #ef4444; --g1: rgba(249,115,22,0.25); --g2: rgba(239,68,68,0.25); }
 
-        html { cursor: none; }
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
@@ -45,33 +44,6 @@
             padding: 16px;
             min-height: 100vh;
             overflow-x: hidden;
-            cursor: none;
-        }
-
-        /* === CUSTOM CURSOR === */
-        #cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--a1), var(--a2));
-            pointer-events: none;
-            z-index: 99999;
-            mix-blend-mode: difference;
-            transition: width 0.2s, height 0.2s;
-            box-shadow: 0 0 40px var(--g1), 0 0 80px var(--g2);
-        }
-        #cursor-trail {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--a1);
-            pointer-events: none;
-            z-index: 99998;
-            opacity: 0.3;
-            filter: blur(4px);
-            transition: all 0.05s;
         }
 
         /* === ANIMATED BG === */
@@ -557,9 +529,6 @@
             .grid { grid-template-columns: 1fr; }
             .chat-col { height: auto; position: static; margin-top: 16px; }
             .chat-box { max-height: 280px; }
-            #cursor, #cursor-trail { display: none; }
-            html { cursor: auto; }
-            body { cursor: auto; }
         }
         @media (max-width: 600px) {
             body { padding: 10px; }
@@ -580,10 +549,6 @@
 <div class="orb-bg"></div>
 <div class="orb-bg"></div>
 <canvas id="particles"></canvas>
-
-<!-- === CURSOR === -->
-<div id="cursor"></div>
-<div id="cursor-trail"></div>
 
 <div class="app">
 
@@ -894,7 +859,7 @@
     setTheme(savedTheme);
 
     // =============================================================
-    // PARTICLES (Interactive)
+    // PARTICLES (Interactive, optimized)
     // =============================================================
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
@@ -910,17 +875,17 @@
         reset() {
             this.x = Math.random() * W;
             this.y = Math.random() * H;
-            this.size = Math.random() * 2.5 + 0.5;
-            this.sx = (Math.random() - 0.5) * 0.4;
-            this.sy = (Math.random() - 0.5) * 0.4;
-            this.o = Math.random() * 0.5 + 0.2;
+            this.size = Math.random() * 2 + 0.5;
+            this.sx = (Math.random() - 0.5) * 0.3;
+            this.sy = (Math.random() - 0.5) * 0.3;
+            this.o = Math.random() * 0.4 + 0.15;
         }
         update() {
             const dx = this.x - mouse.x;
             const dy = this.y - mouse.y;
             const dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist < 150) {
-                const force = (150 - dist) / 150 * 0.02;
+            if (dist < 120) {
+                const force = (120 - dist) / 120 * 0.015;
                 this.x += dx * force;
                 this.y += dy * force;
             }
@@ -935,21 +900,23 @@
             ctx.fill();
         }
     }
-    for (let i=0; i<120; i++) parts.push(new Part());
+    // Reduced particle count for performance
+    for (let i=0; i<70; i++) parts.push(new Part());
 
     function animateP() {
         ctx.clearRect(0,0,W,H);
         parts.forEach(p => { p.update(); p.draw(); });
+        // Draw lines (reduced distance for performance)
         for (let i=0; i<parts.length; i++) {
             for (let j=i+1; j<parts.length; j++) {
                 const dx = parts[i].x - parts[j].x;
                 const dy = parts[i].y - parts[j].y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist < 100) {
+                if (dist < 80) {
                     ctx.beginPath();
                     ctx.moveTo(parts[i].x, parts[i].y);
                     ctx.lineTo(parts[j].x, parts[j].y);
-                    ctx.strokeStyle = `rgba(255,255,255,${0.06 * (1 - dist/100)})`;
+                    ctx.strokeStyle = `rgba(255,255,255,${0.04 * (1 - dist/80)})`;
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 }
@@ -958,27 +925,6 @@
         requestAnimationFrame(animateP);
     }
     animateP();
-
-    // =============================================================
-    // CURSOR
-    // =============================================================
-    const cursor = document.getElementById('cursor');
-    const trail = document.getElementById('cursor-trail');
-    let trailPos = { x: 0, y: 0 };
-
-    document.addEventListener('mousemove', e => {
-        cursor.style.left = e.clientX - 10 + 'px';
-        cursor.style.top = e.clientY - 10 + 'px';
-        trailPos.x = e.clientX;
-        trailPos.y = e.clientY;
-    });
-
-    function animateTrail() {
-        trail.style.left = trailPos.x - 4 + 'px';
-        trail.style.top = trailPos.y - 4 + 'px';
-        requestAnimationFrame(animateTrail);
-    }
-    animateTrail();
 
     // =============================================================
     // TOAST
@@ -1222,7 +1168,6 @@
             ctx.strokeStyle = 'rgba(0,0,0,0.3)';
             ctx.lineWidth = 2;
             ctx.stroke();
-            // label
             const mid = start + angle/2;
             const lx = cx + Math.cos(mid) * (r * 0.65);
             const ly = cy + Math.sin(mid) * (r * 0.65);
