@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>💰 Gemini Pro – Ultimate Finance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>💎 Gemini God Mode — 1000x Ultra</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
 
@@ -14,34 +14,84 @@
         }
 
         :root {
-            --bg: #0a0e1a;
-            --glass: rgba(255, 255, 255, 0.04);
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #f1f5f9;
-            --text2: #94a3b8;
+            --bg: #060a1a;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.06);
+            --text: #f0f4ff;
+            --text2: #8896b8;
             --a1: #38bdf8;
             --a2: #8b5cf6;
             --a3: #10b981;
             --a4: #f59e0b;
             --a5: #ef4444;
-            --g1: rgba(56, 189, 248, 0.3);
-            --g2: rgba(139, 92, 246, 0.3);
-            --radius: 24px;
-            --trans: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --a6: #ec4899;
+            --g1: rgba(56, 189, 248, 0.25);
+            --g2: rgba(139, 92, 246, 0.25);
+            --radius: 28px;
+            --trans: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        [data-theme="ocean"] { --a1: #06b6d4; --a2: #3b82f6; --g1: rgba(6,182,212,0.3); --g2: rgba(59,130,246,0.3); }
-        [data-theme="sunset"] { --a1: #f472b6; --a2: #fb923c; --g1: rgba(244,114,182,0.3); --g2: rgba(251,146,60,0.3); }
-        [data-theme="forest"] { --a1: #34d399; --a2: #6ee7b7; --g1: rgba(52,211,153,0.3); --g2: rgba(110,231,183,0.3); }
-        [data-theme="royal"] { --a1: #a78bfa; --a2: #c084fc; --g1: rgba(167,139,250,0.3); --g2: rgba(192,132,252,0.3); }
+        [data-theme="ocean"] { --a1: #06b6d4; --a2: #3b82f6; --g1: rgba(6,182,212,0.25); --g2: rgba(59,130,246,0.25); }
+        [data-theme="sunset"] { --a1: #f472b6; --a2: #fb923c; --g1: rgba(244,114,182,0.25); --g2: rgba(251,146,60,0.25); }
+        [data-theme="forest"] { --a1: #34d399; --a2: #6ee7b7; --g1: rgba(52,211,153,0.25); --g2: rgba(110,231,183,0.25); }
+        [data-theme="royal"] { --a1: #a78bfa; --a2: #c084fc; --g1: rgba(167,139,250,0.25); --g2: rgba(192,132,252,0.25); }
+        [data-theme="lava"] { --a1: #f97316; --a2: #ef4444; --g1: rgba(249,115,22,0.25); --g2: rgba(239,68,68,0.25); }
 
+        html { cursor: none; }
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
-            padding: 20px;
+            padding: 16px;
             min-height: 100vh;
             overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* === CUSTOM CURSOR === */
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--a1), var(--a2));
+            pointer-events: none;
+            z-index: 99999;
+            mix-blend-mode: difference;
+            transition: width 0.2s, height 0.2s;
+            box-shadow: 0 0 40px var(--g1), 0 0 80px var(--g2);
+        }
+        #cursor-trail {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--a1);
+            pointer-events: none;
+            z-index: 99998;
+            opacity: 0.3;
+            filter: blur(4px);
+            transition: all 0.05s;
+        }
+
+        /* === ANIMATED BG === */
+        .orb-bg {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(150px);
+            pointer-events: none;
+            z-index: 0;
+            animation: orbFloat 25s infinite alternate ease-in-out;
+        }
+        .orb-bg:nth-child(1) { width: 800px; height: 800px; background: var(--g1); top: -300px; right: -300px; }
+        .orb-bg:nth-child(2) { width: 700px; height: 700px; background: var(--g2); bottom: -300px; left: -200px; animation-delay: -8s; }
+        .orb-bg:nth-child(3) { width: 500px; height: 500px; background: rgba(236,72,153,0.08); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-duration: 30s; }
+
+        @keyframes orbFloat {
+            0% { transform: translate(0,0) scale(1) rotate(0deg); }
+            33% { transform: translate(60px,-80px) scale(1.1) rotate(5deg); }
+            66% { transform: translate(-40px,60px) scale(0.9) rotate(-3deg); }
+            100% { transform: translate(80px,40px) scale(1.05) rotate(4deg); }
         }
 
         canvas#particles {
@@ -54,188 +104,228 @@
             pointer-events: none;
         }
 
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(120px);
-            pointer-events: none;
-            z-index: 0;
-            animation: float 20s infinite alternate ease-in-out;
-        }
-        .orb:nth-child(1) { width: 600px; height: 600px; background: var(--g1); top: -200px; right: -200px; }
-        .orb:nth-child(2) { width: 500px; height: 500px; background: var(--g2); bottom: -200px; left: -100px; animation-delay: -7s; }
-
-        @keyframes float {
-            0% { transform: translate(0,0) scale(1); }
-            100% { transform: translate(80px,-60px) scale(1.2); }
-        }
-
         .app {
             position: relative;
             z-index: 1;
-            max-width: 1400px;
+            max-width: 1440px;
             margin: 0 auto;
         }
 
+        /* === HEADER === */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 16px;
-            padding: 20px 0 30px;
+            padding: 16px 0 24px;
         }
         .brand {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: 900;
-            background: linear-gradient(135deg, var(--a1), var(--a2));
+            background: linear-gradient(135deg, var(--a1), var(--a2), var(--a6));
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: gradShift 4s ease infinite;
         }
+        @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
         .brand small {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 400;
             -webkit-text-fill-color: var(--text2);
             background: none;
-            padding-left: 8px;
+            padding-left: 6px;
         }
+
         .level-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             background: linear-gradient(135deg, var(--a1), var(--a2));
-            padding: 4px 16px 4px 12px;
-            border-radius: 30px;
-            font-weight: 700;
+            padding: 4px 18px 4px 14px;
+            border-radius: 40px;
+            font-weight: 800;
             font-size: 0.8rem;
             color: white;
-            box-shadow: 0 0 30px var(--g1);
+            box-shadow: 0 0 40px var(--g1);
             -webkit-text-fill-color: white;
+            animation: pulseGlow 2s ease-in-out infinite;
+            position: relative;
         }
+        @keyframes pulseGlow { 0%,100%{box-shadow:0 0 30px var(--g1)} 50%{box-shadow:0 0 60px var(--g1),0 0 90px var(--g2)} }
+
         .theme-toggles {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
         .theme-btn {
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             border: 2px solid transparent;
             cursor: pointer;
             transition: var(--trans);
+            position: relative;
         }
-        .theme-btn:hover { transform: scale(1.15); }
-        .theme-btn.active { border-color: white; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .theme-btn:hover { transform: scale(1.2) rotate(10deg); }
+        .theme-btn.active { border-color: white; box-shadow: 0 0 30px rgba(255,255,255,0.25); }
         .theme-btn[data-theme="cyber"] { background: linear-gradient(135deg, #38bdf8, #8b5cf6); }
         .theme-btn[data-theme="ocean"] { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
         .theme-btn[data-theme="sunset"] { background: linear-gradient(135deg, #f472b6, #fb923c); }
         .theme-btn[data-theme="forest"] { background: linear-gradient(135deg, #34d399, #6ee7b7); }
         .theme-btn[data-theme="royal"] { background: linear-gradient(135deg, #a78bfa, #c084fc); }
+        .theme-btn[data-theme="lava"] { background: linear-gradient(135deg, #f97316, #ef4444); }
 
+        /* === GRID === */
         .grid {
             display: grid;
-            grid-template-columns: 1fr 420px;
+            grid-template-columns: 1fr 440px;
             gap: 24px;
         }
 
+        /* === GLASS === */
         .glass {
             background: var(--glass);
-            backdrop-filter: blur(20px) saturate(1.4);
-            -webkit-backdrop-filter: blur(20px) saturate(1.4);
+            backdrop-filter: blur(24px) saturate(1.6);
+            -webkit-backdrop-filter: blur(24px) saturate(1.6);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 24px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 48px rgba(0,0,0,0.6);
             transition: var(--trans);
+            position: relative;
+            overflow: hidden;
         }
-        .glass:hover { border-color: rgba(255,255,255,0.12); }
+        .glass::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius);
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent, rgba(255,255,255,0.02));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        .glass:hover { border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
 
+        /* === 3D TILT WRAPPER === */
+        .tilt {
+            transition: var(--trans);
+            transform-style: preserve-3d;
+            perspective: 800px;
+        }
+
+        /* === TABS === */
         .tabs {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             overflow-x: auto;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
+            padding: 4px;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
         .tabs::-webkit-scrollbar { display: none; }
 
         .tab {
-            background: rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
             color: var(--text2);
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 14px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
             transition: var(--trans);
             flex-shrink: 0;
+            position: relative;
         }
         .tab:hover { border-color: var(--a1); color: var(--text); }
         .tab.active {
             background: linear-gradient(135deg, var(--a1), var(--a2));
             color: white;
             border: none;
-            box-shadow: 0 4px 20px var(--g1);
+            box-shadow: 0 4px 30px var(--g1);
             transform: translateY(-2px);
         }
-
-        .view { display: none; animation: fade .4s ease; }
-        .view.active { display: block; }
-        @keyframes fade {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--a1), var(--a2), var(--a6));
+            z-index: -1;
+            filter: blur(12px);
+            opacity: 0.5;
         }
 
+        .view { display: none; animation: fadeZoom 0.5s cubic-bezier(0.16,1,0.3,1); }
+        .view.active { display: block; }
+        @keyframes fadeZoom {
+            from { opacity:0; transform:scale(0.96) translateY(12px); }
+            to { opacity:1; transform:scale(1) translateY(0); }
+        }
+
+        /* === STATS === */
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
             gap: 14px;
             margin-bottom: 20px;
         }
         .stat {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.02);
             border: 1px solid var(--border);
             border-radius: 18px;
             padding: 18px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--trans);
+            cursor: pointer;
         }
+        .stat:hover { border-color: var(--a1); transform: translateY(-3px) scale(1.01); }
         .stat .label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: var(--text2);
             font-weight: 600;
         }
         .stat .value {
             font-size: 1.8rem;
-            font-weight: 800;
-            margin-top: 6px;
+            font-weight: 900;
+            margin-top: 4px;
             background: linear-gradient(135deg, var(--a1), var(--a2));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            transition: var(--trans);
         }
         .stat .value.green { background: linear-gradient(135deg, #34d399, #10b981); -webkit-background-clip: text; }
         .stat .value.red { background: linear-gradient(135deg, #f87171, #ef4444); -webkit-background-clip: text; }
+        .stat .value.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; }
 
+        /* === FORMS === */
         .input-group {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
         }
         .input-group input, .input-group select {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             border: 1px solid var(--border);
             padding: 12px 16px;
             border-radius: 14px;
             color: var(--text);
             font-size: 0.95rem;
             flex: 1;
-            min-width: 120px;
+            min-width: 100px;
             transition: var(--trans);
         }
         .input-group input:focus, .input-group select:focus {
@@ -246,7 +336,7 @@
         .input-group input::placeholder { color: var(--text2); }
 
         .btn {
-            padding: 12px 24px;
+            padding: 12px 28px;
             border: none;
             border-radius: 14px;
             font-weight: 700;
@@ -258,32 +348,44 @@
             gap: 8px;
             background: linear-gradient(135deg, var(--a1), var(--a2));
             color: white;
-            box-shadow: 0 4px 15px var(--g1);
+            box-shadow: 0 4px 20px var(--g1);
+            position: relative;
+            overflow: hidden;
         }
-        .btn:hover { transform: scale(1.04); box-shadow: 0 6px 30px var(--g1); }
-        .btn:active { transform: scale(0.96); }
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.6s;
+        }
+        .btn:hover::before { transform: translateX(100%); }
+        .btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 40px var(--g1); }
+        .btn:active { transform: scale(0.95); }
         .btn-danger {
             background: rgba(239,68,68,0.15);
             color: #ef4444;
             border: 1px solid rgba(239,68,68,0.3);
             box-shadow: none;
         }
-        .btn-danger:hover { background: #ef4444; color: white; box-shadow: 0 4px 20px rgba(239,68,68,0.4); }
-        .btn-sm { padding: 6px 14px; font-size: 0.75rem; }
+        .btn-danger:hover { background: #ef4444; color: white; box-shadow: 0 4px 30px rgba(239,68,68,0.4); }
+        .btn-sm { padding: 6px 14px; font-size: 0.7rem; }
 
+        /* === LISTS === */
         .list-item {
-            background: rgba(255,255,255,0.02);
+            background: rgba(255,255,255,0.015);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 16px;
+            padding: 14px 16px;
             margin-bottom: 10px;
             transition: var(--trans);
         }
-        .list-item:hover { border-color: rgba(255,255,255,0.12); }
+        .list-item:hover { border-color: rgba(255,255,255,0.1); transform: translateX(4px); }
 
         .progress {
-            background: rgba(0,0,0,0.4);
-            height: 6px;
+            background: rgba(0,0,0,0.5);
+            height: 5px;
             border-radius: 4px;
             overflow: hidden;
             margin-top: 8px;
@@ -291,36 +393,62 @@
         .progress-fill {
             height: 100%;
             border-radius: 4px;
-            transition: width 0.6s cubic-bezier(0.16,1,0.3,1);
+            transition: width 1s cubic-bezier(0.16,1,0.3,1);
+            position: relative;
+        }
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+            border-radius: 4px;
         }
 
+        /* === PIE CHART === */
+        #pieCanvas {
+            width: 100%;
+            max-width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: block;
+        }
+
+        /* === CHAT === */
         .chat-col {
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 120px);
+            height: calc(100vh - 100px);
             position: sticky;
-            top: 20px;
+            top: 16px;
         }
         .chat-box {
             flex: 1;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding-right: 6px;
-            margin-bottom: 16px;
+            gap: 8px;
+            padding-right: 4px;
+            margin-bottom: 14px;
             min-height: 200px;
+            scroll-behavior: smooth;
         }
+        .chat-box::-webkit-scrollbar { width: 4px; }
+        .chat-box::-webkit-scrollbar-thumb { background: var(--a1); border-radius: 10px; }
+
         .bubble {
             padding: 12px 18px;
             border-radius: 18px;
             font-size: 0.9rem;
             line-height: 1.5;
-            max-width: 85%;
-            animation: fade .3s ease;
+            max-width: 88%;
+            animation: fadeZoom 0.3s ease;
         }
         .bubble.ai {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.04);
             border: 1px solid var(--border);
             align-self: flex-start;
             border-bottom-left-radius: 4px;
@@ -330,78 +458,139 @@
             color: white;
             align-self: flex-end;
             border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 20px var(--g1);
         }
+        .bubble .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--text);
+            animation: blink 0.7s infinite;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
+        /* === TOASTS === */
         #toasts {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            left: 20px;
+            bottom: 24px;
+            right: 24px;
+            left: 24px;
             display: flex;
             flex-direction: column;
             gap: 8px;
-            z-index: 9999;
+            z-index: 99999;
             pointer-events: none;
-            max-width: 400px;
+            max-width: 420px;
             margin-left: auto;
         }
         .toast {
-            background: var(--bg);
+            background: rgba(10,14,26,0.92);
             backdrop-filter: blur(20px);
             border-left: 4px solid var(--a3);
             padding: 14px 20px;
             border-radius: 14px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 12px 60px rgba(0,0,0,0.8);
             font-weight: 500;
             pointer-events: auto;
-            animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1);
+            animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         .toast.error { border-left-color: var(--a5); }
+        .toast .toast-icon { font-size: 1.3rem; }
         @keyframes slideUp {
-            from { opacity:0; transform:translateY(30px); }
-            to { opacity:1; transform:translateY(0); }
+            from { opacity:0; transform:translateY(40px) scale(0.95); }
+            to { opacity:1; transform:translateY(0) scale(1); }
         }
 
+        /* === MODAL === */
         .modal {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
             display: none;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            animation: fadeZoom 0.3s ease;
         }
         .modal.show { display: flex; }
+        .modal .glass { max-width: 440px; width: 100%; }
 
+        /* === FLOATING +KZT === */
+        .float-label {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--a3);
+            z-index: 9999;
+            animation: floatUp 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
+            text-shadow: 0 0 30px var(--g1);
+        }
+        @keyframes floatUp {
+            0% { opacity:1; transform:translateY(0) scale(0.5); }
+            100% { opacity:0; transform:translateY(-120px) scale(1.2); }
+        }
+
+        /* === CONFETTI === */
+        .confetti-piece {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            z-index: 99999;
+            pointer-events: none;
+            animation: confettiFall 2s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        @keyframes confettiFall {
+            0% { opacity:1; transform:translateY(0) rotate(0deg) scale(1); }
+            100% { opacity:0; transform:translateY(400px) rotate(720deg) scale(0); }
+        }
+
+        /* === RESPONSIVE === */
         @media (max-width: 1024px) {
             .grid { grid-template-columns: 1fr; }
-            .chat-col { height: auto; position: static; margin-top: 20px; }
-            .chat-box { max-height: 300px; }
+            .chat-col { height: auto; position: static; margin-top: 16px; }
+            .chat-box { max-height: 280px; }
+            #cursor, #cursor-trail { display: none; }
+            html { cursor: auto; }
+            body { cursor: auto; }
         }
         @media (max-width: 600px) {
-            body { padding: 12px; }
+            body { padding: 10px; }
             .glass { padding: 16px; }
             .stats { grid-template-columns: 1fr 1fr; }
             .input-group { flex-direction: column; }
             .input-group input, .input-group select { min-width: 100%; }
             .brand { font-size: 1.2rem; }
+            .header { padding: 10px 0 16px; }
+            .stat .value { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
 
-<div class="orb"></div>
-<div class="orb"></div>
+<!-- === ORBS === -->
+<div class="orb-bg"></div>
+<div class="orb-bg"></div>
+<div class="orb-bg"></div>
 <canvas id="particles"></canvas>
+
+<!-- === CURSOR === -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
 
 <div class="app">
 
     <header class="header">
         <div class="brand">
-            💰 Gemini Pro
-            <small>v3.0 • Ultra</small>
+            💎 Gemini God
+            <small>∞ Edition</small>
             <span class="level-badge" id="levelBadge">🏆 Level 1</span>
         </div>
         <div class="theme-toggles">
@@ -410,63 +599,82 @@
             <button class="theme-btn" data-theme="sunset" onclick="setTheme('sunset')"></button>
             <button class="theme-btn" data-theme="forest" onclick="setTheme('forest')"></button>
             <button class="theme-btn" data-theme="royal" onclick="setTheme('royal')"></button>
+            <button class="theme-btn" data-theme="lava" onclick="setTheme('lava')"></button>
         </div>
     </header>
 
     <div class="grid">
 
-        <!-- LEFT COLUMN -->
+        <!-- === LEFT === -->
         <div>
-            <div class="glass tabs" style="padding: 12px 20px; margin-bottom: 20px;">
-                <button class="tab active" data-view="dash">📊 Dashboard</button>
-                <button class="tab" data-view="wish">🎯 Wishlist</button>
-                <button class="tab" data-view="analytics">📈 Analytics</button>
-                <button class="tab" data-view="converter">💱 Exchange</button>
-                <button class="tab" data-view="income">💵 Income</button>
-                <button class="tab" data-view="history">📜 History</button>
+            <div class="glass" style="padding: 12px 16px; margin-bottom: 16px;">
+                <div class="tabs">
+                    <button class="tab active" data-view="dash">📊 Dashboard</button>
+                    <button class="tab" data-view="wish">🎯 Wishlist</button>
+                    <button class="tab" data-view="analytics">📈 Analytics</button>
+                    <button class="tab" data-view="converter">💱 Exchange</button>
+                    <button class="tab" data-view="income">💵 Income</button>
+                    <button class="tab" data-view="history">📜 History</button>
+                </div>
             </div>
 
             <!-- DASHBOARD -->
             <div id="dash" class="view active">
-                <div class="glass" style="margin-bottom:20px;">
+                <div class="glass tilt" style="margin-bottom:16px;" id="statsCard">
                     <div class="stats">
-                        <div class="stat"><div class="label">💰 Total Balance</div><div class="value green" id="balanceDisplay">0</div></div>
-                        <div class="stat"><div class="label">📉 Daily Burn</div><div class="value" id="paceDisplay">0</div></div>
-                        <div class="stat"><div class="label">🎯 Savings Rate</div><div class="value" id="savingsRate">0%</div></div>
+                        <div class="stat" onclick="showBalanceDetail()">
+                            <div class="label">💰 Total Balance</div>
+                            <div class="value green" id="balanceDisplay">0</div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">📉 Daily Burn</div>
+                            <div class="value" id="paceDisplay">0</div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">🎯 Savings Rate</div>
+                            <div class="value gold" id="savingsRate">0%</div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">🏆 Achievements</div>
+                            <div class="value" id="achievementCount">0</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="glass" style="margin-bottom:20px;">
-                    <h3 style="margin-bottom:16px;">⚡ Quick Actions</h3>
+                <div class="glass" style="margin-bottom:16px;">
+                    <h3 style="margin-bottom:14px; font-size:1.1rem;">⚡ Quick Actions</h3>
                     <div class="input-group" style="margin-bottom:12px;">
                         <input type="number" id="depositInput" placeholder="Amount to deposit...">
-                        <button class="btn" onclick="depositMoney()">➕ Deposit</button>
+                        <button class="btn" onclick="depositMoney()" id="depositBtn">➕ Deposit</button>
                     </div>
-                    <div style="height:1px; background:var(--border); margin:14px 0;"></div>
+                    <div style="height:1px; background:var(--border); margin:12px 0;"></div>
                     <div class="input-group" style="margin-bottom:12px;">
                         <input type="text" id="expenseDesc" placeholder="What did you buy?">
                         <input type="number" id="expenseAmount" placeholder="Cost">
                     </div>
                     <div class="input-group">
                         <select id="expenseCategory"></select>
-                        <button class="btn" onclick="logExpense()">💸 Log Expense</button>
+                        <button class="btn" onclick="logExpense()" id="expenseBtn">💸 Log Expense</button>
                     </div>
                 </div>
 
                 <div class="glass">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                        <h3>📂 Budget Distribution</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                        <h3 style="font-size:1.05rem;">📂 Budget Distribution</h3>
                         <button class="btn btn-danger btn-sm" onclick="resetSystem()">🗑️ Reset</button>
                     </div>
                     <div id="categoriesContainer"></div>
+                    <div style="margin-top:16px; text-align:center;">
+                        <canvas id="pieCanvas" width="400" height="400"></canvas>
+                    </div>
                 </div>
             </div>
 
             <!-- WISHLIST -->
             <div id="wish" class="view">
                 <div class="glass">
-                    <h3 style="margin-bottom:16px;">🎯 Target Goals</h3>
-                    <div class="input-group" style="margin-bottom:20px;">
+                    <h3 style="margin-bottom:14px;">🎯 Target Goals</h3>
+                    <div class="input-group" style="margin-bottom:16px;">
                         <input type="text" id="wishName" placeholder="Item Name">
                         <input type="number" id="wishPrice" placeholder="Cost">
                         <button class="btn" onclick="addWish()">➕ Add</button>
@@ -478,10 +686,11 @@
             <!-- ANALYTICS -->
             <div id="analytics" class="view">
                 <div class="glass">
-                    <h3 style="margin-bottom:16px;">📈 Financial Logs</h3>
-                    <div class="stats" style="margin-bottom:20px;">
+                    <h3 style="margin-bottom:14px;">📈 Financial Logs</h3>
+                    <div class="stats" style="margin-bottom:16px;">
                         <div class="stat"><div class="label">Total Outflow</div><div class="value red" id="analyticsSpent">0</div></div>
                         <div class="stat"><div class="label">System Health</div><div class="value green" id="analyticsHealth">Optimal</div></div>
+                        <div class="stat"><div class="label">Total Income</div><div class="value green" id="analyticsIncome">0</div></div>
                     </div>
                     <h4 style="color:var(--text2); margin-bottom:10px;">Recent Transactions</h4>
                     <div id="transactionLog" style="max-height:350px; overflow-y:auto;"></div>
@@ -491,10 +700,10 @@
             <!-- CONVERTER -->
             <div id="converter" class="view">
                 <div class="glass">
-                    <h3 style="margin-bottom:16px;">💱 Live Conversion</h3>
-                    <div style="margin-bottom:20px;">
-                        <label style="font-size:0.8rem; color:var(--text2);">Base Amount (KZT)</label>
-                        <input type="number" id="convKZT" oninput="updateUI()" style="font-size:1.4rem; font-weight:700; width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border); padding:12px; border-radius:14px; color:white;">
+                    <h3 style="margin-bottom:14px;">💱 Live Conversion</h3>
+                    <div style="margin-bottom:16px;">
+                        <label style="font-size:0.75rem; color:var(--text2);">Base Amount (KZT)</label>
+                        <input type="number" id="convKZT" oninput="updateUI()" style="font-size:1.4rem; font-weight:700; width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:12px; border-radius:14px; color:white;">
                     </div>
                     <div class="stats">
                         <div class="stat"><div class="label">USD ($)</div><div class="value" id="convUSD">0</div></div>
@@ -508,8 +717,8 @@
             <!-- INCOME -->
             <div id="income" class="view">
                 <div class="glass">
-                    <h3 style="margin-bottom:16px;">💵 Income Streams</h3>
-                    <div class="input-group" style="margin-bottom:20px;">
+                    <h3 style="margin-bottom:14px;">💵 Income Streams</h3>
+                    <div class="input-group" style="margin-bottom:16px;">
                         <input type="text" id="incSource" placeholder="Source">
                         <input type="number" id="incAmount" placeholder="KZT/mo">
                         <button class="btn" onclick="addIncome()">⚡ Setup</button>
@@ -521,24 +730,29 @@
             <!-- HISTORY -->
             <div id="history" class="view">
                 <div class="glass">
-                    <h3 style="margin-bottom:16px;">📜 Full History</h3>
+                    <h3 style="margin-bottom:14px;">📜 Full History</h3>
                     <div id="fullHistory"></div>
                 </div>
             </div>
         </div>
 
-        <!-- CHAT COLUMN -->
+        <!-- === CHAT === -->
         <div class="glass chat-col">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--border);">
-                <span style="display:inline-block; width:10px; height:10px; background:var(--a3); border-radius:50%; box-shadow:0 0 20px var(--a3);"></span>
-                <span style="font-weight:700;">🧠 AI Advisor</span>
-                <span style="font-size:0.7rem; color:var(--text2); margin-left:auto;">online</span>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border);">
+                <span style="display:inline-block; width:10px; height:10px; background:var(--a3); border-radius:50%; box-shadow:0 0 25px var(--a3); animation:pulseGlow 1.5s ease-in-out infinite;"></span>
+                <span style="font-weight:700;">🧠 AI God</span>
+                <span style="font-size:0.65rem; color:var(--text2); margin-left:auto; opacity:0.6;">● conscious</span>
             </div>
             <div class="chat-box" id="chatBox">
-                <div class="bubble ai">👋 I'm your financial AI. Ask me anything!</div>
+                <div class="bubble ai">👋 I'm your AI financial god. Ask me anything — I see all.</div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:var(--text2); box-shadow:none; padding:4px 12px;" onclick="quickChat('balance')">💰 Balance</button>
+                <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:var(--text2); box-shadow:none; padding:4px 12px;" onclick="quickChat('spend')">💸 Spend</button>
+                <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:var(--text2); box-shadow:none; padding:4px 12px;" onclick="quickChat('wish')">🎯 Wish</button>
             </div>
             <div class="input-group">
-                <input type="text" id="chatInput" placeholder="Ask me..." onkeypress="if(event.key==='Enter') sendChat()">
+                <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter') sendChat()">
                 <button class="btn" onclick="sendChat()">📤</button>
             </div>
         </div>
@@ -548,26 +762,26 @@
 
 <div id="toasts"></div>
 
-<!-- EDIT MODAL -->
+<!-- === MODALS === -->
 <div class="modal" id="editModal">
-    <div class="glass" style="max-width:420px; width:100%;">
-        <h3 style="margin-bottom:16px;">✏️ Edit Category</h3>
-        <input type="text" id="editName" style="width:100%; margin-bottom:12px; background:rgba(0,0,0,0.3); border:1px solid var(--border); padding:12px; border-radius:12px; color:white;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
-            <div><label style="font-size:0.75rem; color:var(--text2);">Limit (KZT)</label><input type="number" id="editAmount" oninput="onAmountEdit(this.value)" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border); padding:10px; border-radius:12px; color:white;"></div>
-            <div><label style="font-size:0.75rem; color:var(--text2);">Share %</label><input type="number" id="editPercent" oninput="onPercentEdit(this.value)" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border); padding:10px; border-radius:12px; color:white;"></div>
+    <div class="glass">
+        <h3 style="margin-bottom:14px;">✏️ Edit Category</h3>
+        <input type="text" id="editName" style="width:100%; margin-bottom:10px; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:12px; border-radius:12px; color:white;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+            <div><label style="font-size:0.7rem; color:var(--text2);">Limit (KZT)</label><input type="number" id="editAmount" oninput="onAmountEdit(this.value)" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:10px; border-radius:12px; color:white;"></div>
+            <div><label style="font-size:0.7rem; color:var(--text2);">Share %</label><input type="number" id="editPercent" oninput="onPercentEdit(this.value)" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:10px; border-radius:12px; color:white;"></div>
         </div>
         <div style="display:flex; gap:10px; justify-content:flex-end;">
             <button class="btn btn-sm" style="background:transparent; border:1px solid var(--border); color:white; box-shadow:none;" onclick="closeModal()">Cancel</button>
-            <button class="btn btn-sm" onclick="saveCategory()">Save</button>
+            <button class="btn btn-sm" onclick="saveCategory()">💾 Save</button>
         </div>
     </div>
 </div>
 
 <script>
-    // =========================================================
+    // =============================================================
     // STATE
-    // =========================================================
+    // =============================================================
     const DEFAULT = {
         balance: 15000,
         categories: [
@@ -578,36 +792,99 @@
         ],
         logs: [{ desc: 'Initial Boot', amount: 15000, type: 'deposit', time: new Date().toLocaleTimeString() }],
         wishlist: [{ id: 'w1', name: 'Sony Headphones', cost: 120000 }],
-        income: [{ id: 'i1', source: 'Monthly Allowance', amount: 25000 }]
+        income: [{ id: 'i1', source: 'Monthly Allowance', amount: 25000 }],
+        achievements: []
     };
 
     let state = JSON.parse(JSON.stringify(DEFAULT));
-    try {
-        const saved = localStorage.getItem('budgetPro');
-        if (saved) state = { ...DEFAULT, ...JSON.parse(saved) };
-    } catch (e) {}
-
+    try { const s = localStorage.getItem('budgetPro'); if (s) state = { ...DEFAULT, ...JSON.parse(s) }; } catch(e) {}
     let editingId = null;
+    let animatingBalance = false;
 
-    function saveState() {
-        localStorage.setItem('budgetPro', JSON.stringify(state));
-        updateUI();
-    }
-
+    function saveState() { localStorage.setItem('budgetPro', JSON.stringify(state)); updateUI(); }
     function syncCategories() {
         state.categories.forEach(c => c.current = 0);
-        state.logs.forEach(l => {
-            if (l.type === 'expense') {
-                const match = state.categories.find(c => l.desc.includes(`(${c.name})`));
-                if (match) match.current += l.amount;
-            }
-        });
+        state.logs.forEach(l => { if (l.type === 'expense') {
+            const match = state.categories.find(c => l.desc.includes(`(${c.name})`));
+            if (match) match.current += l.amount;
+        }});
     }
     syncCategories();
 
-    // =========================================================
+    // =============================================================
+    // SOUND ENGINE (Web Audio)
+    // =============================================================
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+
+    function getAudio() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
+
+    function playSound(freq = 440, duration = 0.08, type = 'sine', vol = 0.15) {
+        try {
+            const ctx = getAudio();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(vol, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + duration);
+        } catch(e) {}
+    }
+
+    function soundClick() { playSound(600, 0.06, 'sine', 0.12); }
+    function soundDeposit() { playSound(880, 0.15, 'sine', 0.15); setTimeout(()=>playSound(1100,0.1,'sine',0.1),100); }
+    function soundExpense() { playSound(300, 0.2, 'sawtooth', 0.08); }
+    function soundLevelUp() {
+        [523, 659, 784, 1047].forEach((f,i) => setTimeout(()=>playSound(f,0.12,'sine',0.12), i*100));
+    }
+    function soundAchievement() {
+        [523, 659, 784, 1047, 1318].forEach((f,i) => setTimeout(()=>playSound(f,0.1,'sine',0.1), i*80));
+    }
+
+    // =============================================================
+    // CONFETTI
+    // =============================================================
+    function fireConfetti(count = 60) {
+        const colors = ['#38bdf8','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#f472b6','#34d399'];
+        for (let i=0; i<count; i++) {
+            const el = document.createElement('div');
+            el.className = 'confetti-piece';
+            const size = 4 + Math.random() * 8;
+            const x = Math.random() * window.innerWidth;
+            const y = -20 - Math.random() * 40;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            el.style.cssText = `
+                left:${x}px; top:${y}px;
+                width:${size}px; height:${size * (0.5 + Math.random())}px;
+                background:${color};
+                border-radius:${Math.random()>0.5?'50%':'2px'};
+                animation-duration:${1.5 + Math.random() * 1.5}s;
+                transform:rotate(${Math.random()*360}deg);
+            `;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        }
+    }
+
+    // =============================================================
+    // FLOATING LABEL
+    // =============================================================
+    function floatLabel(text, x, y, color = 'var(--a3)') {
+        const el = document.createElement('div');
+        el.className = 'float-label';
+        el.textContent = text;
+        el.style.cssText = `left:${x}px; top:${y}px; color:${color};`;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1300);
+    }
+
+    // =============================================================
     // THEME
-    // =========================================================
+    // =============================================================
     function setTheme(t) {
         document.documentElement.setAttribute('data-theme', t);
         document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === t));
@@ -616,104 +893,166 @@
     const savedTheme = localStorage.getItem('budgetTheme') || 'cyber';
     setTheme(savedTheme);
 
-    // =========================================================
-    // PARTICLES
-    // =========================================================
+    // =============================================================
+    // PARTICLES (Interactive)
+    // =============================================================
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
-    let W, H, particles = [];
+    let W, H, parts = [], mouse = { x: -1000, y: -1000 };
 
-    function resize() {
-        W = canvas.width = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
+    function resizeP() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resizeP();
+    window.addEventListener('resize', resizeP);
+    document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
-    class Particle {
+    class Part {
         constructor() { this.reset(); }
         reset() {
             this.x = Math.random() * W;
             this.y = Math.random() * H;
-            this.size = Math.random() * 2 + 0.5;
-            this.sx = (Math.random() - 0.5) * 0.3;
-            this.sy = (Math.random() - 0.5) * 0.3;
+            this.size = Math.random() * 2.5 + 0.5;
+            this.sx = (Math.random() - 0.5) * 0.4;
+            this.sy = (Math.random() - 0.5) * 0.4;
             this.o = Math.random() * 0.5 + 0.2;
         }
         update() {
+            const dx = this.x - mouse.x;
+            const dy = this.y - mouse.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 150) {
+                const force = (150 - dist) / 150 * 0.02;
+                this.x += dx * force;
+                this.y += dy * force;
+            }
             this.x += this.sx;
             this.y += this.sy;
             if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
         }
         draw() {
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
             ctx.fillStyle = `rgba(255,255,255,${this.o})`;
             ctx.fill();
         }
     }
-    for (let i = 0; i < 80; i++) particles.push(new Particle());
+    for (let i=0; i<120; i++) parts.push(new Part());
 
-    function animate() {
-        ctx.clearRect(0, 0, W, H);
-        particles.forEach(p => { p.update(); p.draw(); });
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 120) {
+    function animateP() {
+        ctx.clearRect(0,0,W,H);
+        parts.forEach(p => { p.update(); p.draw(); });
+        for (let i=0; i<parts.length; i++) {
+            for (let j=i+1; j<parts.length; j++) {
+                const dx = parts[i].x - parts[j].x;
+                const dy = parts[i].y - parts[j].y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 100) {
                     ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = `rgba(255,255,255,${0.08 * (1 - dist / 120)})`;
+                    ctx.moveTo(parts[i].x, parts[i].y);
+                    ctx.lineTo(parts[j].x, parts[j].y);
+                    ctx.strokeStyle = `rgba(255,255,255,${0.06 * (1 - dist/100)})`;
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 }
             }
         }
-        requestAnimationFrame(animate);
+        requestAnimationFrame(animateP);
     }
-    animate();
+    animateP();
 
-    // =========================================================
+    // =============================================================
+    // CURSOR
+    // =============================================================
+    const cursor = document.getElementById('cursor');
+    const trail = document.getElementById('cursor-trail');
+    let trailPos = { x: 0, y: 0 };
+
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX - 10 + 'px';
+        cursor.style.top = e.clientY - 10 + 'px';
+        trailPos.x = e.clientX;
+        trailPos.y = e.clientY;
+    });
+
+    function animateTrail() {
+        trail.style.left = trailPos.x - 4 + 'px';
+        trail.style.top = trailPos.y - 4 + 'px';
+        requestAnimationFrame(animateTrail);
+    }
+    animateTrail();
+
+    // =============================================================
     // TOAST
-    // =========================================================
-    function showToast(msg, type = 'success') {
+    // =============================================================
+    function showToast(msg, type = 'success', icon = '✅') {
         const container = document.getElementById('toasts');
         const el = document.createElement('div');
         el.className = `toast ${type}`;
-        el.textContent = msg;
+        el.innerHTML = `<span class="toast-icon">${icon}</span> ${msg}`;
         container.appendChild(el);
         setTimeout(() => {
             el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            setTimeout(() => el.remove(), 300);
-        }, 3000);
+            el.style.transform = 'translateY(20px) scale(0.95)';
+            setTimeout(() => el.remove(), 400);
+        }, 3200);
     }
 
-    // =========================================================
+    // =============================================================
     // TABS
-    // =========================================================
+    // =============================================================
     document.querySelectorAll('.tab').forEach(btn => {
-        btn.onclick = function () {
+        btn.onclick = function() {
             document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             this.classList.add('active');
             document.getElementById(this.dataset.view).classList.add('active');
+            soundClick();
         };
     });
 
-    // =========================================================
+    // =============================================================
+    // 3D TILT
+    // =============================================================
+    document.querySelectorAll('.tilt').forEach(el => {
+        el.addEventListener('mousemove', e => {
+            const rect = el.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            el.style.transform = `perspective(800px) rotateX(${y*-6}deg) rotateY(${x*6}deg) translateY(-3px)`;
+        });
+        el.addEventListener('mouseleave', () => {
+            el.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
+        });
+    });
+
+    // =============================================================
     // UI UPDATE
-    // =========================================================
+    // =============================================================
     function updateUI() {
-        // Balance & pace
-        document.getElementById('balanceDisplay').textContent = state.balance.toLocaleString();
+        // Balance with animation
+        const balEl = document.getElementById('balanceDisplay');
+        const target = state.balance;
+        const current = parseInt(balEl.textContent.replace(/,/g,'')) || 0;
+        if (!animatingBalance && current !== target) {
+            animatingBalance = true;
+            const start = current;
+            const duration = 400;
+            const startTime = performance.now();
+            function countUp(time) {
+                const progress = Math.min((time - startTime) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const val = Math.round(start + (target - start) * eased);
+                balEl.textContent = val.toLocaleString();
+                if (progress < 1) requestAnimationFrame(countUp);
+                else { balEl.textContent = target.toLocaleString(); animatingBalance = false; }
+            }
+            requestAnimationFrame(countUp);
+        } else {
+            balEl.textContent = target.toLocaleString();
+        }
+
         document.getElementById('paceDisplay').textContent = Math.round(state.balance / 30).toLocaleString();
 
-        // Savings rate
-        const totalIncome = state.income.reduce((sum, i) => sum + i.amount, 0);
+        const totalIncome = state.income.reduce((s, i) => s + i.amount, 0);
         const rate = totalIncome > 0 ? Math.round((state.balance / (totalIncome * 3)) * 100) : 0;
         document.getElementById('savingsRate').textContent = Math.min(rate, 100) + '%';
 
@@ -721,29 +1060,33 @@
         const level = Math.floor(state.balance / 50000) + 1;
         document.getElementById('levelBadge').innerHTML = `🏆 Level ${Math.min(level, 99)}`;
 
+        // Achievements
+        const achCount = state.achievements ? state.achievements.length : 0;
+        document.getElementById('achievementCount').textContent = achCount;
+
         // Category dropdown
         const sel = document.getElementById('expenseCategory');
         sel.innerHTML = '';
         state.categories.forEach(c => sel.innerHTML += `<option value="${c.name}">${c.name}</option>`);
 
-        // Categories list
+        // Categories
         const cont = document.getElementById('categoriesContainer');
         cont.innerHTML = '';
         let totalSpent = 0;
         state.categories.forEach(cat => {
             totalSpent += cat.current;
-            const target = cat.targetLimit ?? Math.round((state.balance * cat.percentShare) / 100);
-            const pct = target > 0 ? Math.min((cat.current / target) * 100, 100) : 0;
+            const targetLimit = cat.targetLimit ?? Math.round((state.balance * cat.percentShare) / 100);
+            const pct = targetLimit > 0 ? Math.min((cat.current / targetLimit) * 100, 100) : 0;
             const color = pct > 80 ? '#ef4444' : pct > 50 ? '#f59e0b' : '#38bdf8';
             cont.innerHTML += `
                 <div class="list-item">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:600;">${cat.name} <span style="font-size:0.75rem; color:var(--text2);">(${cat.percentShare}%)</span></span>
-                        <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); color:white; box-shadow:none;" onclick="openEdit('${cat.id}')">✏️</button>
+                        <span style="font-weight:600;">${cat.name} <span style="font-size:0.7rem; color:var(--text2);">(${cat.percentShare}%)</span></span>
+                        <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:white; box-shadow:none;" onclick="openEdit('${cat.id}')">✏️</button>
                     </div>
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text2);">
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text2);">
                         <span>Spent: ${cat.current.toLocaleString()} KZT</span>
-                        <span>Limit: ${target.toLocaleString()} KZT</span>
+                        <span>Limit: ${targetLimit.toLocaleString()} KZT</span>
                     </div>
                     <div class="progress"><div class="progress-fill" style="width:${pct}%; background:${color};"></div></div>
                 </div>
@@ -760,16 +1103,18 @@
             health.textContent = '✅ Optimal';
             health.className = 'value green';
         }
+        const totalInc = state.income.reduce((s,i) => s + i.amount, 0);
+        document.getElementById('analyticsIncome').textContent = totalInc.toLocaleString() + ' KZT/mo';
 
-        // Transaction log (recent)
+        // Transaction log
         const logDiv = document.getElementById('transactionLog');
         logDiv.innerHTML = '';
         [...state.logs].reverse().slice(0, 10).forEach(l => {
             const sign = l.type === 'deposit' ? '+' : '-';
             const color = l.type === 'deposit' ? 'var(--a3)' : 'var(--a5)';
             logDiv.innerHTML += `
-                <div class="list-item" style="padding:12px; display:flex; justify-content:space-between; align-items:center;">
-                    <div><div style="font-weight:600;">${l.desc}</div><div style="font-size:0.7rem; color:var(--text2);">${l.time}</div></div>
+                <div class="list-item" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <div><div style="font-weight:600;">${l.desc}</div><div style="font-size:0.65rem; color:var(--text2);">${l.time}</div></div>
                     <span style="color:${color}; font-weight:700;">${sign}${l.amount.toLocaleString()}</span>
                 </div>
             `;
@@ -786,11 +1131,11 @@
                 const sign = l.type === 'deposit' ? '+' : '-';
                 const color = l.type === 'deposit' ? 'var(--a3)' : 'var(--a5)';
                 histDiv.innerHTML += `
-                    <div class="list-item" style="padding:12px; display:flex; justify-content:space-between; align-items:center;">
-                        <div><div style="font-weight:600;">${l.desc}</div><div style="font-size:0.7rem; color:var(--text2);">${l.time}</div></div>
-                        <div style="display:flex; align-items:center; gap:12px;">
+                    <div class="list-item" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+                        <div><div style="font-weight:600;">${l.desc}</div><div style="font-size:0.65rem; color:var(--text2);">${l.time}</div></div>
+                        <div style="display:flex; align-items:center; gap:10px;">
                             <span style="color:${color}; font-weight:700;">${sign}${l.amount.toLocaleString()} KZT</span>
-                            <button class="btn btn-danger btn-sm" onclick="deleteLog(${realIdx})">🗑️</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteLog(${realIdx})" style="padding:3px 10px;">🗑️</button>
                         </div>
                     </div>
                 `;
@@ -814,12 +1159,12 @@
                 <div class="list-item">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <span style="font-weight:600;">${w.name}</span>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <span style="background:${afford ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color:${afford ? 'var(--a3)' : 'var(--a4)'}; padding:2px 10px; border-radius:8px; font-weight:600;">${w.cost.toLocaleString()} KZT</span>
-                            <button class="btn btn-sm" style="background:rgba(255,255,255,0.05); color:white; box-shadow:none;" onclick="editWish('${w.id}')">✏️</button>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="background:${afford ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color:${afford ? 'var(--a3)' : 'var(--a4)'}; padding:2px 10px; border-radius:8px; font-weight:600; font-size:0.8rem;">${w.cost.toLocaleString()} KZT</span>
+                            <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:white; box-shadow:none; padding:3px 10px;" onclick="editWish('${w.id}')">✏️</button>
                         </div>
                     </div>
-                    <div style="font-size:0.8rem; margin-bottom:4px; color:var(--text2);">${afford ? '✅ You can afford this!' : '⏳ Saving...'}</div>
+                    <div style="font-size:0.75rem; margin-bottom:4px; color:var(--text2);">${afford ? '✅ You can afford this!' : '⏳ Saving...'}</div>
                     <div class="progress"><div class="progress-fill" style="width:${Math.min(pct,100)}%; background:${afford ? 'var(--a3)' : 'var(--a4)'};"></div></div>
                 </div>
             `;
@@ -836,21 +1181,111 @@
                 </div>
             `;
         });
+
+        // Pie chart
+        drawPieChart();
+
+        // Check achievements
+        checkAchievements();
     }
 
-    // =========================================================
+    // =============================================================
+    // PIE CHART
+    // =============================================================
+    function drawPieChart() {
+        const canvas = document.getElementById('pieCanvas');
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+        const cx = w/2, cy = h/2, r = Math.min(w,h)/2 - 20;
+        ctx.clearRect(0,0,w,h);
+
+        const data = state.categories.filter(c => c.current > 0);
+        if (data.length === 0) {
+            ctx.fillStyle = 'var(--text2)';
+            ctx.font = '16px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('No spending data', cx, cy+6);
+            return;
+        }
+        const total = data.reduce((s,c) => s + c.current, 0);
+        let start = -Math.PI/2;
+        const colors = ['#38bdf8','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#f472b6','#34d399'];
+
+        data.forEach((cat, i) => {
+            const angle = (cat.current / total) * 2 * Math.PI;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, start + angle);
+            ctx.closePath();
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // label
+            const mid = start + angle/2;
+            const lx = cx + Math.cos(mid) * (r * 0.65);
+            const ly = cy + Math.sin(mid) * (r * 0.65);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            if (angle > 0.3) {
+                ctx.fillText(Math.round((cat.current/total)*100)+'%', lx, ly);
+            }
+            start += angle;
+        });
+    }
+
+    // =============================================================
+    // ACHIEVEMENTS
+    // =============================================================
+    function checkAchievements() {
+        if (!state.achievements) state.achievements = [];
+        const newAch = [];
+
+        if (state.balance >= 100000 && !state.achievements.includes('wealthy')) {
+            newAch.push({ id: 'wealthy', name: '💰 Wealthy', msg: 'Balance reached 100,000 KZT!' });
+        }
+        if (state.balance >= 500000 && !state.achievements.includes('millionaire')) {
+            newAch.push({ id: 'millionaire', name: '💎 Millionaire', msg: 'Balance reached 500,000 KZT!' });
+        }
+        if (state.logs.length >= 20 && !state.achievements.includes('active')) {
+            newAch.push({ id: 'active', name: '📊 Active', msg: 'Logged 20+ transactions!' });
+        }
+        if (state.wishlist.length >= 3 && !state.achievements.includes('dreamer')) {
+            newAch.push({ id: 'dreamer', name: '🎯 Dreamer', msg: 'Added 3+ wishlist items!' });
+        }
+        if (state.income.length >= 2 && !state.achievements.includes('earner')) {
+            newAch.push({ id: 'earner', name: '💵 Earner', msg: 'Set up 2+ income streams!' });
+        }
+
+        newAch.forEach(a => {
+            state.achievements.push(a.id);
+            showToast(`🏆 ACHIEVEMENT: ${a.name} — ${a.msg}`, 'success', '🏆');
+            soundAchievement();
+            fireConfetti(80);
+        });
+        if (newAch.length > 0) saveState();
+    }
+
+    // =============================================================
     // ACTIONS
-    // =========================================================
+    // =============================================================
     function depositMoney() {
         const val = parseFloat(document.getElementById('depositInput').value);
         if (val > 0) {
             state.balance += val;
             state.logs.push({ desc: 'Manual Deposit', amount: val, type: 'deposit', time: new Date().toLocaleTimeString() });
             document.getElementById('depositInput').value = '';
-            showToast(`Deposited ${val.toLocaleString()} KZT`);
+            soundDeposit();
+            showToast(`💰 Deposited ${val.toLocaleString()} KZT`, 'success', '💰');
+            const rect = document.getElementById('depositBtn').getBoundingClientRect();
+            floatLabel(`+${val.toLocaleString()} KZT`, rect.left + rect.width/2 - 60, rect.top - 10, '#10b981');
+            if (val >= 50000) { fireConfetti(40); soundLevelUp(); }
             saveState();
         } else {
-            showToast('Enter a valid amount', 'error');
+            showToast('Enter a valid amount', 'error', '⚠️');
         }
     }
 
@@ -865,10 +1300,13 @@
             state.logs.push({ desc: `${desc} (${catName})`, amount: val, type: 'expense', time: new Date().toLocaleTimeString() });
             document.getElementById('expenseDesc').value = '';
             document.getElementById('expenseAmount').value = '';
-            showToast(`Logged -${val.toLocaleString()} KZT`, 'error');
+            soundExpense();
+            showToast(`💸 Logged -${val.toLocaleString()} KZT to ${catName}`, 'error', '💸');
+            const rect = document.getElementById('expenseBtn').getBoundingClientRect();
+            floatLabel(`-${val.toLocaleString()} KZT`, rect.left + rect.width/2 - 60, rect.top - 10, '#ef4444');
             saveState();
         } else {
-            showToast('Enter a valid cost', 'error');
+            showToast('Enter a valid cost', 'error', '⚠️');
         }
     }
 
@@ -879,10 +1317,11 @@
             state.wishlist.push({ id: 'w' + Date.now(), name, cost });
             document.getElementById('wishName').value = '';
             document.getElementById('wishPrice').value = '';
-            showToast(`Added "${name}" to wishlist`);
+            soundClick();
+            showToast(`🎯 Added "${name}" to wishlist`, 'success', '🎯');
             saveState();
         } else {
-            showToast('Enter name and cost', 'error');
+            showToast('Enter name and cost', 'error', '⚠️');
         }
     }
 
@@ -893,10 +1332,11 @@
             state.income.push({ id: 'i' + Date.now(), source, amount });
             document.getElementById('incSource').value = '';
             document.getElementById('incAmount').value = '';
-            showToast(`Income stream "${source}" added`);
+            soundClick();
+            showToast(`💵 Income stream "${source}" added`, 'success', '💵');
             saveState();
         } else {
-            showToast('Enter source and amount', 'error');
+            showToast('Enter source and amount', 'error', '⚠️');
         }
     }
 
@@ -907,20 +1347,22 @@
         else if (log.type === 'expense') state.balance += log.amount;
         state.logs.splice(index, 1);
         syncCategories();
-        showToast('Transaction removed', 'error');
+        soundClick();
+        showToast('Transaction removed', 'error', '🗑️');
         saveState();
     }
 
     function resetSystem() {
-        if (confirm('Reset all data to defaults?')) {
+        if (confirm('🔥 Reset all data to defaults?')) {
             localStorage.removeItem('budgetPro');
+            soundClick();
             location.reload();
         }
     }
 
-    // =========================================================
+    // =============================================================
     // EDIT CATEGORY
-    // =========================================================
+    // =============================================================
     function openEdit(id) {
         editingId = id;
         const cat = state.categories.find(c => c.id === id);
@@ -930,62 +1372,50 @@
         document.getElementById('editAmount').value = target;
         document.getElementById('editPercent').value = cat.percentShare;
         document.getElementById('editModal').classList.add('show');
+        soundClick();
     }
-
-    function closeModal() {
-        document.getElementById('editModal').classList.remove('show');
-        editingId = null;
-    }
-
+    function closeModal() { document.getElementById('editModal').classList.remove('show'); editingId = null; }
     function onAmountEdit(val) {
         const amount = parseFloat(val) || 0;
         const base = state.balance > 0 ? state.balance : 15000;
-        const pct = base > 0 ? ((amount / base) * 100).toFixed(1) : 0;
-        document.getElementById('editPercent').value = pct;
+        document.getElementById('editPercent').value = base > 0 ? ((amount / base) * 100).toFixed(1) : 0;
     }
-
     function onPercentEdit(val) {
         const pct = parseFloat(val) || 0;
         const base = state.balance > 0 ? state.balance : 15000;
-        const amount = Math.round((base * pct) / 100);
-        document.getElementById('editAmount').value = amount;
+        document.getElementById('editAmount').value = Math.round((base * pct) / 100);
     }
-
     function saveCategory() {
         if (!editingId) return;
         const cat = state.categories.find(c => c.id === editingId);
         if (!cat) return;
-        const newName = document.getElementById('editName').value.trim();
-        const newPercent = parseFloat(document.getElementById('editPercent').value) || 0;
-        const newLimit = parseFloat(document.getElementById('editAmount').value) || 0;
-        cat.name = newName;
-        cat.percentShare = newPercent;
-        cat.targetLimit = newLimit;
+        cat.name = document.getElementById('editName').value.trim() || cat.name;
+        cat.percentShare = parseFloat(document.getElementById('editPercent').value) || 0;
+        cat.targetLimit = parseFloat(document.getElementById('editAmount').value) || 0;
         closeModal();
-        showToast('Category updated');
+        soundClick();
+        showToast('Category updated', 'success', '✅');
         saveState();
     }
 
-    // =========================================================
-    // EDIT WISHLIST (simple inline edit)
-    // =========================================================
+    // =============================================================
+    // EDIT WISHLIST
+    // =============================================================
     function editWish(id) {
         const w = state.wishlist.find(item => item.id === id);
         if (!w) return;
         const newName = prompt('Edit item name:', w.name);
         if (newName !== null) w.name = newName.trim() || w.name;
         const newCost = prompt('Edit cost (KZT):', w.cost);
-        if (newCost !== null) {
-            const num = parseFloat(newCost);
-            if (!isNaN(num) && num >= 0) w.cost = num;
-        }
+        if (newCost !== null) { const num = parseFloat(newCost); if (!isNaN(num) && num >= 0) w.cost = num; }
+        soundClick();
+        showToast('Wishlist updated', 'success', '✅');
         saveState();
-        showToast('Wishlist item updated');
     }
 
-    // =========================================================
-    // CHAT
-    // =========================================================
+    // =============================================================
+    // CHAT (with typing animation)
+    // =============================================================
     function sendChat() {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
@@ -994,6 +1424,7 @@
         chatBox.innerHTML += `<div class="bubble user">${text}</div>`;
         input.value = '';
         chatBox.scrollTop = chatBox.scrollHeight;
+        soundClick();
 
         setTimeout(() => {
             let reply = "I've recorded that. How can I help further?";
@@ -1008,16 +1439,56 @@
                 reply = "Hello! I'm monitoring your finances. All systems green.";
             } else if (lower.includes('help')) {
                 reply = "You can deposit, log expenses, set income streams, add wishlist items, and track your budget across categories. Ask me anything!";
+            } else if (lower.includes('level')) {
+                reply = `🏆 You're Level ${Math.floor(state.balance/50000)+1}. Keep going!`;
             }
-            chatBox.innerHTML += `<div class="bubble ai">${reply}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }, 500);
+            typeReply(reply);
+        }, 400);
     }
 
-    // =========================================================
+    function typeReply(text) {
+        const chatBox = document.getElementById('chatBox');
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ai';
+        bubble.innerHTML = '';
+        chatBox.appendChild(bubble);
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                bubble.textContent += text[i];
+                i++;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } else {
+                clearInterval(interval);
+            }
+        }, 20);
+    }
+
+    function quickChat(cmd) {
+        const input = document.getElementById('chatInput');
+        const map = { balance: 'What is my balance?', spend: 'How do I log an expense?', wish: 'Show me my wishlist' };
+        input.value = map[cmd] || cmd;
+        sendChat();
+    }
+
+    // =============================================================
+    // SHOW BALANCE DETAIL
+    // =============================================================
+    function showBalanceDetail() {
+        const totalIncome = state.income.reduce((s,i) => s + i.amount, 0);
+        showToast(`💰 Balance: ${state.balance.toLocaleString()} KZT | Income: ${totalIncome.toLocaleString()} KZT/mo`, 'success', '📊');
+    }
+
+    // =============================================================
     // INIT
-    // =========================================================
+    // =============================================================
     updateUI();
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e => {
+        if (e.key === 'd' && e.ctrlKey) { e.preventDefault(); depositMoney(); }
+        if (e.key === 'e' && e.ctrlKey) { e.preventDefault(); document.getElementById('expenseAmount').focus(); }
+    });
 </script>
 </body>
 </html>
