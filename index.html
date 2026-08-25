@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>💎 Nova Finance — Ultimate Edition</title>
+    <title>💎 Nova Finance — Final Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -183,7 +183,7 @@
 
         .list-item { background: rgba(255,255,255,0.015); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; transition: var(--trans); }
         .list-item:hover { border-color: rgba(255,255,255,0.1); transform: translateX(4px); }
-        .category-color { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+        .category-color { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: middle; border: 1px solid rgba(255,255,255,0.1); }
 
         .progress { background: rgba(0,0,0,0.5); height: 5px; border-radius: 4px; overflow: hidden; margin-top: 8px; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(0.16,1,0.3,1); position: relative; }
@@ -266,6 +266,7 @@
             background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 6px 10px; border-radius: 10px;
             color: var(--text); font-size: 0.8rem; font-family: inherit; max-width: 140px;
         }
+
         .goal-progress {
             margin-top: 8px;
             padding: 10px 14px;
@@ -275,19 +276,14 @@
         }
         .goal-progress .label { font-size: 0.75rem; color: var(--text2); }
         .goal-progress .value { font-size: 1rem; font-weight: 700; }
+        .goal-progress .progress { margin-top: 6px; }
 
-        .install-btn {
-            background: var(--a3);
-            color: #000;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: var(--trans);
+        .shortcut-hint {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+            font-size: 0.6rem; color: var(--text2); opacity: 0.3;
+            pointer-events: none; z-index: 1;
+            text-align: center;
         }
-        .install-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--g1); }
 
         @media (max-width: 1024px) {
             .grid { grid-template-columns: 1fr; }
@@ -303,6 +299,7 @@
             .brand { font-size: 1.2rem; }
             .header { padding: 10px 0 16px; }
             .stat .value { font-size: 1.3rem; }
+            .shortcut-hint { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
@@ -326,11 +323,10 @@
     <header class="header">
         <div class="brand">
             💎 Nova Finance
-            <small>v6.0 • Ultimate</small>
+            <small>v7.0 • Final</small>
             <button class="level-badge" id="levelBadge" onclick="showBalanceDetail()">🏆 Level 1</button>
         </div>
         <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-            <button class="install-btn" id="installBtn" style="display:none;" onclick="installPWA()">📱 Install</button>
             <div class="theme-toggles">
                 <button class="theme-btn active" data-theme="cyber" onclick="setTheme('cyber')" aria-label="Cyber theme"></button>
                 <button class="theme-btn" data-theme="ocean" onclick="setTheme('ocean')" aria-label="Ocean theme"></button>
@@ -342,6 +338,7 @@
             <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇️ Export</button>
             <label class="btn btn-ghost btn-sm" style="cursor:pointer;">⬆️ Import<input type="file" accept="application/json" onchange="importData(event)" style="display:none;"></label>
             <button class="btn btn-ghost btn-sm" onclick="showRestoreModal()">💾 Snapshots</button>
+            <button class="btn btn-danger btn-sm" onclick="confirmReset()">🗑️ Reset</button>
         </div>
     </header>
 
@@ -375,21 +372,18 @@
                         <div class="stat">
                             <div class="label">🎯 Savings Rate</div>
                             <div class="value gold" id="savingsRate">0%</div>
-                            <div class="sub">income kept vs. spent this run</div>
+                            <div class="sub">kept vs. total deposits</div>
                         </div>
                         <div class="stat">
                             <div class="label">🏆 Achievements</div>
                             <div class="value" id="achievementCount">0</div>
                         </div>
                     </div>
-                    <!-- Forecast & Insights -->
+                    <!-- Forecast (simple & correct) -->
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
                         <div class="forecast-card">
-                            <div class="label">🔮 Forecast</div>
-                            <div id="forecastContent" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; margin-top:2px;">
-                                <span class="value" id="forecastDays" style="font-size:1rem;">—</span>
-                                <span class="value" id="forecastStatus" style="font-size:1rem;">—</span>
-                            </div>
+                            <div class="label">🔮 Days until zero (no income)</div>
+                            <div class="value" id="forecastDays" style="font-size:1rem;">—</div>
                         </div>
                         <div class="forecast-card">
                             <div class="label">📊 Projected 30‑day balance</div>
@@ -398,7 +392,7 @@
                     </div>
                 </div>
 
-                <!-- SAVINGS GOAL (NEW) -->
+                <!-- SAVINGS GOAL -->
                 <div class="glass" style="margin-bottom:16px;">
                     <h3 style="margin-bottom:10px; font-size:1.05rem;">🎯 Savings Goal</h3>
                     <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -441,11 +435,9 @@
                         <h3 style="font-size:1.05rem;">📂 Budget Distribution</h3>
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
                             <button class="btn btn-ghost btn-sm" onclick="undoLast()" id="undoBtn">↩️ Undo</button>
-                            <button class="btn btn-danger btn-sm" onclick="confirmReset()">🗑️ Reset</button>
                         </div>
                     </div>
                     <div id="categoriesContainer"></div>
-                    <!-- Insights panel -->
                     <div id="insightsPanel" style="margin-top:16px;"></div>
                     <div style="margin-top:16px; text-align:center;">
                         <canvas id="pieCanvas" width="400" height="400"></canvas>
@@ -490,7 +482,7 @@
             <div id="converter" class="view" role="tabpanel">
                 <div class="glass">
                     <h3 style="margin-bottom:14px;">💱 Live Conversion</h3>
-                    <p style="font-size:0.7rem; color:var(--text2); margin-bottom:14px;">Rates are fixed reference values for estimation, not live market data.</p>
+                    <p style="font-size:0.7rem; color:var(--text2); margin-bottom:14px;">Rates are fixed reference values for estimation.</p>
                     <div style="margin-bottom:16px;">
                         <label style="font-size:0.75rem; color:var(--text2);">Base Amount (KZT)</label>
                         <input type="number" id="convKZT" oninput="updateUI()" style="font-size:1.4rem; font-weight:700; width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:12px; border-radius:14px; color:white; margin-top:6px;">
@@ -525,7 +517,7 @@
                 </div>
             </div>
 
-            <!-- HISTORY with date filters -->
+            <!-- HISTORY -->
             <div id="history" class="view" role="tabpanel">
                 <div class="glass">
                     <h3 style="margin-bottom:14px;">📜 Full History</h3>
@@ -576,9 +568,13 @@
     <div class="glass">
         <h3 style="margin-bottom:14px;">✏️ Edit Category</h3>
         <input type="text" id="editName" style="width:100%; margin-bottom:10px; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:12px; border-radius:12px; color:white;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:10px;">
             <div><label style="font-size:0.7rem; color:var(--text2);">Limit (KZT)</label><input type="number" id="editAmount" oninput="onAmountEdit(this.value)" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:10px; border-radius:12px; color:white;"></div>
             <div><label style="font-size:0.7rem; color:var(--text2);">Share %</label><input type="number" id="editPercent" oninput="onPercentEdit(this.value)" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:10px; border-radius:12px; color:white;"></div>
+        </div>
+        <div style="margin-bottom:14px;">
+            <label style="font-size:0.7rem; color:var(--text2); display:block; margin-bottom:4px;">Category Color</label>
+            <input type="color" id="editColor" style="width:100%; height:40px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:12px; cursor:pointer; padding:4px;">
         </div>
         <div style="display:flex; gap:10px; justify-content:flex-end;">
             <button class="btn btn-sm btn-ghost" onclick="closeModal('editModal')">Cancel</button>
@@ -621,13 +617,16 @@
         <div id="restoreList" style="max-height:300px; overflow-y:auto; margin-bottom:14px;"></div>
         <div style="display:flex; gap:10px; justify-content:flex-end;">
             <button class="btn btn-sm btn-ghost" onclick="closeModal('restoreModal')">Close</button>
+            <button class="btn btn-danger btn-sm" onclick="clearRestorePoints()">🗑️ Clear all</button>
         </div>
     </div>
 </div>
 
+<div class="shortcut-hint">Ctrl+D: Deposit · Ctrl+E: Focus expense · Ctrl+U: Undo · ?: shortcuts</div>
+
 <script>
     // =============================================================
-    // STATE & STORAGE (with IndexedDB fallback)
+    // STATE — using window.storage (the platform's actual persistence)
     // =============================================================
     const STORAGE_KEY = 'nova-finance-state';
     const CAT_COLORS = ['#38bdf8','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#f472b6','#34d399','#06b6d4','#a78bfa'];
@@ -644,7 +643,7 @@
         wishlist: [{ id: 'w1', name: 'Sony Headphones', cost: 120000 }],
         income: [{ id: 'i1', source: 'Monthly Allowance', amount: 25000 }],
         bills: [],
-        savingsGoal: null, // { target: number, started: timestamp }
+        savingsGoal: null,
         achievements: [],
         restorePoints: [],
         txCount: 0,
@@ -659,78 +658,15 @@
     let saving = false;
     let isListening = false;
     let recognition = null;
-    let storageReady = false;
 
-    // ---- Storage abstraction ----
-    const storage = {
-        async get(key) {
-            try {
-                // Try localStorage first
-                const val = localStorage.getItem(key);
-                if (val !== null) return { value: val };
-            } catch (e) { /* fall through */ }
-            // Fallback: IndexedDB
-            return new Promise((resolve) => {
-                const req = indexedDB.open('NovaFinanceDB', 1);
-                req.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-                    if (!db.objectStoreNames.contains('store')) {
-                        db.createObjectStore('store');
-                    }
-                };
-                req.onsuccess = (e) => {
-                    const db = e.target.result;
-                    const tx = db.transaction('store', 'readonly');
-                    const store = tx.objectStore('store');
-                    const getReq = store.get(key);
-                    getReq.onsuccess = () => resolve(getReq.result ? { value: getReq.result } : null);
-                    getReq.onerror = () => resolve(null);
-                };
-                req.onerror = () => resolve(null);
-            });
-        },
-        async set(key, value) {
-            try {
-                localStorage.setItem(key, value);
-                return;
-            } catch (e) { /* fall through */ }
-            return new Promise((resolve, reject) => {
-                const req = indexedDB.open('NovaFinanceDB', 1);
-                req.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-                    if (!db.objectStoreNames.contains('store')) {
-                        db.createObjectStore('store');
-                    }
-                };
-                req.onsuccess = (e) => {
-                    const db = e.target.result;
-                    const tx = db.transaction('store', 'readwrite');
-                    const store = tx.objectStore('store');
-                    const putReq = store.put(value, key);
-                    putReq.onsuccess = () => resolve();
-                    putReq.onerror = () => reject();
-                };
-                req.onerror = () => reject();
-            });
-        }
-    };
-
-    // ---- State sync ----
-    function syncCategories() {
-        state.categories.forEach(c => c.current = 0);
-        state.logs.forEach(l => {
-            if (l.type === 'expense' && l.categoryId) {
-                const match = state.categories.find(c => c.id === l.categoryId);
-                if (match) match.current += l.amount;
-            }
-        });
-    }
-
-    async function loadState() {
+    // =============================================================
+    // STORAGE — using window.storage (platform API)
+    // =============================================================
+    function loadState() {
         try {
-            const result = await storage.get(STORAGE_KEY);
-            if (result && result.value) {
-                const parsed = JSON.parse(result.value);
+            const raw = window.storage?.get?.(STORAGE_KEY);
+            if (raw && raw.value) {
+                const parsed = JSON.parse(raw.value);
                 if (parsed.categories) {
                     parsed.categories.forEach((c, i) => {
                         if (!c.color) c.color = CAT_COLORS[i % CAT_COLORS.length];
@@ -744,7 +680,7 @@
                 if (!state.historyPage) state.historyPage = 1;
             }
         } catch (e) {
-            showToast('Could not load saved data — starting fresh.', 'error', '⚠️');
+            // Fall back to defaults
         }
         syncCategories();
         document.getElementById('loadingOverlay').style.opacity = '0';
@@ -753,15 +689,14 @@
         if (state.restorePoints && state.restorePoints.length > 0) {
             populateRestoreList();
         }
-        // Process recurring bills
         processRecurringBills();
     }
 
-    async function saveState() {
+    function saveState() {
         updateUI();
         try {
             saving = true;
-            await storage.set(STORAGE_KEY, JSON.stringify(state));
+            window.storage?.set?.(STORAGE_KEY, JSON.stringify(state));
             // Auto-snapshot every 5 transactions
             if (state.logs.length % 5 === 0 && state.logs.length > 0 && state.txCount !== state.logs.length) {
                 state.txCount = state.logs.length;
@@ -772,6 +707,19 @@
         } finally {
             saving = false;
         }
+    }
+
+    // =============================================================
+    // SYNC
+    // =============================================================
+    function syncCategories() {
+        state.categories.forEach(c => c.current = 0);
+        state.logs.forEach(l => {
+            if (l.type === 'expense' && l.categoryId) {
+                const match = state.categories.find(c => c.id === l.categoryId);
+                if (match) match.current += l.amount;
+            }
+        });
     }
 
     // =============================================================
@@ -835,7 +783,7 @@
     setTheme('cyber');
 
     // =============================================================
-    // PARTICLES (same as before)
+    // PARTICLES
     // =============================================================
     const canvas = document.getElementById('particles');
     const pctx = canvas.getContext('2d');
@@ -929,7 +877,7 @@
     }
 
     // =============================================================
-    // FORECAST ENGINE (fixed — uses actual days elapsed)
+    // FORECAST — simple & correct
     // =============================================================
     function calculateForecast() {
         const now = Date.now();
@@ -941,60 +889,23 @@
             const total = expenses.reduce((s,l) => s + l.amount, 0);
             dailyBurn = total / days;
         } else {
-            dailyBurn = state.balance / 30; // fallback
+            dailyBurn = state.balance / 30;
         }
         const totalIncome = state.income.reduce((s,i) => s + i.amount, 0);
-        const monthlyIncome = totalIncome;
-        const netDaily = (monthlyIncome / 30) - dailyBurn;
+        const netDaily = (totalIncome / 30) - dailyBurn;
 
-        let daysLeft = '∞';
-        let status = '💚 Healthy';
-        let projectedBalance = state.balance + (netDaily * 30);
-
+        let daysToZero = '∞';
         if (netDaily < 0 && state.balance > 0) {
-            const days = state.balance / Math.abs(netDaily);
-            daysLeft = `~${Math.round(days)} days`;
-            status = days < 30 ? '⚠️ Critical' : '🔶 Caution';
-        } else if (netDaily >= 0) {
-            daysLeft = '♾️ (growing)';
-            status = '💚 Healthy';
+            daysToZero = `${Math.round(state.balance / Math.abs(netDaily))} days`;
+        } else if (netDaily < 0 && state.balance <= 0) {
+            daysToZero = '0 days';
         }
-
-        // Linear regression for advanced forecast
-        const points = state.logs.filter(l => l.ts).sort((a,b) => a.ts - b.ts);
-        let slope = 0;
-        if (points.length >= 2) {
-            const n = points.length;
-            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-            const firstTs = points[0].ts;
-            points.forEach((p, i) => {
-                const x = (p.ts - firstTs) / 86400000; // days since first
-                let y = 0;
-                // reconstruct balance at this point
-                for (let j=0; j<=i; j++) {
-                    y += (points[j].type === 'deposit' ? points[j].amount : -points[j].amount);
-                }
-                sumX += x; sumY += y; sumXY += x*y; sumX2 += x*x;
-            });
-            const denom = n * sumX2 - sumX * sumX;
-            if (denom !== 0) slope = (n * sumXY - sumX * sumY) / denom;
-        }
-        // Use slope to predict 30 days out
-        if (slope !== 0 && points.length >= 2) {
-            const lastPoint = points[points.length-1];
-            let lastBalance = 0;
-            for (let j=0; j<points.length; j++) {
-                lastBalance += (points[j].type === 'deposit' ? points[j].amount : -points[j].amount);
-            }
-            const pred30 = lastBalance + slope * 30;
-            projectedBalance = pred30;
-        }
-
-        return { daysLeft, status, projectedBalance: Math.round(projectedBalance) };
+        const projected = Math.round(state.balance + netDaily * 30);
+        return { daysToZero, projected };
     }
 
     // =============================================================
-    // SAVINGS GOAL
+    // SAVINGS GOAL (correct math)
     // =============================================================
     function setSavingsGoal() {
         const val = parseFloat(document.getElementById('goalInput').value);
@@ -1027,17 +938,28 @@
         const pct = Math.min((current / goal.target) * 100, 100);
         document.getElementById('goalFill').style.width = pct + '%';
         document.getElementById('goalFill').style.background = pct >= 100 ? 'var(--a3)' : 'var(--a4)';
-        // ETA
+
+        // ETA based on actual net daily rate
+        const now = Date.now();
+        const expenses = state.logs.filter(l => l.type === 'expense' && l.ts);
+        let dailyBurn = 0;
+        if (expenses.length > 0) {
+            const minTs = Math.min(...expenses.map(l => l.ts));
+            const days = Math.max((now - minTs) / 86400000, 0.001);
+            const total = expenses.reduce((s,l) => s + l.amount, 0);
+            dailyBurn = total / days;
+        } else {
+            dailyBurn = state.balance / 30;
+        }
         const totalIncome = state.income.reduce((s,i) => s + i.amount, 0);
-        const avgDailyBurn = state.logs.filter(l => l.type === 'expense').reduce((s,l) => s + l.amount, 0) / Math.max(1, state.logs.length);
-        const netDaily = (totalIncome / 30) - avgDailyBurn;
+        const netDaily = (totalIncome / 30) - dailyBurn;
         if (netDaily > 0 && current < goal.target) {
             const days = (goal.target - current) / netDaily;
             document.getElementById('goalEta').textContent = `⏳ ~${Math.round(days)} days left (at current rate)`;
         } else if (current >= goal.target) {
             document.getElementById('goalEta').textContent = '🎉 Goal achieved!';
         } else {
-            document.getElementById('goalEta').textContent = '⏳ Saving... (increase income or reduce spending)';
+            document.getElementById('goalEta').textContent = '⏳ Saving... increase income or reduce spending';
         }
     }
 
@@ -1067,7 +989,6 @@
         state.bills.forEach(bill => {
             const daysSince = (now - bill.lastPaid) / 86400000;
             if (daysSince >= 30) {
-                // auto-deduct
                 state.balance -= bill.amount;
                 state.logs.push({
                     id: 'l' + Date.now(),
@@ -1087,7 +1008,7 @@
     }
 
     // =============================================================
-    // SPENDING INSIGHTS (AI‑style summary)
+    // SPENDING INSIGHTS
     // =============================================================
     function generateInsights() {
         const totalIncome = state.income.reduce((s,i) => s + i.amount, 0);
@@ -1099,7 +1020,9 @@
         if (topCat && topCat.current > 0) {
             const pctOfIncome = totalIncome > 0 ? (topCat.current / totalIncome) * 100 : 0;
             msg += `💸 Top category: "${topCat.name}" (${topCat.current.toLocaleString()} KZT, ${pctOfIncome.toFixed(1)}% of income). `;
-            if (pctOfIncome > 30) msg += 'This is above a typical 30% benchmark — consider reviewing. ';
+            const target = topCat.targetLimit ?? Math.round((state.balance * topCat.percentShare) / 100);
+            if (target > 0 && topCat.current > target) msg += '⚠️ Over budget! ';
+            else if (pctOfIncome > 30) msg += 'This is above a typical 30% benchmark — consider reviewing. ';
             else msg += 'This is within a healthy range. ';
         }
         if (totalIncome > 0) {
@@ -1108,16 +1031,17 @@
             if (savingsRate < 10) msg += 'Try to aim for at least 10‑15% savings. ';
             else if (savingsRate > 30) msg += 'Excellent savings discipline! ';
         }
-        const avgDailyBurn = totalSpent / Math.max(1, state.logs.filter(l => l.type === 'expense').length);
-        if (avgDailyBurn > 0) {
-            const daysLeft = state.balance / avgDailyBurn;
-            msg += `⏳ Current burn rate would last ~${Math.round(daysLeft)} days without income.`;
+        const now = Date.now();
+        const recentExpenses = state.logs.filter(l => l.type === 'expense' && l.ts && (now - l.ts) < 30*86400000);
+        if (recentExpenses.length > 0) {
+            const avg = recentExpenses.reduce((s,l) => s + l.amount, 0) / recentExpenses.length;
+            msg += `📈 Avg expense: ${Math.round(avg).toLocaleString()} KZT per transaction.`;
         }
         return msg;
     }
 
     // =============================================================
-    // UI UPDATE (main render)
+    // UI UPDATE
     // =============================================================
     function updateUI() {
         // === Balance
@@ -1140,7 +1064,7 @@
             balEl.textContent = target.toLocaleString();
         }
 
-        // === Daily burn (fixed: actual days elapsed)
+        // === Daily burn (correct: days elapsed)
         const now = Date.now();
         const expenses = state.logs.filter(l => l.type === 'expense' && l.ts);
         let dailyBurn = 0;
@@ -1170,11 +1094,9 @@
 
         // === Forecast
         const forecast = calculateForecast();
-        document.getElementById('forecastDays').textContent = `⏳ ${forecast.daysLeft}`;
-        document.getElementById('forecastStatus').textContent = forecast.status;
-        document.getElementById('forecastStatus').className = 'value ' + (forecast.status.includes('Healthy') ? 'green' : forecast.status.includes('Critical') ? 'red' : 'gold');
-        document.getElementById('projectedBalance').textContent = forecast.projectedBalance.toLocaleString() + ' KZT';
-        document.getElementById('analyticsProjection').textContent = forecast.projectedBalance.toLocaleString() + ' KZT';
+        document.getElementById('forecastDays').textContent = `⏳ ${forecast.daysToZero}`;
+        document.getElementById('projectedBalance').textContent = forecast.projected.toLocaleString() + ' KZT';
+        document.getElementById('analyticsProjection').textContent = forecast.projected.toLocaleString() + ' KZT';
 
         // === Category dropdown
         const sel = document.getElementById('expenseCategory');
@@ -1224,7 +1146,7 @@
         else { health.textContent = '✅ Optimal'; health.className = 'value green'; }
         document.getElementById('analyticsIncome').textContent = totalIncome.toLocaleString() + ' KZT/mo';
 
-        // === Transaction log (with search)
+        // === Transaction log
         const searchTerm = (document.getElementById('txSearch')?.value || '').toLowerCase();
         const logDiv = document.getElementById('transactionLog');
         logDiv.innerHTML = '';
@@ -1249,14 +1171,13 @@
         const histDiv = document.getElementById('fullHistory');
         let filteredLogs = [...state.logs];
         if (startDate) {
-            const startTs = new Date(startDate).getTime(); // local midnight
+            const startTs = new Date(startDate).getTime();
             filteredLogs = filteredLogs.filter(l => (l.ts || 0) >= startTs);
         }
         if (endDate) {
-            const endTs = new Date(endDate).getTime() + 86400000; // next midnight
+            const endTs = new Date(endDate).getTime() + 86400000;
             filteredLogs = filteredLogs.filter(l => (l.ts || 0) <= endTs);
         }
-        // Sort by most recent
         filteredLogs.sort((a,b) => (b.ts||0) - (a.ts||0));
         const pageSize = state.historyPageSize || 20;
         const page = state.historyPage || 1;
@@ -1280,7 +1201,6 @@
                 `;
             });
         }
-        // Show/hide "Load More" button
         const loadMoreBtn = document.getElementById('loadMoreBtn');
         if (filteredLogs.length > startIdx + pageSize) {
             loadMoreBtn.style.display = 'inline-block';
@@ -1356,17 +1276,10 @@
             });
         }
 
-        // === Undo button state
         document.getElementById('undoBtn').disabled = state.logs.length === 0;
-
-        // === Savings Goal UI
         updateGoalUI();
-
-        // === Draw charts
         drawPieChart();
         drawTrendChart();
-
-        // === Achievements & alerts
         checkAchievements();
         checkBudgetAlerts();
     }
@@ -1473,11 +1386,10 @@
     }
 
     // =============================================================
-    // RESTORE POINTS (differential, capped at 5)
+    // RESTORE POINTS (capped at 5)
     // =============================================================
     function createRestorePoint(auto = false) {
         if (!state.restorePoints) state.restorePoints = [];
-        // Keep only last 5
         if (state.restorePoints.length >= 5) {
             state.restorePoints.shift();
         }
@@ -1551,6 +1463,15 @@
         soundClick();
     }
 
+    function clearRestorePoints() {
+        if (!state.restorePoints || state.restorePoints.length === 0) return;
+        state.restorePoints = [];
+        populateRestoreList();
+        soundClick();
+        showToast('Restore points cleared', 'success', '🗑️');
+        saveState();
+    }
+
     // =============================================================
     // VOICE INPUT
     // =============================================================
@@ -1605,27 +1526,6 @@
             document.getElementById('micBtn').textContent = '🎤';
         };
         recognition.start();
-    }
-
-    // =============================================================
-    // PWA INSTALL
-    // =============================================================
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('installBtn').style.display = 'inline-block';
-    });
-
-    function installPWA() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(() => {
-                document.getElementById('installBtn').style.display = 'none';
-            });
-        } else {
-            showToast('Installation not available', 'error', '⚠️');
-        }
     }
 
     // =============================================================
@@ -1762,6 +1662,7 @@
             state.logs[0].time = new Date().toLocaleTimeString();
             state.bills = [];
             state.savingsGoal = null;
+            state.restorePoints = [];
             syncCategories();
             closeModal('confirmModal');
             soundClick();
@@ -1775,7 +1676,7 @@
     function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
     // =============================================================
-    // EDIT CATEGORY
+    // EDIT CATEGORY (with color picker)
     // =============================================================
     function openEdit(id) {
         editingId = id;
@@ -1785,6 +1686,7 @@
         const target = cat.targetLimit ?? Math.round((state.balance * cat.percentShare) / 100);
         document.getElementById('editAmount').value = target;
         document.getElementById('editPercent').value = cat.percentShare;
+        document.getElementById('editColor').value = cat.color || '#38bdf8';
         document.getElementById('editModal').classList.add('show');
         soundClick();
     }
@@ -1805,6 +1707,7 @@
         cat.name = document.getElementById('editName').value.trim() || cat.name;
         cat.percentShare = parseFloat(document.getElementById('editPercent').value) || 0;
         cat.targetLimit = parseFloat(document.getElementById('editAmount').value) || 0;
+        cat.color = document.getElementById('editColor').value || '#38bdf8';
         closeModal('editModal');
         editingId = null;
         soundClick();
@@ -1890,7 +1793,7 @@
     }
 
     // =============================================================
-    // CHAT (enhanced)
+    // CHAT
     // =============================================================
     function sendChat() {
         const input = document.getElementById('chatInput');
@@ -1913,7 +1816,7 @@
             if (lower.includes('balance') || lower.includes('money')) {
                 reply = `💰 Your current balance is ${state.balance.toLocaleString()} KZT.`;
             } else if (lower.includes('forecast') || lower.includes('predict') || lower.includes('run out')) {
-                reply = `🔮 Forecast: ${forecast.daysLeft} — ${forecast.status}. Projected 30‑day balance: ${forecast.projectedBalance.toLocaleString()} KZT.`;
+                reply = `🔮 Forecast: ${forecast.daysToZero} — projected 30‑day balance: ${forecast.projected.toLocaleString()} KZT.`;
             } else if (lower.includes('top') || lower.includes('most') || (lower.includes('spend') && lower.includes('categ'))) {
                 reply = topCat && topCat.current > 0 ? `💸 Your top spending category is "${topCat.name}" at ${topCat.current.toLocaleString()} KZT.` : "You haven't logged any expenses by category yet.";
             } else if (lower.includes('spend') || lower.includes('expense')) {
@@ -1975,6 +1878,9 @@
         if (e.key === 'u' && e.ctrlKey) { e.preventDefault(); undoLast(); }
         if (e.key === 'Escape') {
             document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+        }
+        if (e.key === '?') {
+            showToast('⌨️ Ctrl+D: Deposit · Ctrl+E: Focus expense · Ctrl+U: Undo · Esc: Close modals', 'success', '⌨️');
         }
     });
 
