@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>💎 Gemini Pro — Finance Command Center</title>
+    <title>💎 Nova Finance — Command Center</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg: #060a1a;
@@ -29,6 +25,7 @@
             --g2: rgba(139, 92, 246, 0.25);
             --radius: 28px;
             --trans: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            --mono: 'JetBrains Mono', monospace;
         }
 
         [data-theme="ocean"] { --a1: #06b6d4; --a2: #3b82f6; --g1: rgba(6,182,212,0.25); --g2: rgba(59,130,246,0.25); }
@@ -46,14 +43,11 @@
             overflow-x: hidden;
         }
 
-        /* === ANIMATED BG === */
+        *:focus-visible { outline: 2px solid var(--a1); outline-offset: 2px; }
+
         .orb-bg {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(150px);
-            pointer-events: none;
-            z-index: 0;
-            animation: orbFloat 25s infinite alternate ease-in-out;
+            position: fixed; border-radius: 50%; filter: blur(150px);
+            pointer-events: none; z-index: 0; animation: orbFloat 25s infinite alternate ease-in-out;
         }
         .orb-bg:nth-child(1) { width: 800px; height: 800px; background: var(--g1); top: -300px; right: -300px; }
         .orb-bg:nth-child(2) { width: 700px; height: 700px; background: var(--g2); bottom: -300px; left: -200px; animation-delay: -8s; }
@@ -66,84 +60,31 @@
             100% { transform: translate(80px,40px) scale(1.05) rotate(4deg); }
         }
 
-        canvas#particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
+        canvas#particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
-        .app {
-            position: relative;
-            z-index: 1;
-            max-width: 1440px;
-            margin: 0 auto;
-        }
+        .app { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; }
 
-        /* === HEADER === */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            padding: 16px 0 24px;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding: 16px 0 24px; }
         .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.8rem;
-            font-weight: 900;
+            display: flex; align-items: center; gap: 12px; font-size: 1.8rem; font-weight: 900;
             background: linear-gradient(135deg, var(--a1), var(--a2), var(--a6));
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: gradShift 4s ease infinite;
         }
         @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-        .brand small {
-            font-size: 0.65rem;
-            font-weight: 400;
-            -webkit-text-fill-color: var(--text2);
-            background: none;
-            padding-left: 6px;
-        }
+        .brand small { font-size: 0.65rem; font-weight: 400; -webkit-text-fill-color: var(--text2); background: none; padding-left: 6px; }
 
         .level-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            display: inline-flex; align-items: center; gap: 8px;
             background: linear-gradient(135deg, var(--a1), var(--a2));
-            padding: 4px 18px 4px 14px;
-            border-radius: 40px;
-            font-weight: 800;
-            font-size: 0.8rem;
-            color: white;
-            box-shadow: 0 0 40px var(--g1);
-            -webkit-text-fill-color: white;
-            animation: pulseGlow 2s ease-in-out infinite;
-            position: relative;
+            padding: 4px 18px 4px 14px; border-radius: 40px; font-weight: 800; font-size: 0.8rem; color: white;
+            box-shadow: 0 0 40px var(--g1); -webkit-text-fill-color: white;
+            animation: pulseGlow 2s ease-in-out infinite; position: relative; border: none; cursor: pointer;
         }
         @keyframes pulseGlow { 0%,100%{box-shadow:0 0 30px var(--g1)} 50%{box-shadow:0 0 60px var(--g1),0 0 90px var(--g2)} }
 
-        .theme-toggles {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .theme-btn {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: var(--trans);
-            position: relative;
-        }
+        .theme-toggles { display: flex; gap: 8px; flex-wrap: wrap; }
+        .theme-btn { width: 34px; height: 34px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: var(--trans); position: relative; }
         .theme-btn:hover { transform: scale(1.2) rotate(10deg); }
         .theme-btn.active { border-color: white; box-shadow: 0 0 30px rgba(255,255,255,0.25); }
         .theme-btn[data-theme="cyber"] { background: linear-gradient(135deg, #38bdf8, #8b5cf6); }
@@ -153,378 +94,144 @@
         .theme-btn[data-theme="royal"] { background: linear-gradient(135deg, #a78bfa, #c084fc); }
         .theme-btn[data-theme="lava"] { background: linear-gradient(135deg, #f97316, #ef4444); }
 
-        /* === GRID === */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 440px;
-            gap: 24px;
-        }
+        .grid { display: grid; grid-template-columns: 1fr 440px; gap: 24px; }
 
-        /* === GLASS === */
         .glass {
-            background: var(--glass);
-            backdrop-filter: blur(24px) saturate(1.6);
-            -webkit-backdrop-filter: blur(24px) saturate(1.6);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: 0 8px 48px rgba(0,0,0,0.6);
-            transition: var(--trans);
-            position: relative;
-            overflow: hidden;
+            background: var(--glass); backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6);
+            border: 1px solid var(--border); border-radius: var(--radius); padding: 24px;
+            box-shadow: 0 8px 48px rgba(0,0,0,0.6); transition: var(--trans); position: relative; overflow: hidden;
         }
         .glass::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius);
-            padding: 1px;
+            content: ''; position: absolute; inset: 0; border-radius: var(--radius); padding: 1px;
             background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent, rgba(255,255,255,0.02));
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
+            -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
         }
         .glass:hover { border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
 
-        /* === 3D TILT WRAPPER === */
-        .tilt {
-            transition: var(--trans);
-            transform-style: preserve-3d;
-            perspective: 800px;
-        }
+        .tilt { transition: var(--trans); transform-style: preserve-3d; perspective: 800px; }
 
-        /* === TABS === */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 4px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-        }
+        .tabs { display: flex; gap: 8px; overflow-x: auto; padding: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .tabs::-webkit-scrollbar { display: none; }
-
         .tab {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            color: var(--text2);
-            padding: 10px 18px;
-            border-radius: 14px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: var(--trans);
-            flex-shrink: 0;
-            position: relative;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text2);
+            padding: 10px 18px; border-radius: 14px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+            white-space: nowrap; transition: var(--trans); flex-shrink: 0; position: relative;
         }
         .tab:hover { border-color: var(--a1); color: var(--text); }
         .tab.active {
-            background: linear-gradient(135deg, var(--a1), var(--a2));
-            color: white;
-            border: none;
-            box-shadow: 0 4px 30px var(--g1);
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, var(--a1), var(--a2)); color: white; border: none;
+            box-shadow: 0 4px 30px var(--g1); transform: translateY(-2px);
         }
         .tab.active::after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, var(--a1), var(--a2), var(--a6));
-            z-index: -1;
-            filter: blur(12px);
-            opacity: 0.5;
+            content: ''; position: absolute; inset: -2px; border-radius: 16px;
+            background: linear-gradient(135deg, var(--a1), var(--a2), var(--a6)); z-index: -1; filter: blur(12px); opacity: 0.5;
         }
 
         .view { display: none; animation: fadeZoom 0.5s cubic-bezier(0.16,1,0.3,1); }
         .view.active { display: block; }
-        @keyframes fadeZoom {
-            from { opacity:0; transform:scale(0.96) translateY(12px); }
-            to { opacity:1; transform:scale(1) translateY(0); }
-        }
+        @keyframes fadeZoom { from { opacity:0; transform:scale(0.96) translateY(12px); } to { opacity:1; transform:scale(1) translateY(0); } }
 
-        /* === STATS === */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
-            gap: 14px;
-            margin-bottom: 20px;
-        }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 14px; margin-bottom: 20px; }
         .stat {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 18px;
-            position: relative;
-            overflow: hidden;
-            transition: var(--trans);
-            cursor: pointer;
+            background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 18px; padding: 18px;
+            position: relative; overflow: hidden; transition: var(--trans); cursor: pointer;
         }
         .stat:hover { border-color: var(--a1); transform: translateY(-3px) scale(1.01); }
-        .stat .label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text2);
-            font-weight: 600;
-        }
+        .stat .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); font-weight: 600; }
         .stat .value {
-            font-size: 1.8rem;
-            font-weight: 900;
-            margin-top: 4px;
+            font-size: 1.8rem; font-weight: 900; margin-top: 4px;
             background: linear-gradient(135deg, var(--a1), var(--a2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: var(--trans);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; transition: var(--trans);
         }
         .stat .value.green { background: linear-gradient(135deg, #34d399, #10b981); -webkit-background-clip: text; }
         .stat .value.red { background: linear-gradient(135deg, #f87171, #ef4444); -webkit-background-clip: text; }
         .stat .value.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; }
+        .stat .sub { font-size: 0.65rem; color: var(--text2); margin-top: 2px; }
 
-        /* === FORMS === */
-        .input-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        .input-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .input-group input, .input-group select {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--border);
-            padding: 12px 16px;
-            border-radius: 14px;
-            color: var(--text);
-            font-size: 0.95rem;
-            flex: 1;
-            min-width: 100px;
-            transition: var(--trans);
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 12px 16px; border-radius: 14px;
+            color: var(--text); font-size: 0.95rem; flex: 1; min-width: 100px; transition: var(--trans); font-family: inherit;
         }
-        .input-group input:focus, .input-group select:focus {
-            border-color: var(--a1);
-            box-shadow: 0 0 0 4px var(--g1);
-            outline: none;
-        }
+        .input-group input:focus, .input-group select:focus { border-color: var(--a1); box-shadow: 0 0 0 4px var(--g1); outline: none; }
         .input-group input::placeholder { color: var(--text2); }
 
         .btn {
-            padding: 12px 28px;
-            border: none;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--trans);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--a1), var(--a2));
-            color: white;
-            box-shadow: 0 4px 20px var(--g1);
-            position: relative;
-            overflow: hidden;
+            padding: 12px 28px; border: none; border-radius: 14px; font-weight: 700; font-size: 0.9rem; cursor: pointer;
+            transition: var(--trans); display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, var(--a1), var(--a2)); color: white; box-shadow: 0 4px 20px var(--g1);
+            position: relative; overflow: hidden; font-family: inherit;
         }
         .btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
+            content: ''; position: absolute; inset: 0;
             background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: translateX(-100%);
-            transition: 0.6s;
+            transform: translateX(-100%); transition: 0.6s;
         }
         .btn:hover::before { transform: translateX(100%); }
         .btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 40px var(--g1); }
         .btn:active { transform: scale(0.95); }
-        .btn-danger {
-            background: rgba(239,68,68,0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239,68,68,0.3);
-            box-shadow: none;
-        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-danger { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); box-shadow: none; }
         .btn-danger:hover { background: #ef4444; color: white; box-shadow: 0 4px 30px rgba(239,68,68,0.4); }
+        .btn-ghost { background: rgba(255,255,255,0.04); color: var(--text2); box-shadow: none; }
+        .btn-ghost:hover { color: white; box-shadow: none; transform: translateY(-2px); }
         .btn-sm { padding: 6px 14px; font-size: 0.7rem; }
 
-        /* === LISTS === */
-        .list-item {
-            background: rgba(255,255,255,0.015);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            transition: var(--trans);
-        }
+        .list-item { background: rgba(255,255,255,0.015); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; transition: var(--trans); }
         .list-item:hover { border-color: rgba(255,255,255,0.1); transform: translateX(4px); }
 
-        .progress {
-            background: rgba(0,0,0,0.5);
-            height: 5px;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 1s cubic-bezier(0.16,1,0.3,1);
-            position: relative;
-        }
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 20px;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
-            border-radius: 4px;
-        }
+        .progress { background: rgba(0,0,0,0.5); height: 5px; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(0.16,1,0.3,1); position: relative; }
+        .progress-fill::after { content: ''; position: absolute; right: 0; top: 0; width: 20px; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3)); border-radius: 4px; }
 
-        /* === PIE CHART === */
-        #pieCanvas {
-            width: 100%;
-            max-width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            margin: 0 auto;
-            display: block;
-        }
+        #pieCanvas { width: 100%; max-width: 200px; height: 200px; border-radius: 50%; margin: 0 auto; display: block; }
+        #trendCanvas { width: 100%; height: 160px; display: block; }
 
-        /* === CHAT === */
-        .chat-col {
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 100px);
-            position: sticky;
-            top: 16px;
-        }
-        .chat-box {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding-right: 4px;
-            margin-bottom: 14px;
-            min-height: 200px;
-            scroll-behavior: smooth;
-        }
+        .chat-col { display: flex; flex-direction: column; height: calc(100vh - 100px); position: sticky; top: 16px; }
+        .chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; margin-bottom: 14px; min-height: 200px; scroll-behavior: smooth; }
         .chat-box::-webkit-scrollbar { width: 4px; }
         .chat-box::-webkit-scrollbar-thumb { background: var(--a1); border-radius: 10px; }
 
-        .bubble {
-            padding: 12px 18px;
-            border-radius: 18px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            max-width: 88%;
-            animation: fadeZoom 0.3s ease;
-        }
-        .bubble.ai {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-        .bubble.user {
-            background: linear-gradient(135deg, var(--a1), var(--a2));
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 20px var(--g1);
-        }
-        .bubble .typing-cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1em;
-            background: var(--text);
-            animation: blink 0.7s infinite;
-            margin-left: 2px;
-            vertical-align: text-bottom;
-        }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        .bubble { padding: 12px 18px; border-radius: 18px; font-size: 0.9rem; line-height: 1.5; max-width: 88%; animation: fadeZoom 0.3s ease; }
+        .bubble.ai { background: rgba(255,255,255,0.04); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .bubble.user { background: linear-gradient(135deg, var(--a1), var(--a2)); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 20px var(--g1); }
 
-        /* === TOASTS === */
-        #toasts {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            left: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 99999;
-            pointer-events: none;
-            max-width: 420px;
-            margin-left: auto;
-        }
+        #toasts { position: fixed; bottom: 24px; right: 24px; left: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 99999; pointer-events: none; max-width: 420px; margin-left: auto; }
         .toast {
-            background: rgba(10,14,26,0.92);
-            backdrop-filter: blur(20px);
-            border-left: 4px solid var(--a3);
-            padding: 14px 20px;
-            border-radius: 14px;
-            box-shadow: 0 12px 60px rgba(0,0,0,0.8);
-            font-weight: 500;
-            pointer-events: auto;
-            animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            background: rgba(10,14,26,0.92); backdrop-filter: blur(20px); border-left: 4px solid var(--a3); padding: 14px 20px;
+            border-radius: 14px; box-shadow: 0 12px 60px rgba(0,0,0,0.8); font-weight: 500; pointer-events: auto;
+            animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1); display: flex; align-items: center; gap: 12px;
         }
         .toast.error { border-left-color: var(--a5); }
         .toast .toast-icon { font-size: 1.3rem; }
-        @keyframes slideUp {
-            from { opacity:0; transform:translateY(40px) scale(0.95); }
-            to { opacity:1; transform:translateY(0) scale(1); }
-        }
+        @keyframes slideUp { from { opacity:0; transform:translateY(40px) scale(0.95); } to { opacity:1; transform:translateY(0) scale(1); } }
 
-        /* === MODAL === */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(12px);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            animation: fadeZoom 0.3s ease;
-        }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; animation: fadeZoom 0.3s ease; }
         .modal.show { display: flex; }
         .modal .glass { max-width: 440px; width: 100%; }
 
-        /* === FLOATING +KZT === */
         .float-label {
-            position: fixed;
-            pointer-events: none;
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: var(--a3);
-            z-index: 9999;
-            animation: floatUp 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
-            text-shadow: 0 0 30px var(--g1);
+            position: fixed; pointer-events: none; font-size: 1.6rem; font-weight: 900; color: var(--a3); z-index: 9999;
+            animation: floatUp 1.2s cubic-bezier(0.16,1,0.3,1) forwards; text-shadow: 0 0 30px var(--g1);
         }
-        @keyframes floatUp {
-            0% { opacity:1; transform:translateY(0) scale(0.5); }
-            100% { opacity:0; transform:translateY(-120px) scale(1.2); }
-        }
+        @keyframes floatUp { 0% { opacity:1; transform:translateY(0) scale(0.5); } 100% { opacity:0; transform:translateY(-120px) scale(1.2); } }
 
-        /* === CONFETTI === */
-        .confetti-piece {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            z-index: 99999;
-            pointer-events: none;
-            animation: confettiFall 2s cubic-bezier(0.16,1,0.3,1) forwards;
-        }
-        @keyframes confettiFall {
-            0% { opacity:1; transform:translateY(0) rotate(0deg) scale(1); }
-            100% { opacity:0; transform:translateY(400px) rotate(720deg) scale(0); }
-        }
+        .confetti-piece { position: fixed; width: 8px; height: 8px; z-index: 99999; pointer-events: none; animation: confettiFall 2s cubic-bezier(0.16,1,0.3,1) forwards; }
+        @keyframes confettiFall { 0% { opacity:1; transform:translateY(0) rotate(0deg) scale(1); } 100% { opacity:0; transform:translateY(400px) rotate(720deg) scale(0); } }
 
-        /* === RESPONSIVE === */
+        .loading-overlay {
+            position: fixed; inset: 0; background: var(--bg); z-index: 100000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 16px; transition: opacity 0.4s ease;
+        }
+        .spinner { width: 42px; height: 42px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--a1); animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state { text-align: center; padding: 30px 16px; color: var(--text2); font-size: 0.85rem; }
+        .empty-state .icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+
+        .badge-pill { font-size: 0.65rem; padding: 2px 9px; border-radius: 8px; font-weight: 700; }
+
         @media (max-width: 1024px) {
             .grid { grid-template-columns: 1fr; }
             .chat-col { height: auto; position: static; margin-top: 16px; }
@@ -540,11 +247,18 @@
             .header { padding: 10px 0 16px; }
             .stat .value { font-size: 1.3rem; }
         }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+        }
     </style>
 </head>
 <body>
 
-<!-- === ORBS === -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div style="color: var(--text2); font-size: 0.85rem;">Loading your finances…</div>
+</div>
+
 <div class="orb-bg"></div>
 <div class="orb-bg"></div>
 <div class="orb-bg"></div>
@@ -554,23 +268,26 @@
 
     <header class="header">
         <div class="brand">
-            💎 Gemini Pro
-            <small>v3.0 • Ultra</small>
-            <span class="level-badge" id="levelBadge">🏆 Level 1</span>
+            💎 Nova Finance
+            <small>v4.0 • Pro</small>
+            <button class="level-badge" id="levelBadge" onclick="showBalanceDetail()">🏆 Level 1</button>
         </div>
-        <div class="theme-toggles">
-            <button class="theme-btn active" data-theme="cyber" onclick="setTheme('cyber')"></button>
-            <button class="theme-btn" data-theme="ocean" onclick="setTheme('ocean')"></button>
-            <button class="theme-btn" data-theme="sunset" onclick="setTheme('sunset')"></button>
-            <button class="theme-btn" data-theme="forest" onclick="setTheme('forest')"></button>
-            <button class="theme-btn" data-theme="royal" onclick="setTheme('royal')"></button>
-            <button class="theme-btn" data-theme="lava" onclick="setTheme('lava')"></button>
+        <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <div class="theme-toggles">
+                <button class="theme-btn active" data-theme="cyber" onclick="setTheme('cyber')" aria-label="Cyber theme"></button>
+                <button class="theme-btn" data-theme="ocean" onclick="setTheme('ocean')" aria-label="Ocean theme"></button>
+                <button class="theme-btn" data-theme="sunset" onclick="setTheme('sunset')" aria-label="Sunset theme"></button>
+                <button class="theme-btn" data-theme="forest" onclick="setTheme('forest')" aria-label="Forest theme"></button>
+                <button class="theme-btn" data-theme="royal" onclick="setTheme('royal')" aria-label="Royal theme"></button>
+                <button class="theme-btn" data-theme="lava" onclick="setTheme('lava')" aria-label="Lava theme"></button>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇️ Export</button>
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer;">⬆️ Import<input type="file" accept="application/json" onchange="importData(event)" style="display:none;"></label>
         </div>
     </header>
 
     <div class="grid">
 
-        <!-- === LEFT === -->
         <div>
             <div class="glass" style="padding: 12px 16px; margin-bottom: 16px;">
                 <div class="tabs">
@@ -594,10 +311,12 @@
                         <div class="stat">
                             <div class="label">📉 Daily Burn</div>
                             <div class="value" id="paceDisplay">0</div>
+                            <div class="sub" id="paceSub"></div>
                         </div>
                         <div class="stat">
                             <div class="label">🎯 Savings Rate</div>
                             <div class="value gold" id="savingsRate">0%</div>
+                            <div class="sub">income kept vs. spent this run</div>
                         </div>
                         <div class="stat">
                             <div class="label">🏆 Achievements</div>
@@ -609,13 +328,13 @@
                 <div class="glass" style="margin-bottom:16px;">
                     <h3 style="margin-bottom:14px; font-size:1.1rem;">⚡ Quick Actions</h3>
                     <div class="input-group" style="margin-bottom:12px;">
-                        <input type="number" id="depositInput" placeholder="Amount to deposit...">
+                        <input type="number" id="depositInput" placeholder="Amount to deposit..." min="0">
                         <button class="btn" onclick="depositMoney()" id="depositBtn">➕ Deposit</button>
                     </div>
                     <div style="height:1px; background:var(--border); margin:12px 0;"></div>
                     <div class="input-group" style="margin-bottom:12px;">
                         <input type="text" id="expenseDesc" placeholder="What did you buy?">
-                        <input type="number" id="expenseAmount" placeholder="Cost">
+                        <input type="number" id="expenseAmount" placeholder="Cost" min="0">
                     </div>
                     <div class="input-group">
                         <select id="expenseCategory"></select>
@@ -624,9 +343,12 @@
                 </div>
 
                 <div class="glass">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
                         <h3 style="font-size:1.05rem;">📂 Budget Distribution</h3>
-                        <button class="btn btn-danger btn-sm" onclick="resetSystem()">🗑️ Reset</button>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn btn-ghost btn-sm" onclick="undoLast()" id="undoBtn">↩️ Undo Last</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmReset()">🗑️ Reset</button>
+                        </div>
                     </div>
                     <div id="categoriesContainer"></div>
                     <div style="margin-top:16px; text-align:center;">
@@ -641,7 +363,7 @@
                     <h3 style="margin-bottom:14px;">🎯 Target Goals</h3>
                     <div class="input-group" style="margin-bottom:16px;">
                         <input type="text" id="wishName" placeholder="Item Name">
-                        <input type="number" id="wishPrice" placeholder="Cost">
+                        <input type="number" id="wishPrice" placeholder="Cost" min="0">
                         <button class="btn" onclick="addWish()">➕ Add</button>
                     </div>
                     <div id="wishlistContainer"></div>
@@ -657,7 +379,12 @@
                         <div class="stat"><div class="label">System Health</div><div class="value green" id="analyticsHealth">Optimal</div></div>
                         <div class="stat"><div class="label">Total Income</div><div class="value green" id="analyticsIncome">0</div></div>
                     </div>
-                    <h4 style="color:var(--text2); margin-bottom:10px;">Recent Transactions</h4>
+                    <h4 style="color:var(--text2); margin-bottom:10px;">Balance Trend</h4>
+                    <canvas id="trendCanvas" width="600" height="160" style="margin-bottom:20px;"></canvas>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;">
+                        <h4 style="color:var(--text2);">Recent Transactions</h4>
+                        <input type="text" id="txSearch" placeholder="Search transactions..." oninput="updateUI()" style="max-width:220px; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:8px 12px; border-radius:12px; color:white; font-size:0.8rem;">
+                    </div>
                     <div id="transactionLog" style="max-height:350px; overflow-y:auto;"></div>
                 </div>
             </div>
@@ -666,9 +393,10 @@
             <div id="converter" class="view">
                 <div class="glass">
                     <h3 style="margin-bottom:14px;">💱 Live Conversion</h3>
+                    <p style="font-size:0.7rem; color:var(--text2); margin-bottom:14px;">Rates are fixed reference values for estimation, not live market data.</p>
                     <div style="margin-bottom:16px;">
                         <label style="font-size:0.75rem; color:var(--text2);">Base Amount (KZT)</label>
-                        <input type="number" id="convKZT" oninput="updateUI()" style="font-size:1.4rem; font-weight:700; width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:12px; border-radius:14px; color:white;">
+                        <input type="number" id="convKZT" oninput="updateUI()" style="font-size:1.4rem; font-weight:700; width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:12px; border-radius:14px; color:white; margin-top:6px;">
                     </div>
                     <div class="stats">
                         <div class="stat"><div class="label">USD ($)</div><div class="value" id="convUSD">0</div></div>
@@ -685,7 +413,7 @@
                     <h3 style="margin-bottom:14px;">💵 Income Streams</h3>
                     <div class="input-group" style="margin-bottom:16px;">
                         <input type="text" id="incSource" placeholder="Source">
-                        <input type="number" id="incAmount" placeholder="KZT/mo">
+                        <input type="number" id="incAmount" placeholder="KZT/mo" min="0">
                         <button class="btn" onclick="addIncome()">⚡ Setup</button>
                     </div>
                     <div id="incomeContainer"></div>
@@ -709,16 +437,17 @@
                 <span style="font-size:0.65rem; color:var(--text2); margin-left:auto; opacity:0.6;">● online</span>
             </div>
             <div class="chat-box" id="chatBox">
-                <div class="bubble ai">👋 I'm your AI financial assistant. Ask me anything!</div>
+                <div class="bubble ai">👋 I'm your finance assistant. Ask me about your balance, spending, or wishlist!</div>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
-                <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:var(--text2); box-shadow:none; padding:4px 12px;" onclick="quickChat('balance')">💰 Balance</button>
-                <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:var(--text2); box-shadow:none; padding:4px 12px;" onclick="quickChat('spend')">💸 Spend</button>
-                <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:var(--text2); box-shadow:none; padding:4px 12px;" onclick="quickChat('wish')">🎯 Wish</button>
+                <button class="btn btn-sm btn-ghost" onclick="quickChat('balance')">💰 Balance</button>
+                <button class="btn btn-sm btn-ghost" onclick="quickChat('spend')">💸 Top category</button>
+                <button class="btn btn-sm btn-ghost" onclick="quickChat('wish')">🎯 Wishlist</button>
+                <button class="btn btn-sm btn-ghost" onclick="quickChat('advice')">💡 Advice</button>
             </div>
             <div class="input-group">
                 <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter') sendChat()">
-                <button class="btn" onclick="sendChat()">📤</button>
+                <button class="btn" onclick="sendChat()" aria-label="Send message">📤</button>
             </div>
         </div>
 
@@ -737,8 +466,35 @@
             <div><label style="font-size:0.7rem; color:var(--text2);">Share %</label><input type="number" id="editPercent" oninput="onPercentEdit(this.value)" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:10px; border-radius:12px; color:white;"></div>
         </div>
         <div style="display:flex; gap:10px; justify-content:flex-end;">
-            <button class="btn btn-sm" style="background:transparent; border:1px solid var(--border); color:white; box-shadow:none;" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-sm btn-ghost" onclick="closeModal('editModal')">Cancel</button>
             <button class="btn btn-sm" onclick="saveCategory()">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="wishModal">
+    <div class="glass">
+        <h3 style="margin-bottom:14px;">✏️ Edit Wishlist Item</h3>
+        <input type="text" id="wishEditName" style="width:100%; margin-bottom:10px; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:12px; border-radius:12px; color:white;">
+        <label style="font-size:0.7rem; color:var(--text2);">Cost (KZT)</label>
+        <input type="number" id="wishEditCost" style="width:100%; margin-bottom:14px; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:10px; border-radius:12px; color:white;">
+        <div style="display:flex; gap:10px; justify-content:space-between;">
+            <button class="btn btn-danger btn-sm" onclick="deleteWish()">🗑️ Delete</button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-sm btn-ghost" onclick="closeModal('wishModal')">Cancel</button>
+                <button class="btn btn-sm" onclick="saveWish()">💾 Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="confirmModal">
+    <div class="glass">
+        <h3 style="margin-bottom:10px;" id="confirmTitle">Are you sure?</h3>
+        <p style="color:var(--text2); font-size:0.85rem; margin-bottom:18px;" id="confirmBody"></p>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn btn-sm btn-ghost" onclick="closeModal('confirmModal')">Cancel</button>
+            <button class="btn btn-danger btn-sm" id="confirmActionBtn">Confirm</button>
         </div>
     </div>
 </div>
@@ -747,43 +503,71 @@
     // =============================================================
     // STATE
     // =============================================================
+    const STORAGE_KEY = 'nova-finance-state';
     const DEFAULT = {
         balance: 15000,
         categories: [
-            { id: '1', name: 'Savings (DO NOT TOUCH)', current: 0, percentShare: 10, targetLimit: 1500 },
+            { id: '1', name: 'Savings (do not touch)', current: 0, percentShare: 10, targetLimit: 1500 },
             { id: '2', name: 'Emergency', current: 0, percentShare: 17, targetLimit: 2550 },
             { id: '3', name: 'Needs', current: 0, percentShare: 40, targetLimit: 6000 },
             { id: '4', name: 'Fun Money', current: 0, percentShare: 33, targetLimit: 4950 }
         ],
-        logs: [{ desc: 'Initial Boot', amount: 15000, type: 'deposit', time: new Date().toLocaleTimeString() }],
+        logs: [{ id: 'l0', desc: 'Initial Boot', amount: 15000, type: 'deposit', categoryId: null, time: new Date().toLocaleTimeString(), ts: Date.now() }],
         wishlist: [{ id: 'w1', name: 'Sony Headphones', cost: 120000 }],
         income: [{ id: 'i1', source: 'Monthly Allowance', amount: 25000 }],
         achievements: []
     };
 
     let state = JSON.parse(JSON.stringify(DEFAULT));
-    try { const s = localStorage.getItem('budgetPro'); if (s) state = { ...DEFAULT, ...JSON.parse(s) }; } catch(e) {}
     let editingId = null;
+    let editingWishId = null;
     let animatingBalance = false;
+    let saving = false;
 
-    function saveState() { localStorage.setItem('budgetPro', JSON.stringify(state)); updateUI(); }
     function syncCategories() {
         state.categories.forEach(c => c.current = 0);
-        state.logs.forEach(l => { if (l.type === 'expense') {
-            const match = state.categories.find(c => l.desc.includes(`(${c.name})`));
-            if (match) match.current += l.amount;
-        }});
+        state.logs.forEach(l => {
+            if (l.type === 'expense' && l.categoryId) {
+                const match = state.categories.find(c => c.id === l.categoryId);
+                if (match) match.current += l.amount;
+            }
+        });
     }
-    syncCategories();
+
+    async function loadState() {
+        try {
+            const result = await window.storage.get(STORAGE_KEY, false);
+            if (result && result.value) {
+                const parsed = JSON.parse(result.value);
+                state = { ...DEFAULT, ...parsed };
+            }
+        } catch (e) {
+            // no saved state yet — use defaults
+        }
+        syncCategories();
+        document.getElementById('loadingOverlay').style.opacity = '0';
+        setTimeout(() => document.getElementById('loadingOverlay').style.display = 'none', 400);
+        updateUI();
+    }
+
+    async function saveState() {
+        updateUI();
+        try {
+            saving = true;
+            await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+        } catch (e) {
+            showToast('Could not save — your changes may not persist', 'error', '⚠️');
+        } finally {
+            saving = false;
+        }
+    }
 
     // =============================================================
-    // SOUND ENGINE (Web Audio)
+    // SOUND ENGINE
     // =============================================================
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx;
-
     function getAudio() { if (!audioCtx) audioCtx = new AudioCtx(); return audioCtx; }
-
     function playSound(freq = 440, duration = 0.08, type = 'sine', vol = 0.15) {
         try {
             const ctx = getAudio();
@@ -793,25 +577,18 @@
             osc.frequency.setValueAtTime(freq, ctx.currentTime);
             gain.gain.setValueAtTime(vol, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + duration);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(ctx.currentTime); osc.stop(ctx.currentTime + duration);
         } catch(e) {}
     }
-
     function soundClick() { playSound(600, 0.06, 'sine', 0.12); }
     function soundDeposit() { playSound(880, 0.15, 'sine', 0.15); setTimeout(()=>playSound(1100,0.1,'sine',0.1),100); }
     function soundExpense() { playSound(300, 0.2, 'sawtooth', 0.08); }
-    function soundLevelUp() {
-        [523, 659, 784, 1047].forEach((f,i) => setTimeout(()=>playSound(f,0.12,'sine',0.12), i*100));
-    }
-    function soundAchievement() {
-        [523, 659, 784, 1047, 1318].forEach((f,i) => setTimeout(()=>playSound(f,0.1,'sine',0.1), i*80));
-    }
+    function soundLevelUp() { [523, 659, 784, 1047].forEach((f,i) => setTimeout(()=>playSound(f,0.12,'sine',0.12), i*100)); }
+    function soundAchievement() { [523, 659, 784, 1047, 1318].forEach((f,i) => setTimeout(()=>playSound(f,0.1,'sine',0.1), i*80)); }
 
     // =============================================================
-    // CONFETTI
+    // CONFETTI + FLOAT LABEL
     // =============================================================
     function fireConfetti(count = 60) {
         const colors = ['#38bdf8','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#f472b6','#34d399'];
@@ -822,22 +599,11 @@
             const x = Math.random() * window.innerWidth;
             const y = -20 - Math.random() * 40;
             const color = colors[Math.floor(Math.random() * colors.length)];
-            el.style.cssText = `
-                left:${x}px; top:${y}px;
-                width:${size}px; height:${size * (0.5 + Math.random())}px;
-                background:${color};
-                border-radius:${Math.random()>0.5?'50%':'2px'};
-                animation-duration:${1.5 + Math.random() * 1.5}s;
-                transform:rotate(${Math.random()*360}deg);
-            `;
+            el.style.cssText = `left:${x}px; top:${y}px; width:${size}px; height:${size * (0.5 + Math.random())}px; background:${color}; border-radius:${Math.random()>0.5?'50%':'2px'}; animation-duration:${1.5 + Math.random() * 1.5}s; transform:rotate(${Math.random()*360}deg);`;
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 3000);
         }
     }
-
-    // =============================================================
-    // FLOATING LABEL
-    // =============================================================
     function floatLabel(text, x, y, color = 'var(--a3)') {
         const el = document.createElement('div');
         el.className = 'float-label';
@@ -853,18 +619,15 @@
     function setTheme(t) {
         document.documentElement.setAttribute('data-theme', t);
         document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === t));
-        localStorage.setItem('budgetTheme', t);
     }
-    const savedTheme = localStorage.getItem('budgetTheme') || 'cyber';
-    setTheme(savedTheme);
+    setTheme('cyber');
 
     // =============================================================
-    // PARTICLES (Interactive, optimized)
+    // PARTICLES
     // =============================================================
     const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
+    const pctx = canvas.getContext('2d');
     let W, H, parts = [], mouse = { x: -1000, y: -1000 };
-
     function resizeP() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
     resizeP();
     window.addEventListener('resize', resizeP);
@@ -873,50 +636,31 @@
     class Part {
         constructor() { this.reset(); }
         reset() {
-            this.x = Math.random() * W;
-            this.y = Math.random() * H;
+            this.x = Math.random() * W; this.y = Math.random() * H;
             this.size = Math.random() * 2 + 0.5;
-            this.sx = (Math.random() - 0.5) * 0.3;
-            this.sy = (Math.random() - 0.5) * 0.3;
+            this.sx = (Math.random() - 0.5) * 0.3; this.sy = (Math.random() - 0.5) * 0.3;
             this.o = Math.random() * 0.4 + 0.15;
         }
         update() {
-            const dx = this.x - mouse.x;
-            const dy = this.y - mouse.y;
+            const dx = this.x - mouse.x, dy = this.y - mouse.y;
             const dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist < 120) {
-                const force = (120 - dist) / 120 * 0.015;
-                this.x += dx * force;
-                this.y += dy * force;
-            }
-            this.x += this.sx;
-            this.y += this.sy;
+            if (dist < 120) { const force = (120 - dist) / 120 * 0.015; this.x += dx * force; this.y += dy * force; }
+            this.x += this.sx; this.y += this.sy;
             if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
         }
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-            ctx.fillStyle = `rgba(255,255,255,${this.o})`;
-            ctx.fill();
-        }
+        draw() { pctx.beginPath(); pctx.arc(this.x, this.y, this.size, 0, Math.PI*2); pctx.fillStyle = `rgba(255,255,255,${this.o})`; pctx.fill(); }
     }
     for (let i=0; i<70; i++) parts.push(new Part());
-
     function animateP() {
-        ctx.clearRect(0,0,W,H);
+        pctx.clearRect(0,0,W,H);
         parts.forEach(p => { p.update(); p.draw(); });
         for (let i=0; i<parts.length; i++) {
             for (let j=i+1; j<parts.length; j++) {
-                const dx = parts[i].x - parts[j].x;
-                const dy = parts[i].y - parts[j].y;
+                const dx = parts[i].x - parts[j].x, dy = parts[i].y - parts[j].y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
                 if (dist < 80) {
-                    ctx.beginPath();
-                    ctx.moveTo(parts[i].x, parts[i].y);
-                    ctx.lineTo(parts[j].x, parts[j].y);
-                    ctx.strokeStyle = `rgba(255,255,255,${0.04 * (1 - dist/80)})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
+                    pctx.beginPath(); pctx.moveTo(parts[i].x, parts[i].y); pctx.lineTo(parts[j].x, parts[j].y);
+                    pctx.strokeStyle = `rgba(255,255,255,${0.04 * (1 - dist/80)})`; pctx.lineWidth = 0.5; pctx.stroke();
                 }
             }
         }
@@ -963,24 +707,25 @@
             const y = (e.clientY - rect.top) / rect.height - 0.5;
             el.style.transform = `perspective(800px) rotateX(${y*-6}deg) rotateY(${x*6}deg) translateY(-3px)`;
         });
-        el.addEventListener('mouseleave', () => {
-            el.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
-        });
+        el.addEventListener('mouseleave', () => { el.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)'; });
     });
+
+    function esc(str) {
+        const div = document.createElement('div');
+        div.textContent = str ?? '';
+        return div.innerHTML;
+    }
 
     // =============================================================
     // UI UPDATE
     // =============================================================
     function updateUI() {
-        // Balance with animation
         const balEl = document.getElementById('balanceDisplay');
         const target = state.balance;
         const current = parseInt(balEl.textContent.replace(/,/g,'')) || 0;
         if (!animatingBalance && current !== target) {
             animatingBalance = true;
-            const start = current;
-            const duration = 400;
-            const startTime = performance.now();
+            const start = current, duration = 400, startTime = performance.now();
             function countUp(time) {
                 const progress = Math.min((time - startTime) / duration, 1);
                 const eased = 1 - Math.pow(1 - progress, 3);
@@ -990,43 +735,51 @@
                 else { balEl.textContent = target.toLocaleString(); animatingBalance = false; }
             }
             requestAnimationFrame(countUp);
-        } else {
+        } else if (animatingBalance === false) {
             balEl.textContent = target.toLocaleString();
         }
 
-        document.getElementById('paceDisplay').textContent = Math.round(state.balance / 30).toLocaleString();
+        // Daily burn based on last 7 days of expenses if available, else fallback
+        const recentExpenses = state.logs.filter(l => l.type === 'expense' && (Date.now() - (l.ts || 0)) < 7 * 86400000);
+        const burnBasis = recentExpenses.length > 0 ? recentExpenses.reduce((s,l)=>s+l.amount,0) / 7 : state.balance / 30;
+        document.getElementById('paceDisplay').textContent = Math.round(burnBasis).toLocaleString();
+        document.getElementById('paceSub').textContent = recentExpenses.length > 0 ? 'avg over last 7 days' : 'estimate (no recent data)';
 
         const totalIncome = state.income.reduce((s, i) => s + i.amount, 0);
-        const rate = totalIncome > 0 ? Math.round((state.balance / (totalIncome * 3)) * 100) : 0;
-        document.getElementById('savingsRate').textContent = Math.min(rate, 100) + '%';
+        const totalSpentAll = state.logs.filter(l => l.type === 'expense').reduce((s,l)=>s+l.amount, 0);
+        const totalDepositedAll = state.logs.filter(l => l.type === 'deposit').reduce((s,l)=>s+l.amount, 0);
+        const rate = totalDepositedAll > 0 ? Math.round(((totalDepositedAll - totalSpentAll) / totalDepositedAll) * 100) : 0;
+        document.getElementById('savingsRate').textContent = Math.max(Math.min(rate, 100), 0) + '%';
 
-        // Level
         const level = Math.floor(state.balance / 50000) + 1;
         document.getElementById('levelBadge').innerHTML = `🏆 Level ${Math.min(level, 99)}`;
 
-        // Achievements
         const achCount = state.achievements ? state.achievements.length : 0;
         document.getElementById('achievementCount').textContent = achCount;
 
-        // Category dropdown
         const sel = document.getElementById('expenseCategory');
+        const prevSelVal = sel.value;
         sel.innerHTML = '';
-        state.categories.forEach(c => sel.innerHTML += `<option value="${c.name}">${c.name}</option>`);
+        state.categories.forEach(c => sel.innerHTML += `<option value="${c.id}">${esc(c.name)}</option>`);
+        if ([...sel.options].some(o => o.value === prevSelVal)) sel.value = prevSelVal;
 
-        // Categories
         const cont = document.getElementById('categoriesContainer');
         cont.innerHTML = '';
         let totalSpent = 0;
+        if (state.categories.length === 0) {
+            cont.innerHTML = `<div class="empty-state"><span class="icon">📂</span>No categories yet.</div>`;
+        }
         state.categories.forEach(cat => {
             totalSpent += cat.current;
             const targetLimit = cat.targetLimit ?? Math.round((state.balance * cat.percentShare) / 100);
             const pct = targetLimit > 0 ? Math.min((cat.current / targetLimit) * 100, 100) : 0;
             const color = pct > 80 ? '#ef4444' : pct > 50 ? '#f59e0b' : '#38bdf8';
+            const overBudget = cat.current > targetLimit && targetLimit > 0;
             cont.innerHTML += `
                 <div class="list-item">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:600;">${cat.name} <span style="font-size:0.7rem; color:var(--text2);">(${cat.percentShare}%)</span></span>
-                        <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:white; box-shadow:none;" onclick="openEdit('${cat.id}')">✏️</button>
+                        <span style="font-weight:600;">${esc(cat.name)} <span style="font-size:0.7rem; color:var(--text2);">(${cat.percentShare}%)</span> ${overBudget ? '<span class="badge-pill" style="background:rgba(239,68,68,0.2); color:#ef4444;">over budget</span>' : ''}</span>
+                        <button class="btn btn-sm btn-ghost" onclick="openEdit('${cat.id}')" aria-label="Edit ${esc(cat.name)}">✏️</button>
                     </div>
                     <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text2);">
                         <span>Spent: ${cat.current.toLocaleString()} KZT</span>
@@ -1037,104 +790,106 @@
             `;
         });
 
-        // Analytics
         document.getElementById('analyticsSpent').textContent = totalSpent.toLocaleString() + ' KZT';
         const health = document.getElementById('analyticsHealth');
-        if (totalSpent > state.balance * 0.8) {
-            health.textContent = '⚠️ Critical';
-            health.className = 'value red';
-        } else {
-            health.textContent = '✅ Optimal';
-            health.className = 'value green';
-        }
-        const totalInc = state.income.reduce((s,i) => s + i.amount, 0);
-        document.getElementById('analyticsIncome').textContent = totalInc.toLocaleString() + ' KZT/mo';
+        if (totalSpent > state.balance * 0.8 && state.balance > 0) { health.textContent = '⚠️ Critical'; health.className = 'value red'; }
+        else { health.textContent = '✅ Optimal'; health.className = 'value green'; }
+        document.getElementById('analyticsIncome').textContent = totalIncome.toLocaleString() + ' KZT/mo';
 
-        // Transaction log
+        // Transaction log (dashboard analytics, last 10) + search-filtered full history
+        const searchTerm = (document.getElementById('txSearch')?.value || '').toLowerCase();
         const logDiv = document.getElementById('transactionLog');
         logDiv.innerHTML = '';
-        [...state.logs].reverse().slice(0, 10).forEach(l => {
+        const recentFiltered = [...state.logs].reverse().filter(l => l.desc.toLowerCase().includes(searchTerm)).slice(0, 10);
+        if (recentFiltered.length === 0) {
+            logDiv.innerHTML = `<div class="empty-state"><span class="icon">🔍</span>No matching transactions.</div>`;
+        }
+        recentFiltered.forEach(l => {
             const sign = l.type === 'deposit' ? '+' : '-';
             const color = l.type === 'deposit' ? 'var(--a3)' : 'var(--a5)';
             logDiv.innerHTML += `
                 <div class="list-item" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
-                    <div><div style="font-weight:600;">${l.desc}</div><div style="font-size:0.65rem; color:var(--text2);">${l.time}</div></div>
+                    <div><div style="font-weight:600;">${esc(l.desc)}</div><div style="font-size:0.65rem; color:var(--text2);">${l.time}</div></div>
                     <span style="color:${color}; font-weight:700;">${sign}${l.amount.toLocaleString()}</span>
                 </div>
             `;
         });
 
-        // Full history
         const histDiv = document.getElementById('fullHistory');
         histDiv.innerHTML = '';
         if (state.logs.length === 0) {
-            histDiv.innerHTML = '<div style="color:var(--text2);">No transactions.</div>';
+            histDiv.innerHTML = `<div class="empty-state"><span class="icon">📭</span>No transactions yet. Log a deposit or expense to get started.</div>`;
         } else {
-            [...state.logs].reverse().forEach((l, idx) => {
-                const realIdx = state.logs.length - 1 - idx;
+            [...state.logs].reverse().forEach((l) => {
                 const sign = l.type === 'deposit' ? '+' : '-';
                 const color = l.type === 'deposit' ? 'var(--a3)' : 'var(--a5)';
                 histDiv.innerHTML += `
                     <div class="list-item" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
-                        <div><div style="font-weight:600;">${l.desc}</div><div style="font-size:0.65rem; color:var(--text2);">${l.time}</div></div>
+                        <div><div style="font-weight:600;">${esc(l.desc)}</div><div style="font-size:0.65rem; color:var(--text2);">${l.time}</div></div>
                         <div style="display:flex; align-items:center; gap:10px;">
                             <span style="color:${color}; font-weight:700;">${sign}${l.amount.toLocaleString()} KZT</span>
-                            <button class="btn btn-danger btn-sm" onclick="deleteLog(${realIdx})" style="padding:3px 10px;">🗑️</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteLog('${l.id}')" style="padding:3px 10px;" aria-label="Delete transaction">🗑️</button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        // Converter
         const kzt = parseFloat(document.getElementById('convKZT').value) || state.balance;
         document.getElementById('convUSD').textContent = (kzt / 480).toFixed(2);
         document.getElementById('convEUR').textContent = (kzt / 520).toFixed(2);
         document.getElementById('convRUB').textContent = (kzt / 5.2).toFixed(2);
         document.getElementById('convCNY').textContent = (kzt / 66).toFixed(2);
 
-        // Wishlist
         const wishDiv = document.getElementById('wishlistContainer');
         wishDiv.innerHTML = '';
+        if (state.wishlist.length === 0) {
+            wishDiv.innerHTML = `<div class="empty-state"><span class="icon">🎯</span>No goals yet. Add something you're saving for.</div>`;
+        }
         state.wishlist.forEach(w => {
             const afford = state.balance >= w.cost;
             const pct = afford ? 100 : (state.balance / w.cost) * 100;
             wishDiv.innerHTML += `
                 <div class="list-item">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:600;">${w.name}</span>
+                        <span style="font-weight:600;">${esc(w.name)}</span>
                         <div style="display:flex; align-items:center; gap:6px;">
-                            <span style="background:${afford ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color:${afford ? 'var(--a3)' : 'var(--a4)'}; padding:2px 10px; border-radius:8px; font-weight:600; font-size:0.8rem;">${w.cost.toLocaleString()} KZT</span>
-                            <button class="btn btn-sm" style="background:rgba(255,255,255,0.04); color:white; box-shadow:none; padding:3px 10px;" onclick="editWish('${w.id}')">✏️</button>
+                            <span class="badge-pill" style="background:${afford ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}; color:${afford ? 'var(--a3)' : 'var(--a4)'};">${w.cost.toLocaleString()} KZT</span>
+                            <button class="btn btn-sm btn-ghost" onclick="openWishEdit('${w.id}')" aria-label="Edit ${esc(w.name)}">✏️</button>
                         </div>
                     </div>
-                    <div style="font-size:0.75rem; margin-bottom:4px; color:var(--text2);">${afford ? '✅ You can afford this!' : '⏳ Saving...'}</div>
+                    <div style="font-size:0.75rem; margin-bottom:4px; color:var(--text2);">${afford ? '✅ You can afford this!' : `⏳ ${Math.round(pct)}% saved`}</div>
                     <div class="progress"><div class="progress-fill" style="width:${Math.min(pct,100)}%; background:${afford ? 'var(--a3)' : 'var(--a4)'};"></div></div>
                 </div>
             `;
         });
 
-        // Income
         const incDiv = document.getElementById('incomeContainer');
         incDiv.innerHTML = '';
+        if (state.income.length === 0) {
+            incDiv.innerHTML = `<div class="empty-state"><span class="icon">💵</span>No income streams set up yet.</div>`;
+        }
         state.income.forEach(inc => {
             incDiv.innerHTML += `
                 <div class="list-item" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-weight:600;">${inc.source}</span>
-                    <span style="color:var(--a3); font-weight:700;">+${inc.amount.toLocaleString()} / mo</span>
+                    <span style="font-weight:600;">${esc(inc.source)}</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="color:var(--a3); font-weight:700;">+${inc.amount.toLocaleString()} / mo</span>
+                        <button class="btn btn-danger btn-sm" onclick="deleteIncome('${inc.id}')" aria-label="Remove ${esc(inc.source)}">🗑️</button>
+                    </div>
                 </div>
             `;
         });
 
-        // Pie chart
-        drawPieChart();
+        document.getElementById('undoBtn').disabled = state.logs.length === 0;
 
-        // Check achievements
+        drawPieChart();
+        drawTrendChart();
         checkAchievements();
     }
 
     // =============================================================
-    // PIE CHART
+    // PIE + TREND CHARTS
     // =============================================================
     function drawPieChart() {
         const canvas = document.getElementById('pieCanvas');
@@ -1142,42 +897,59 @@
         const w = canvas.width, h = canvas.height;
         const cx = w/2, cy = h/2, r = Math.min(w,h)/2 - 20;
         ctx.clearRect(0,0,w,h);
-
         const data = state.categories.filter(c => c.current > 0);
         if (data.length === 0) {
-            ctx.fillStyle = 'var(--text2)';
-            ctx.font = '16px Inter, sans-serif';
-            ctx.textAlign = 'center';
+            ctx.fillStyle = '#8896b8'; ctx.font = '16px Inter, sans-serif'; ctx.textAlign = 'center';
             ctx.fillText('No spending data', cx, cy+6);
             return;
         }
         const total = data.reduce((s,c) => s + c.current, 0);
         let start = -Math.PI/2;
         const colors = ['#38bdf8','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#f472b6','#34d399'];
-
         data.forEach((cat, i) => {
             const angle = (cat.current / total) * 2 * Math.PI;
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.arc(cx, cy, r, start, start + angle);
-            ctx.closePath();
-            ctx.fillStyle = colors[i % colors.length];
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, start, start + angle); ctx.closePath();
+            ctx.fillStyle = colors[i % colors.length]; ctx.fill();
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 2; ctx.stroke();
             const mid = start + angle/2;
-            const lx = cx + Math.cos(mid) * (r * 0.65);
-            const ly = cy + Math.sin(mid) * (r * 0.65);
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 11px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            if (angle > 0.3) {
-                ctx.fillText(Math.round((cat.current/total)*100)+'%', lx, ly);
-            }
+            const lx = cx + Math.cos(mid) * (r * 0.65), ly = cy + Math.sin(mid) * (r * 0.65);
+            ctx.fillStyle = 'white'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            if (angle > 0.3) ctx.fillText(Math.round((cat.current/total)*100)+'%', lx, ly);
             start += angle;
         });
+    }
+
+    function drawTrendChart() {
+        const canvas = document.getElementById('trendCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0,0,w,h);
+        const sorted = [...state.logs].sort((a,b) => (a.ts||0) - (b.ts||0));
+        if (sorted.length < 2) {
+            ctx.fillStyle = '#8896b8'; ctx.font = '13px Inter, sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText('Not enough history yet', w/2, h/2);
+            return;
+        }
+        let running = 0;
+        const points = [];
+        // reconstruct balance trend from the very first log backward isn't reliable, so just plot cumulative deltas
+        sorted.forEach(l => { running += (l.type === 'deposit' ? l.amount : -l.amount); points.push(running); });
+        const min = Math.min(...points, 0), max = Math.max(...points, 1);
+        const range = max - min || 1;
+        const pad = 10;
+        ctx.beginPath();
+        points.forEach((p, i) => {
+            const x = pad + (i / (points.length - 1)) * (w - pad*2);
+            const y = h - pad - ((p - min) / range) * (h - pad*2);
+            if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        });
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.stroke();
+        // fill under line
+        ctx.lineTo(w - pad, h - pad); ctx.lineTo(pad, h - pad); ctx.closePath();
+        const grad = ctx.createLinearGradient(0,0,0,h);
+        grad.addColorStop(0, 'rgba(56,189,248,0.25)'); grad.addColorStop(1, 'rgba(56,189,248,0)');
+        ctx.fillStyle = grad; ctx.fill();
     }
 
     // =============================================================
@@ -1186,41 +958,27 @@
     function checkAchievements() {
         if (!state.achievements) state.achievements = [];
         const newAch = [];
-
-        if (state.balance >= 100000 && !state.achievements.includes('wealthy')) {
-            newAch.push({ id: 'wealthy', name: '💰 Wealthy', msg: 'Balance reached 100,000 KZT!' });
-        }
-        if (state.balance >= 500000 && !state.achievements.includes('millionaire')) {
-            newAch.push({ id: 'millionaire', name: '💎 Millionaire', msg: 'Balance reached 500,000 KZT!' });
-        }
-        if (state.logs.length >= 20 && !state.achievements.includes('active')) {
-            newAch.push({ id: 'active', name: '📊 Active', msg: 'Logged 20+ transactions!' });
-        }
-        if (state.wishlist.length >= 3 && !state.achievements.includes('dreamer')) {
-            newAch.push({ id: 'dreamer', name: '🎯 Dreamer', msg: 'Added 3+ wishlist items!' });
-        }
-        if (state.income.length >= 2 && !state.achievements.includes('earner')) {
-            newAch.push({ id: 'earner', name: '💵 Earner', msg: 'Set up 2+ income streams!' });
-        }
-
-        newAch.forEach(a => {
-            state.achievements.push(a.id);
-            showToast(`🏆 ACHIEVEMENT: ${a.name} — ${a.msg}`, 'success', '🏆');
-            soundAchievement();
-            fireConfetti(80);
-        });
-        if (newAch.length > 0) saveState();
+        if (state.balance >= 100000 && !state.achievements.includes('wealthy')) newAch.push({ id: 'wealthy', name: '💰 Wealthy', msg: 'Balance reached 100,000 KZT!' });
+        if (state.balance >= 500000 && !state.achievements.includes('millionaire')) newAch.push({ id: 'millionaire', name: '💎 Millionaire', msg: 'Balance reached 500,000 KZT!' });
+        if (state.logs.length >= 20 && !state.achievements.includes('active')) newAch.push({ id: 'active', name: '📊 Active', msg: 'Logged 20+ transactions!' });
+        if (state.wishlist.length >= 3 && !state.achievements.includes('dreamer')) newAch.push({ id: 'dreamer', name: '🎯 Dreamer', msg: 'Added 3+ wishlist items!' });
+        if (state.income.length >= 2 && !state.achievements.includes('earner')) newAch.push({ id: 'earner', name: '💵 Earner', msg: 'Set up 2+ income streams!' });
+        if (newAch.length === 0) return;
+        newAch.forEach(a => state.achievements.push(a.id));
+        newAch.forEach((a, i) => setTimeout(() => { showToast(`🏆 ACHIEVEMENT: ${a.name} — ${a.msg}`, 'success', '🏆'); soundAchievement(); fireConfetti(80); }, i * 200));
+        try { window.storage.set(STORAGE_KEY, JSON.stringify(state), false); } catch(e) {}
     }
 
     // =============================================================
     // ACTIONS
     // =============================================================
     function depositMoney() {
-        const val = parseFloat(document.getElementById('depositInput').value);
+        const input = document.getElementById('depositInput');
+        const val = parseFloat(input.value);
         if (val > 0) {
             state.balance += val;
-            state.logs.push({ desc: 'Manual Deposit', amount: val, type: 'deposit', time: new Date().toLocaleTimeString() });
-            document.getElementById('depositInput').value = '';
+            state.logs.push({ id: 'l' + Date.now(), desc: 'Manual Deposit', amount: val, type: 'deposit', categoryId: null, time: new Date().toLocaleTimeString(), ts: Date.now() });
+            input.value = '';
             soundDeposit();
             showToast(`💰 Deposited ${val.toLocaleString()} KZT`, 'success', '💰');
             const rect = document.getElementById('depositBtn').getBoundingClientRect();
@@ -1233,18 +991,19 @@
     }
 
     function logExpense() {
-        const desc = document.getElementById('expenseDesc').value || 'Misc';
-        const val = parseFloat(document.getElementById('expenseAmount').value);
-        const catName = document.getElementById('expenseCategory').value;
+        const descInput = document.getElementById('expenseDesc');
+        const amtInput = document.getElementById('expenseAmount');
+        const desc = descInput.value.trim() || 'Misc';
+        const val = parseFloat(amtInput.value);
+        const catId = document.getElementById('expenseCategory').value;
+        const cat = state.categories.find(c => c.id === catId);
         if (val > 0) {
             state.balance -= val;
-            const cat = state.categories.find(c => c.name === catName);
             if (cat) cat.current += val;
-            state.logs.push({ desc: `${desc} (${catName})`, amount: val, type: 'expense', time: new Date().toLocaleTimeString() });
-            document.getElementById('expenseDesc').value = '';
-            document.getElementById('expenseAmount').value = '';
+            state.logs.push({ id: 'l' + Date.now(), desc: `${desc}${cat ? ' (' + cat.name + ')' : ''}`, amount: val, type: 'expense', categoryId: catId || null, time: new Date().toLocaleTimeString(), ts: Date.now() });
+            descInput.value = ''; amtInput.value = '';
             soundExpense();
-            showToast(`💸 Logged -${val.toLocaleString()} KZT to ${catName}`, 'error', '💸');
+            showToast(`💸 Logged -${val.toLocaleString()} KZT${cat ? ' to ' + cat.name : ''}`, 'error', '💸');
             const rect = document.getElementById('expenseBtn').getBoundingClientRect();
             floatLabel(`-${val.toLocaleString()} KZT`, rect.left + rect.width/2 - 60, rect.top - 10, '#ef4444');
             saveState();
@@ -1253,13 +1012,28 @@
         }
     }
 
+    function undoLast() {
+        if (state.logs.length === 0) return;
+        const log = state.logs[state.logs.length - 1];
+        if (log.type === 'deposit') state.balance -= log.amount;
+        else {
+            state.balance += log.amount;
+            if (log.categoryId) { const cat = state.categories.find(c => c.id === log.categoryId); if (cat) cat.current -= log.amount; }
+        }
+        state.logs.pop();
+        soundClick();
+        showToast('Last transaction undone', 'success', '↩️');
+        saveState();
+    }
+
     function addWish() {
-        const name = document.getElementById('wishName').value.trim();
-        const cost = parseFloat(document.getElementById('wishPrice').value);
+        const nameInput = document.getElementById('wishName');
+        const priceInput = document.getElementById('wishPrice');
+        const name = nameInput.value.trim();
+        const cost = parseFloat(priceInput.value);
         if (name && cost > 0) {
             state.wishlist.push({ id: 'w' + Date.now(), name, cost });
-            document.getElementById('wishName').value = '';
-            document.getElementById('wishPrice').value = '';
+            nameInput.value = ''; priceInput.value = '';
             soundClick();
             showToast(`🎯 Added "${name}" to wishlist`, 'success', '🎯');
             saveState();
@@ -1269,12 +1043,13 @@
     }
 
     function addIncome() {
-        const source = document.getElementById('incSource').value.trim();
-        const amount = parseFloat(document.getElementById('incAmount').value);
+        const sourceInput = document.getElementById('incSource');
+        const amountInput = document.getElementById('incAmount');
+        const source = sourceInput.value.trim();
+        const amount = parseFloat(amountInput.value);
         if (source && amount >= 0) {
             state.income.push({ id: 'i' + Date.now(), source, amount });
-            document.getElementById('incSource').value = '';
-            document.getElementById('incAmount').value = '';
+            sourceInput.value = ''; amountInput.value = '';
             soundClick();
             showToast(`💵 Income stream "${source}" added`, 'success', '💵');
             saveState();
@@ -1283,25 +1058,50 @@
         }
     }
 
-    function deleteLog(index) {
-        const log = state.logs[index];
-        if (!log) return;
+    function deleteIncome(id) {
+        state.income = state.income.filter(i => i.id !== id);
+        soundClick();
+        showToast('Income stream removed', 'error', '🗑️');
+        saveState();
+    }
+
+    function deleteLog(id) {
+        const idx = state.logs.findIndex(l => l.id === id);
+        if (idx === -1) return;
+        const log = state.logs[idx];
         if (log.type === 'deposit') state.balance -= log.amount;
-        else if (log.type === 'expense') state.balance += log.amount;
-        state.logs.splice(index, 1);
-        syncCategories();
+        else {
+            state.balance += log.amount;
+            if (log.categoryId) { const cat = state.categories.find(c => c.id === log.categoryId); if (cat) cat.current -= log.amount; }
+        }
+        state.logs.splice(idx, 1);
         soundClick();
         showToast('Transaction removed', 'error', '🗑️');
         saveState();
     }
 
-    function resetSystem() {
-        if (confirm('🔥 Reset all data to defaults?')) {
-            localStorage.removeItem('budgetPro');
+    // =============================================================
+    // CONFIRM MODAL (reset / destructive actions)
+    // =============================================================
+    function confirmReset() {
+        document.getElementById('confirmTitle').textContent = '🔥 Reset all data?';
+        document.getElementById('confirmBody').textContent = 'This clears your balance, categories, logs, wishlist, and income streams back to defaults. This cannot be undone.';
+        const btn = document.getElementById('confirmActionBtn');
+        btn.onclick = async () => {
+            state = JSON.parse(JSON.stringify(DEFAULT));
+            state.logs[0].ts = Date.now();
+            state.logs[0].time = new Date().toLocaleTimeString();
+            syncCategories();
+            closeModal('confirmModal');
             soundClick();
-            location.reload();
-        }
+            showToast('Everything reset to defaults', 'success', '🔄');
+            await saveState();
+        };
+        document.getElementById('confirmModal').classList.add('show');
+        soundClick();
     }
+
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
     // =============================================================
     // EDIT CATEGORY
@@ -1317,7 +1117,6 @@
         document.getElementById('editModal').classList.add('show');
         soundClick();
     }
-    function closeModal() { document.getElementById('editModal').classList.remove('show'); editingId = null; }
     function onAmountEdit(val) {
         const amount = parseFloat(val) || 0;
         const base = state.balance > 0 ? state.balance : 15000;
@@ -1335,53 +1134,117 @@
         cat.name = document.getElementById('editName').value.trim() || cat.name;
         cat.percentShare = parseFloat(document.getElementById('editPercent').value) || 0;
         cat.targetLimit = parseFloat(document.getElementById('editAmount').value) || 0;
-        closeModal();
+        closeModal('editModal');
+        editingId = null;
         soundClick();
         showToast('Category updated', 'success', '✅');
         saveState();
     }
 
     // =============================================================
-    // EDIT WISHLIST
+    // EDIT WISHLIST (modal, not prompt())
     // =============================================================
-    function editWish(id) {
+    function openWishEdit(id) {
+        editingWishId = id;
         const w = state.wishlist.find(item => item.id === id);
         if (!w) return;
-        const newName = prompt('Edit item name:', w.name);
-        if (newName !== null) w.name = newName.trim() || w.name;
-        const newCost = prompt('Edit cost (KZT):', w.cost);
-        if (newCost !== null) { const num = parseFloat(newCost); if (!isNaN(num) && num >= 0) w.cost = num; }
+        document.getElementById('wishEditName').value = w.name;
+        document.getElementById('wishEditCost').value = w.cost;
+        document.getElementById('wishModal').classList.add('show');
+        soundClick();
+    }
+    function saveWish() {
+        if (!editingWishId) return;
+        const w = state.wishlist.find(item => item.id === editingWishId);
+        if (!w) return;
+        const newName = document.getElementById('wishEditName').value.trim();
+        const newCost = parseFloat(document.getElementById('wishEditCost').value);
+        if (newName) w.name = newName;
+        if (!isNaN(newCost) && newCost >= 0) w.cost = newCost;
+        closeModal('wishModal');
+        editingWishId = null;
         soundClick();
         showToast('Wishlist updated', 'success', '✅');
         saveState();
     }
+    function deleteWish() {
+        if (!editingWishId) return;
+        state.wishlist = state.wishlist.filter(w => w.id !== editingWishId);
+        closeModal('wishModal');
+        editingWishId = null;
+        soundClick();
+        showToast('Wishlist item removed', 'error', '🗑️');
+        saveState();
+    }
 
     // =============================================================
-    // CHAT (with typing animation)
+    // EXPORT / IMPORT
+    // =============================================================
+    function exportData() {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'nova-finance-backup.json';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        showToast('Backup downloaded', 'success', '⬇️');
+    }
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const parsed = JSON.parse(e.target.result);
+                if (typeof parsed.balance !== 'number' || !Array.isArray(parsed.categories)) throw new Error('bad shape');
+                state = { ...DEFAULT, ...parsed };
+                syncCategories();
+                showToast('Data imported successfully', 'success', '⬆️');
+                saveState();
+            } catch (err) {
+                showToast('That file doesn\'t look like a valid backup', 'error', '⚠️');
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    // =============================================================
+    // CHAT
     // =============================================================
     function sendChat() {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
         if (!text) return;
         const chatBox = document.getElementById('chatBox');
-        chatBox.innerHTML += `<div class="bubble user">${text}</div>`;
+        chatBox.innerHTML += `<div class="bubble user">${esc(text)}</div>`;
         input.value = '';
         chatBox.scrollTop = chatBox.scrollHeight;
         soundClick();
 
         setTimeout(() => {
-            let reply = "I've recorded that. How can I help further?";
+            let reply = "I've noted that. Try asking about your balance, top spending category, wishlist, or for advice.";
             const lower = text.toLowerCase();
+            const topCat = [...state.categories].sort((a,b) => b.current - a.current)[0];
+            const totalIncome = state.income.reduce((s,i)=>s+i.amount,0);
+
             if (lower.includes('balance') || lower.includes('money')) {
                 reply = `💰 Your current balance is ${state.balance.toLocaleString()} KZT.`;
+            } else if (lower.includes('top') || lower.includes('most') || (lower.includes('spend') && lower.includes('categ'))) {
+                reply = topCat && topCat.current > 0 ? `💸 Your top spending category is "${topCat.name}" at ${topCat.current.toLocaleString()} KZT.` : "You haven't logged any expenses by category yet.";
             } else if (lower.includes('spend') || lower.includes('expense')) {
-                reply = "Use the Dashboard to log expenses. I'll track them against your category limits.";
+                reply = "Use the Dashboard to log expenses — pick a category and I'll track it against that category's limit.";
             } else if (lower.includes('wish') || lower.includes('buy')) {
-                reply = "Check the Wishlist tab! Add or edit your target goals there.";
+                const affordable = state.wishlist.filter(w => state.balance >= w.cost);
+                reply = affordable.length > 0 ? `🎯 You can already afford: ${affordable.map(w=>w.name).join(', ')}.` : "Check the Wishlist tab — none of your goals are affordable yet, but keep saving!";
+            } else if (lower.includes('advice') || lower.includes('tip')) {
+                if (totalIncome === 0) reply = "💡 Set up an income stream first so I can gauge your savings rate.";
+                else if (topCat && topCat.current > totalIncome * 0.4) reply = `💡 "${topCat.name}" is eating a big chunk of your income — worth a closer look.`;
+                else reply = "💡 Your spending looks balanced across categories. Keep logging consistently for better insight.";
             } else if (lower.includes('hello') || lower.includes('hi')) {
                 reply = "Hello! I'm monitoring your finances. All systems green.";
             } else if (lower.includes('help')) {
-                reply = "You can deposit, log expenses, set income streams, add wishlist items, and track your budget across categories. Ask me anything!";
+                reply = "You can deposit, log expenses, set income streams, add wishlist items, and track your budget across categories. Ask me about balance, top category, wishlist, or advice!";
             } else if (lower.includes('level')) {
                 reply = `🏆 You're Level ${Math.floor(state.balance/50000)+1}. Keep going!`;
             }
@@ -1393,30 +1256,21 @@
         const chatBox = document.getElementById('chatBox');
         const bubble = document.createElement('div');
         bubble.className = 'bubble ai';
-        bubble.innerHTML = '';
         chatBox.appendChild(bubble);
         let i = 0;
         const interval = setInterval(() => {
-            if (i < text.length) {
-                bubble.textContent += text[i];
-                i++;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            } else {
-                clearInterval(interval);
-            }
-        }, 20);
+            if (i < text.length) { bubble.textContent += text[i]; i++; chatBox.scrollTop = chatBox.scrollHeight; }
+            else clearInterval(interval);
+        }, 18);
     }
 
     function quickChat(cmd) {
         const input = document.getElementById('chatInput');
-        const map = { balance: 'What is my balance?', spend: 'How do I log an expense?', wish: 'Show me my wishlist' };
+        const map = { balance: 'What is my balance?', spend: 'What is my top spending category?', wish: 'What can I afford on my wishlist?', advice: 'Give me some advice' };
         input.value = map[cmd] || cmd;
         sendChat();
     }
 
-    // =============================================================
-    // SHOW BALANCE DETAIL
-    // =============================================================
     function showBalanceDetail() {
         const totalIncome = state.income.reduce((s,i) => s + i.amount, 0);
         showToast(`💰 Balance: ${state.balance.toLocaleString()} KZT | Income: ${totalIncome.toLocaleString()} KZT/mo`, 'success', '📊');
@@ -1425,9 +1279,8 @@
     // =============================================================
     // INIT
     // =============================================================
-    updateUI();
+    loadState();
 
-    // Keyboard shortcuts
     document.addEventListener('keydown', e => {
         if (e.key === 'd' && e.ctrlKey) { e.preventDefault(); depositMoney(); }
         if (e.key === 'e' && e.ctrlKey) { e.preventDefault(); document.getElementById('expenseAmount').focus(); }
