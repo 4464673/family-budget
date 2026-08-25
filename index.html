@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>💎 Nova Finance — Final Edition</title>
+    <title>💎 Nova Finance — Auto‑Allocate</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -323,7 +323,7 @@
     <header class="header">
         <div class="brand">
             💎 Nova Finance
-            <small>v7.0 • Final</small>
+            <small>v8.0 • Auto‑Allocate</small>
             <button class="level-badge" id="levelBadge" onclick="showBalanceDetail()">🏆 Level 1</button>
         </div>
         <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
@@ -379,7 +379,7 @@
                             <div class="value" id="achievementCount">0</div>
                         </div>
                     </div>
-                    <!-- Forecast (simple & correct) -->
+                    <!-- Forecast -->
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
                         <div class="forecast-card">
                             <div class="label">🔮 Days until zero (no income)</div>
@@ -1531,17 +1531,34 @@
     // =============================================================
     // ACTIONS
     // =============================================================
+
+    // ***** DEPOSIT WITH AUTO‑ALLOCATE *****
     function depositMoney() {
         const input = document.getElementById('depositInput');
         const val = parseFloat(input.value);
         if (val > 0) {
             state.balance += val;
-            state.logs.push({ id: 'l' + Date.now(), desc: 'Manual Deposit', amount: val, type: 'deposit', categoryId: null, time: new Date().toLocaleTimeString(), ts: Date.now() });
+            state.logs.push({
+                id: 'l' + Date.now(),
+                desc: 'Manual Deposit',
+                amount: val,
+                type: 'deposit',
+                categoryId: null,
+                time: new Date().toLocaleTimeString(),
+                ts: Date.now()
+            });
+
+            // === AUTO‑ALLOCATE DEPOSIT TO CATEGORIES BASED ON PERCENTAGES ===
+            state.categories.forEach(cat => {
+                // Recalculate each category's limit as percentage of total balance
+                cat.targetLimit = Math.round(state.balance * (cat.percentShare / 100));
+            });
+
             input.value = '';
             soundDeposit();
-            showToast(`💰 Deposited ${val.toLocaleString()} KZT`, 'success', '💰');
+            showToast(`💰 Deposited ${val.toLocaleString()} KZT — limits updated!`, 'success', '💰');
             const rect = document.getElementById('depositBtn').getBoundingClientRect();
-            floatLabel(`+${val.toLocaleString()} KZT`, rect.left + rect.width/2 - 60, rect.top - 10, '#10b981');
+            floatLabel(`+${val.toLocaleString()} KZT`, rect.left + rect.width / 2 - 60, rect.top - 10, '#10b981');
             if (val >= 50000) { fireConfetti(40); soundLevelUp(); }
             saveState();
         } else {
