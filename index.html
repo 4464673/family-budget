@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>💎 Nova Finance — Command Center</title>
+    <title>💎 Nova Finance — AI Command Center</title>
+    <link rel="manifest" href="data:application/json,{}" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -177,9 +178,13 @@
         .btn-ghost { background: rgba(255,255,255,0.04); color: var(--text2); box-shadow: none; }
         .btn-ghost:hover { color: white; box-shadow: none; transform: translateY(-2px); }
         .btn-sm { padding: 6px 14px; font-size: 0.7rem; }
+        .btn-mic { background: rgba(255,255,255,0.04); color: var(--text2); box-shadow: none; border-radius: 50%; width: 44px; height: 44px; padding: 0; justify-content: center; font-size: 1.2rem; }
+        .btn-mic:hover { color: var(--a1); box-shadow: none; transform: scale(1.05); }
+        .btn-mic.listening { color: var(--a5); box-shadow: 0 0 30px rgba(239,68,68,0.3); }
 
         .list-item { background: rgba(255,255,255,0.015); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; transition: var(--trans); }
         .list-item:hover { border-color: rgba(255,255,255,0.1); transform: translateX(4px); }
+        .category-color { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
 
         .progress { background: rgba(0,0,0,0.5); height: 5px; border-radius: 4px; overflow: hidden; margin-top: 8px; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(0.16,1,0.3,1); position: relative; }
@@ -196,6 +201,19 @@
         .bubble { padding: 12px 18px; border-radius: 18px; font-size: 0.9rem; line-height: 1.5; max-width: 88%; animation: fadeZoom 0.3s ease; }
         .bubble.ai { background: rgba(255,255,255,0.04); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
         .bubble.user { background: linear-gradient(135deg, var(--a1), var(--a2)); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 20px var(--g1); }
+
+        .forecast-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+        }
+        .forecast-card .label { font-size: 0.65rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+        .forecast-card .value { font-size: 1.2rem; font-weight: 700; margin-top: 2px; }
+        .forecast-card .value.green { color: var(--a3); }
+        .forecast-card .value.red { color: var(--a5); }
+        .forecast-card .value.gold { color: var(--a4); }
 
         #toasts { position: fixed; bottom: 24px; right: 24px; left: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 99999; pointer-events: none; max-width: 420px; margin-left: auto; }
         .toast {
@@ -231,6 +249,13 @@
         .empty-state .icon { font-size: 2rem; margin-bottom: 8px; display: block; }
 
         .badge-pill { font-size: 0.65rem; padding: 2px 9px; border-radius: 8px; font-weight: 700; }
+
+        .date-filter-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+        .date-filter-group label { font-size: 0.75rem; color: var(--text2); }
+        .date-filter-group input[type="date"] {
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 6px 10px; border-radius: 10px;
+            color: var(--text); font-size: 0.8rem; font-family: inherit; max-width: 140px;
+        }
 
         @media (max-width: 1024px) {
             .grid { grid-template-columns: 1fr; }
@@ -269,7 +294,7 @@
     <header class="header">
         <div class="brand">
             💎 Nova Finance
-            <small>v4.0 • Pro</small>
+            <small>v5.0 • AI</small>
             <button class="level-badge" id="levelBadge" onclick="showBalanceDetail()">🏆 Level 1</button>
         </div>
         <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
@@ -283,6 +308,7 @@
             </div>
             <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇️ Export</button>
             <label class="btn btn-ghost btn-sm" style="cursor:pointer;">⬆️ Import<input type="file" accept="application/json" onchange="importData(event)" style="display:none;"></label>
+            <button class="btn btn-ghost btn-sm" onclick="createRestorePoint()">💾 Snapshot</button>
         </div>
     </header>
 
@@ -290,18 +316,18 @@
 
         <div>
             <div class="glass" style="padding: 12px 16px; margin-bottom: 16px;">
-                <div class="tabs">
-                    <button class="tab active" data-view="dash">📊 Dashboard</button>
-                    <button class="tab" data-view="wish">🎯 Wishlist</button>
-                    <button class="tab" data-view="analytics">📈 Analytics</button>
-                    <button class="tab" data-view="converter">💱 Exchange</button>
-                    <button class="tab" data-view="income">💵 Income</button>
-                    <button class="tab" data-view="history">📜 History</button>
+                <div class="tabs" role="tablist">
+                    <button class="tab active" data-view="dash" role="tab">📊 Dashboard</button>
+                    <button class="tab" data-view="wish" role="tab">🎯 Wishlist</button>
+                    <button class="tab" data-view="analytics" role="tab">📈 Analytics</button>
+                    <button class="tab" data-view="converter" role="tab">💱 Exchange</button>
+                    <button class="tab" data-view="income" role="tab">💵 Income</button>
+                    <button class="tab" data-view="history" role="tab">📜 History</button>
                 </div>
             </div>
 
             <!-- DASHBOARD -->
-            <div id="dash" class="view active">
+            <div id="dash" class="view active" role="tabpanel">
                 <div class="glass tilt" style="margin-bottom:16px;" id="statsCard">
                     <div class="stats">
                         <div class="stat" onclick="showBalanceDetail()">
@@ -321,6 +347,14 @@
                         <div class="stat">
                             <div class="label">🏆 Achievements</div>
                             <div class="value" id="achievementCount">0</div>
+                        </div>
+                    </div>
+                    <!-- NEW: Forecast Card -->
+                    <div class="forecast-card" id="forecastCard" style="margin-top:8px;">
+                        <div class="label">🔮 AI Spending Forecast</div>
+                        <div id="forecastContent" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:4px;">
+                            <span class="value" id="forecastDays" style="font-size:1rem;">—</span>
+                            <span class="value" id="forecastStatus" style="font-size:1rem;">—</span>
                         </div>
                     </div>
                 </div>
@@ -345,8 +379,8 @@
                 <div class="glass">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
                         <h3 style="font-size:1.05rem;">📂 Budget Distribution</h3>
-                        <div style="display:flex; gap:8px;">
-                            <button class="btn btn-ghost btn-sm" onclick="undoLast()" id="undoBtn">↩️ Undo Last</button>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button class="btn btn-ghost btn-sm" onclick="undoLast()" id="undoBtn">↩️ Undo</button>
                             <button class="btn btn-danger btn-sm" onclick="confirmReset()">🗑️ Reset</button>
                         </div>
                     </div>
@@ -358,7 +392,7 @@
             </div>
 
             <!-- WISHLIST -->
-            <div id="wish" class="view">
+            <div id="wish" class="view" role="tabpanel">
                 <div class="glass">
                     <h3 style="margin-bottom:14px;">🎯 Target Goals</h3>
                     <div class="input-group" style="margin-bottom:16px;">
@@ -371,13 +405,14 @@
             </div>
 
             <!-- ANALYTICS -->
-            <div id="analytics" class="view">
+            <div id="analytics" class="view" role="tabpanel">
                 <div class="glass">
                     <h3 style="margin-bottom:14px;">📈 Financial Logs</h3>
                     <div class="stats" style="margin-bottom:16px;">
                         <div class="stat"><div class="label">Total Outflow</div><div class="value red" id="analyticsSpent">0</div></div>
                         <div class="stat"><div class="label">System Health</div><div class="value green" id="analyticsHealth">Optimal</div></div>
                         <div class="stat"><div class="label">Total Income</div><div class="value green" id="analyticsIncome">0</div></div>
+                        <div class="stat"><div class="label">Net Worth</div><div class="value gold" id="analyticsNetWorth">0</div></div>
                     </div>
                     <h4 style="color:var(--text2); margin-bottom:10px;">Balance Trend</h4>
                     <canvas id="trendCanvas" width="600" height="160" style="margin-bottom:20px;"></canvas>
@@ -390,7 +425,7 @@
             </div>
 
             <!-- CONVERTER -->
-            <div id="converter" class="view">
+            <div id="converter" class="view" role="tabpanel">
                 <div class="glass">
                     <h3 style="margin-bottom:14px;">💱 Live Conversion</h3>
                     <p style="font-size:0.7rem; color:var(--text2); margin-bottom:14px;">Rates are fixed reference values for estimation, not live market data.</p>
@@ -408,7 +443,7 @@
             </div>
 
             <!-- INCOME -->
-            <div id="income" class="view">
+            <div id="income" class="view" role="tabpanel">
                 <div class="glass">
                     <h3 style="margin-bottom:14px;">💵 Income Streams</h3>
                     <div class="input-group" style="margin-bottom:16px;">
@@ -420,10 +455,15 @@
                 </div>
             </div>
 
-            <!-- HISTORY -->
-            <div id="history" class="view">
+            <!-- HISTORY with date filters -->
+            <div id="history" class="view" role="tabpanel">
                 <div class="glass">
                     <h3 style="margin-bottom:14px;">📜 Full History</h3>
+                    <div class="date-filter-group">
+                        <label>From: <input type="date" id="historyStart" onchange="updateUI()" /></label>
+                        <label>To: <input type="date" id="historyEnd" onchange="updateUI()" /></label>
+                        <button class="btn btn-sm btn-ghost" onclick="document.getElementById('historyStart').value='';document.getElementById('historyEnd').value='';updateUI();">Clear</button>
+                    </div>
                     <div id="fullHistory"></div>
                 </div>
             </div>
@@ -435,6 +475,7 @@
                 <span style="display:inline-block; width:10px; height:10px; background:var(--a3); border-radius:50%; box-shadow:0 0 25px var(--a3); animation:pulseGlow 1.5s ease-in-out infinite;"></span>
                 <span style="font-weight:700;">🧠 AI Advisor</span>
                 <span style="font-size:0.65rem; color:var(--text2); margin-left:auto; opacity:0.6;">● online</span>
+                <button class="btn btn-sm btn-mic" id="micBtn" onclick="toggleVoice()" aria-label="Voice input">🎤</button>
             </div>
             <div class="chat-box" id="chatBox">
                 <div class="bubble ai">👋 I'm your finance assistant. Ask me about your balance, spending, or wishlist!</div>
@@ -444,6 +485,7 @@
                 <button class="btn btn-sm btn-ghost" onclick="quickChat('spend')">💸 Top category</button>
                 <button class="btn btn-sm btn-ghost" onclick="quickChat('wish')">🎯 Wishlist</button>
                 <button class="btn btn-sm btn-ghost" onclick="quickChat('advice')">💡 Advice</button>
+                <button class="btn btn-sm btn-ghost" onclick="quickChat('forecast')">🔮 Forecast</button>
             </div>
             <div class="input-group">
                 <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter') sendChat()">
@@ -499,23 +541,39 @@
     </div>
 </div>
 
+<div class="modal" id="restoreModal">
+    <div class="glass">
+        <h3 style="margin-bottom:10px;">🔄 Restore Points</h3>
+        <p style="color:var(--text2); font-size:0.8rem; margin-bottom:14px;">Snapshots are auto‑saved every 5 transactions.</p>
+        <div id="restoreList" style="max-height:300px; overflow-y:auto; margin-bottom:14px;"></div>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn btn-sm btn-ghost" onclick="closeModal('restoreModal')">Close</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // =============================================================
     // STATE
     // =============================================================
     const STORAGE_KEY = 'nova-finance-state';
+    const RESTORE_KEY = 'nova-finance-restore';
+    const CAT_COLORS = ['#38bdf8','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#f472b6','#34d399','#06b6d4','#a78bfa'];
+
     const DEFAULT = {
         balance: 15000,
         categories: [
-            { id: '1', name: 'Savings (do not touch)', current: 0, percentShare: 10, targetLimit: 1500 },
-            { id: '2', name: 'Emergency', current: 0, percentShare: 17, targetLimit: 2550 },
-            { id: '3', name: 'Needs', current: 0, percentShare: 40, targetLimit: 6000 },
-            { id: '4', name: 'Fun Money', current: 0, percentShare: 33, targetLimit: 4950 }
+            { id: 'c1', name: 'Savings (do not touch)', current: 0, percentShare: 10, targetLimit: 1500, color: '#38bdf8' },
+            { id: 'c2', name: 'Emergency', current: 0, percentShare: 17, targetLimit: 2550, color: '#8b5cf6' },
+            { id: 'c3', name: 'Needs', current: 0, percentShare: 40, targetLimit: 6000, color: '#10b981' },
+            { id: 'c4', name: 'Fun Money', current: 0, percentShare: 33, targetLimit: 4950, color: '#f59e0b' }
         ],
         logs: [{ id: 'l0', desc: 'Initial Boot', amount: 15000, type: 'deposit', categoryId: null, time: new Date().toLocaleTimeString(), ts: Date.now() }],
         wishlist: [{ id: 'w1', name: 'Sony Headphones', cost: 120000 }],
         income: [{ id: 'i1', source: 'Monthly Allowance', amount: 25000 }],
-        achievements: []
+        achievements: [],
+        restorePoints: [],
+        txCount: 0
     };
 
     let state = JSON.parse(JSON.stringify(DEFAULT));
@@ -523,6 +581,8 @@
     let editingWishId = null;
     let animatingBalance = false;
     let saving = false;
+    let isListening = false;
+    let recognition = null;
 
     function syncCategories() {
         state.categories.forEach(c => c.current = 0);
@@ -539,15 +599,27 @@
             const result = await window.storage.get(STORAGE_KEY, false);
             if (result && result.value) {
                 const parsed = JSON.parse(result.value);
+                // Ensure categories have color fields
+                if (parsed.categories) {
+                    parsed.categories.forEach((c, i) => {
+                        if (!c.color) c.color = CAT_COLORS[i % CAT_COLORS.length];
+                    });
+                }
                 state = { ...DEFAULT, ...parsed };
+                if (!state.restorePoints) state.restorePoints = [];
+                if (!state.txCount) state.txCount = 0;
             }
         } catch (e) {
-            // no saved state yet — use defaults
+            // no saved state — use defaults
         }
         syncCategories();
         document.getElementById('loadingOverlay').style.opacity = '0';
         setTimeout(() => document.getElementById('loadingOverlay').style.display = 'none', 400);
         updateUI();
+        // Auto-restore from localStorage every 5 transactions
+        if (state.restorePoints && state.restorePoints.length > 0) {
+            populateRestoreList();
+        }
     }
 
     async function saveState() {
@@ -555,6 +627,11 @@
         try {
             saving = true;
             await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+            // Auto-snapshot every 5 transactions
+            if (state.logs.length % 5 === 0 && state.logs.length > 0 && state.txCount !== state.logs.length) {
+                state.txCount = state.logs.length;
+                createRestorePoint(true);
+            }
         } catch (e) {
             showToast('Could not save — your changes may not persist', 'error', '⚠️');
         } finally {
@@ -717,6 +794,38 @@
     }
 
     // =============================================================
+    // FORECAST ENGINE (NEW)
+    // =============================================================
+    function calculateForecast() {
+        const expenses = state.logs.filter(l => l.type === 'expense');
+        const totalExpense = expenses.reduce((s,l) => s + l.amount, 0);
+        const totalIncome = state.income.reduce((s,i) => s + i.amount, 0);
+        const monthlyIncome = totalIncome;
+        const avgDailyBurn = expenses.length > 0 ? totalExpense / Math.max(1, expenses.length) : state.balance / 30;
+
+        let daysLeft = '∞';
+        let status = '💚 Healthy';
+
+        if (avgDailyBurn > 0 && monthlyIncome > 0) {
+            const netDaily = (monthlyIncome / 30) - avgDailyBurn;
+            if (netDaily < 0 && state.balance > 0) {
+                const days = state.balance / Math.abs(netDaily);
+                daysLeft = `~${Math.round(days)} days`;
+                status = days < 30 ? '⚠️ Critical' : '🔶 Caution';
+            } else if (netDaily >= 0) {
+                daysLeft = '♾️ (growing)';
+                status = '💚 Healthy';
+            }
+        } else if (avgDailyBurn > 0 && state.balance > 0) {
+            const days = state.balance / avgDailyBurn;
+            daysLeft = `~${Math.round(days)} days`;
+            status = days < 30 ? '⚠️ Critical' : '🔶 Caution';
+        }
+
+        return { daysLeft, status };
+    }
+
+    // =============================================================
     // UI UPDATE
     // =============================================================
     function updateUI() {
@@ -739,30 +848,41 @@
             balEl.textContent = target.toLocaleString();
         }
 
-        // Daily burn based on last 7 days of expenses if available, else fallback
+        // Daily burn
         const recentExpenses = state.logs.filter(l => l.type === 'expense' && (Date.now() - (l.ts || 0)) < 7 * 86400000);
         const burnBasis = recentExpenses.length > 0 ? recentExpenses.reduce((s,l)=>s+l.amount,0) / 7 : state.balance / 30;
         document.getElementById('paceDisplay').textContent = Math.round(burnBasis).toLocaleString();
         document.getElementById('paceSub').textContent = recentExpenses.length > 0 ? 'avg over last 7 days' : 'estimate (no recent data)';
 
+        // Savings rate
         const totalIncome = state.income.reduce((s, i) => s + i.amount, 0);
         const totalSpentAll = state.logs.filter(l => l.type === 'expense').reduce((s,l)=>s+l.amount, 0);
         const totalDepositedAll = state.logs.filter(l => l.type === 'deposit').reduce((s,l)=>s+l.amount, 0);
         const rate = totalDepositedAll > 0 ? Math.round(((totalDepositedAll - totalSpentAll) / totalDepositedAll) * 100) : 0;
         document.getElementById('savingsRate').textContent = Math.max(Math.min(rate, 100), 0) + '%';
 
+        // Level
         const level = Math.floor(state.balance / 50000) + 1;
         document.getElementById('levelBadge').innerHTML = `🏆 Level ${Math.min(level, 99)}`;
 
+        // Achievements
         const achCount = state.achievements ? state.achievements.length : 0;
         document.getElementById('achievementCount').textContent = achCount;
 
+        // FORECAST
+        const forecast = calculateForecast();
+        document.getElementById('forecastDays').textContent = `⏳ ${forecast.daysLeft}`;
+        document.getElementById('forecastStatus').textContent = forecast.status;
+        document.getElementById('forecastStatus').className = 'value ' + (forecast.status.includes('Healthy') ? 'green' : forecast.status.includes('Critical') ? 'red' : 'gold');
+
+        // Category dropdown
         const sel = document.getElementById('expenseCategory');
         const prevSelVal = sel.value;
         sel.innerHTML = '';
         state.categories.forEach(c => sel.innerHTML += `<option value="${c.id}">${esc(c.name)}</option>`);
         if ([...sel.options].some(o => o.value === prevSelVal)) sel.value = prevSelVal;
 
+        // Categories
         const cont = document.getElementById('categoriesContainer');
         cont.innerHTML = '';
         let totalSpent = 0;
@@ -773,12 +893,12 @@
             totalSpent += cat.current;
             const targetLimit = cat.targetLimit ?? Math.round((state.balance * cat.percentShare) / 100);
             const pct = targetLimit > 0 ? Math.min((cat.current / targetLimit) * 100, 100) : 0;
-            const color = pct > 80 ? '#ef4444' : pct > 50 ? '#f59e0b' : '#38bdf8';
+            const color = pct > 80 ? '#ef4444' : pct > 50 ? '#f59e0b' : cat.color || '#38bdf8';
             const overBudget = cat.current > targetLimit && targetLimit > 0;
             cont.innerHTML += `
                 <div class="list-item">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:600;">${esc(cat.name)} <span style="font-size:0.7rem; color:var(--text2);">(${cat.percentShare}%)</span> ${overBudget ? '<span class="badge-pill" style="background:rgba(239,68,68,0.2); color:#ef4444;">over budget</span>' : ''}</span>
+                        <span style="font-weight:600;"><span class="category-color" style="background:${cat.color || '#38bdf8'};"></span>${esc(cat.name)} <span style="font-size:0.7rem; color:var(--text2);">(${cat.percentShare}%)</span> ${overBudget ? '<span class="badge-pill" style="background:rgba(239,68,68,0.2); color:#ef4444;">over budget</span>' : ''}</span>
                         <button class="btn btn-sm btn-ghost" onclick="openEdit('${cat.id}')" aria-label="Edit ${esc(cat.name)}">✏️</button>
                     </div>
                     <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text2);">
@@ -790,13 +910,17 @@
             `;
         });
 
+        // Analytics
         document.getElementById('analyticsSpent').textContent = totalSpent.toLocaleString() + ' KZT';
         const health = document.getElementById('analyticsHealth');
         if (totalSpent > state.balance * 0.8 && state.balance > 0) { health.textContent = '⚠️ Critical'; health.className = 'value red'; }
         else { health.textContent = '✅ Optimal'; health.className = 'value green'; }
         document.getElementById('analyticsIncome').textContent = totalIncome.toLocaleString() + ' KZT/mo';
+        // Net worth
+        const netWorth = state.balance + totalIncome - totalSpentAll;
+        document.getElementById('analyticsNetWorth').textContent = netWorth.toLocaleString() + ' KZT';
 
-        // Transaction log (dashboard analytics, last 10) + search-filtered full history
+        // Transaction log with search
         const searchTerm = (document.getElementById('txSearch')?.value || '').toLowerCase();
         const logDiv = document.getElementById('transactionLog');
         logDiv.innerHTML = '';
@@ -815,12 +939,24 @@
             `;
         });
 
+        // Full history with date filters
+        const startDate = document.getElementById('historyStart')?.value;
+        const endDate = document.getElementById('historyEnd')?.value;
         const histDiv = document.getElementById('fullHistory');
         histDiv.innerHTML = '';
-        if (state.logs.length === 0) {
-            histDiv.innerHTML = `<div class="empty-state"><span class="icon">📭</span>No transactions yet. Log a deposit or expense to get started.</div>`;
+        let filteredLogs = [...state.logs];
+        if (startDate) {
+            const startTs = new Date(startDate).getTime();
+            filteredLogs = filteredLogs.filter(l => (l.ts || 0) >= startTs);
+        }
+        if (endDate) {
+            const endTs = new Date(endDate).getTime() + 86400000;
+            filteredLogs = filteredLogs.filter(l => (l.ts || 0) <= endTs);
+        }
+        if (filteredLogs.length === 0) {
+            histDiv.innerHTML = `<div class="empty-state"><span class="icon">📭</span>No transactions in this period.</div>`;
         } else {
-            [...state.logs].reverse().forEach((l) => {
+            filteredLogs.reverse().forEach((l) => {
                 const sign = l.type === 'deposit' ? '+' : '-';
                 const color = l.type === 'deposit' ? 'var(--a3)' : 'var(--a5)';
                 histDiv.innerHTML += `
@@ -835,12 +971,14 @@
             });
         }
 
+        // Converter
         const kzt = parseFloat(document.getElementById('convKZT').value) || state.balance;
         document.getElementById('convUSD').textContent = (kzt / 480).toFixed(2);
         document.getElementById('convEUR').textContent = (kzt / 520).toFixed(2);
         document.getElementById('convRUB').textContent = (kzt / 5.2).toFixed(2);
         document.getElementById('convCNY').textContent = (kzt / 66).toFixed(2);
 
+        // Wishlist
         const wishDiv = document.getElementById('wishlistContainer');
         wishDiv.innerHTML = '';
         if (state.wishlist.length === 0) {
@@ -864,6 +1002,7 @@
             `;
         });
 
+        // Income
         const incDiv = document.getElementById('incomeContainer');
         incDiv.innerHTML = '';
         if (state.income.length === 0) {
@@ -886,6 +1025,30 @@
         drawPieChart();
         drawTrendChart();
         checkAchievements();
+        // Check for budget alerts
+        checkBudgetAlerts();
+    }
+
+    // =============================================================
+    // BUDGET ALERTS (NEW)
+    // =============================================================
+    let alertShown = {};
+
+    function checkBudgetAlerts() {
+        state.categories.forEach(cat => {
+            const target = cat.targetLimit ?? Math.round((state.balance * cat.percentShare) / 100);
+            const pct = target > 0 ? (cat.current / target) * 100 : 0;
+            if (pct >= 80 && pct < 100 && !alertShown[cat.id + '_80']) {
+                alertShown[cat.id + '_80'] = true;
+                showToast(`⚠️ "${cat.name}" is at ${Math.round(pct)}% of budget!`, 'error', '⚠️');
+                setTimeout(() => { alertShown[cat.id + '_80'] = false; }, 60000);
+            }
+            if (pct >= 100 && !alertShown[cat.id + '_100']) {
+                alertShown[cat.id + '_100'] = true;
+                showToast(`🚨 "${cat.name}" has EXCEEDED budget!`, 'error', '🚨');
+                setTimeout(() => { alertShown[cat.id + '_100'] = false; }, 120000);
+            }
+        });
     }
 
     // =============================================================
@@ -905,11 +1068,11 @@
         }
         const total = data.reduce((s,c) => s + c.current, 0);
         let start = -Math.PI/2;
-        const colors = ['#38bdf8','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#f472b6','#34d399'];
+        // Use category colors
         data.forEach((cat, i) => {
             const angle = (cat.current / total) * 2 * Math.PI;
             ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, start, start + angle); ctx.closePath();
-            ctx.fillStyle = colors[i % colors.length]; ctx.fill();
+            ctx.fillStyle = cat.color || CAT_COLORS[i % CAT_COLORS.length]; ctx.fill();
             ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 2; ctx.stroke();
             const mid = start + angle/2;
             const lx = cx + Math.cos(mid) * (r * 0.65), ly = cy + Math.sin(mid) * (r * 0.65);
@@ -933,7 +1096,6 @@
         }
         let running = 0;
         const points = [];
-        // reconstruct balance trend from the very first log backward isn't reliable, so just plot cumulative deltas
         sorted.forEach(l => { running += (l.type === 'deposit' ? l.amount : -l.amount); points.push(running); });
         const min = Math.min(...points, 0), max = Math.max(...points, 1);
         const range = max - min || 1;
@@ -945,7 +1107,6 @@
             if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
         });
         ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.stroke();
-        // fill under line
         ctx.lineTo(w - pad, h - pad); ctx.lineTo(pad, h - pad); ctx.closePath();
         const grad = ctx.createLinearGradient(0,0,0,h);
         grad.addColorStop(0, 'rgba(56,189,248,0.25)'); grad.addColorStop(1, 'rgba(56,189,248,0)');
@@ -953,7 +1114,7 @@
     }
 
     // =============================================================
-    // ACHIEVEMENTS
+    // ACHIEVEMENTS (expanded)
     // =============================================================
     function checkAchievements() {
         if (!state.achievements) state.achievements = [];
@@ -963,10 +1124,141 @@
         if (state.logs.length >= 20 && !state.achievements.includes('active')) newAch.push({ id: 'active', name: '📊 Active', msg: 'Logged 20+ transactions!' });
         if (state.wishlist.length >= 3 && !state.achievements.includes('dreamer')) newAch.push({ id: 'dreamer', name: '🎯 Dreamer', msg: 'Added 3+ wishlist items!' });
         if (state.income.length >= 2 && !state.achievements.includes('earner')) newAch.push({ id: 'earner', name: '💵 Earner', msg: 'Set up 2+ income streams!' });
+        if (state.logs.filter(l => l.type === 'expense').length >= 5 && !state.achievements.includes('spender')) newAch.push({ id: 'spender', name: '💸 Spender', msg: 'Logged 5+ expenses!' });
         if (newAch.length === 0) return;
         newAch.forEach(a => state.achievements.push(a.id));
         newAch.forEach((a, i) => setTimeout(() => { showToast(`🏆 ACHIEVEMENT: ${a.name} — ${a.msg}`, 'success', '🏆'); soundAchievement(); fireConfetti(80); }, i * 200));
         try { window.storage.set(STORAGE_KEY, JSON.stringify(state), false); } catch(e) {}
+    }
+
+    // =============================================================
+    // RESTORE POINTS (NEW)
+    // =============================================================
+    function createRestorePoint(auto = false) {
+        if (!state.restorePoints) state.restorePoints = [];
+        // Remove old auto points if too many
+        if (!auto) {
+            // manual snapshot
+        }
+        // Keep last 10 restore points
+        if (state.restorePoints.length >= 10) {
+            state.restorePoints = state.restorePoints.slice(-9);
+        }
+        const snapshot = {
+            id: 'rp' + Date.now(),
+            time: new Date().toLocaleString(),
+            balance: state.balance,
+            logCount: state.logs.length,
+            categories: JSON.parse(JSON.stringify(state.categories)),
+            logs: JSON.parse(JSON.stringify(state.logs)),
+            wishlist: JSON.parse(JSON.stringify(state.wishlist)),
+            income: JSON.parse(JSON.stringify(state.income))
+        };
+        state.restorePoints.push(snapshot);
+        if (!auto) {
+            showToast('💾 Snapshot saved!', 'success', '💾');
+            soundClick();
+        }
+        populateRestoreList();
+        try { window.storage.set(STORAGE_KEY, JSON.stringify(state), false); } catch(e) {}
+    }
+
+    function populateRestoreList() {
+        const list = document.getElementById('restoreList');
+        if (!list) return;
+        list.innerHTML = '';
+        if (!state.restorePoints || state.restorePoints.length === 0) {
+            list.innerHTML = '<div class="empty-state">No restore points yet.</div>';
+            return;
+        }
+        [...state.restorePoints].reverse().forEach((rp, idx) => {
+            const realIdx = state.restorePoints.length - 1 - idx;
+            list.innerHTML += `
+                <div class="list-item" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <div><div style="font-weight:600;">📸 ${rp.time}</div><div style="font-size:0.7rem; color:var(--text2);">Balance: ${rp.balance.toLocaleString()} KZT • ${rp.logCount} tx</div></div>
+                    <button class="btn btn-sm" onclick="restorePoint(${realIdx})" style="padding:3px 12px;">↩️ Restore</button>
+                </div>
+            `;
+        });
+    }
+
+    function restorePoint(index) {
+        if (!state.restorePoints || index >= state.restorePoints.length) return;
+        const rp = state.restorePoints[index];
+        document.getElementById('confirmTitle').textContent = '🔄 Restore snapshot?';
+        document.getElementById('confirmBody').textContent = `This will roll back to ${rp.time} — current data will be lost.`;
+        const btn = document.getElementById('confirmActionBtn');
+        btn.onclick = () => {
+            state.balance = rp.balance;
+            state.categories = JSON.parse(JSON.stringify(rp.categories));
+            state.logs = JSON.parse(JSON.stringify(rp.logs));
+            state.wishlist = JSON.parse(JSON.stringify(rp.wishlist));
+            state.income = JSON.parse(JSON.stringify(rp.income));
+            syncCategories();
+            closeModal('confirmModal');
+            closeModal('restoreModal');
+            soundClick();
+            showToast('Snapshot restored!', 'success', '🔄');
+            saveState();
+        };
+        document.getElementById('confirmModal').classList.add('show');
+        soundClick();
+    }
+
+    // =============================================================
+    // VOICE INPUT (NEW)
+    // =============================================================
+    function toggleVoice() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            showToast('Voice input not supported in this browser', 'error', '⚠️');
+            return;
+        }
+        if (isListening) {
+            if (recognition) recognition.stop();
+            isListening = false;
+            document.getElementById('micBtn').classList.remove('listening');
+            document.getElementById('micBtn').textContent = '🎤';
+            return;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+
+        recognition.onstart = () => {
+            isListening = true;
+            document.getElementById('micBtn').classList.add('listening');
+            document.getElementById('micBtn').textContent = '⏹️';
+            showToast('🎤 Listening...', 'success', '🎤');
+        };
+        recognition.onresult = (event) => {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    transcript += event.results[i][0].transcript;
+                }
+            }
+            if (transcript) {
+                document.getElementById('chatInput').value = transcript;
+                sendChat();
+                isListening = false;
+                document.getElementById('micBtn').classList.remove('listening');
+                document.getElementById('micBtn').textContent = '🎤';
+            }
+        };
+        recognition.onerror = (e) => {
+            isListening = false;
+            document.getElementById('micBtn').classList.remove('listening');
+            document.getElementById('micBtn').textContent = '🎤';
+            if (e.error !== 'aborted') showToast('Voice error: ' + e.error, 'error', '⚠️');
+        };
+        recognition.onend = () => {
+            isListening = false;
+            document.getElementById('micBtn').classList.remove('listening');
+            document.getElementById('micBtn').textContent = '🎤';
+        };
+        recognition.start();
     }
 
     // =============================================================
@@ -1081,7 +1373,7 @@
     }
 
     // =============================================================
-    // CONFIRM MODAL (reset / destructive actions)
+    // CONFIRM MODAL
     // =============================================================
     function confirmReset() {
         document.getElementById('confirmTitle').textContent = '🔥 Reset all data?';
@@ -1142,7 +1434,7 @@
     }
 
     // =============================================================
-    // EDIT WISHLIST (modal, not prompt())
+    // EDIT WISHLIST
     // =============================================================
     function openWishEdit(id) {
         editingWishId = id;
@@ -1197,7 +1489,15 @@
             try {
                 const parsed = JSON.parse(e.target.result);
                 if (typeof parsed.balance !== 'number' || !Array.isArray(parsed.categories)) throw new Error('bad shape');
+                // Ensure colors
+                if (parsed.categories) {
+                    parsed.categories.forEach((c, i) => {
+                        if (!c.color) c.color = CAT_COLORS[i % CAT_COLORS.length];
+                    });
+                }
                 state = { ...DEFAULT, ...parsed };
+                if (!state.restorePoints) state.restorePoints = [];
+                if (!state.txCount) state.txCount = 0;
                 syncCategories();
                 showToast('Data imported successfully', 'success', '⬆️');
                 saveState();
@@ -1210,7 +1510,7 @@
     }
 
     // =============================================================
-    // CHAT
+    // CHAT (enhanced with forecast)
     // =============================================================
     function sendChat() {
         const input = document.getElementById('chatInput');
@@ -1223,13 +1523,16 @@
         soundClick();
 
         setTimeout(() => {
-            let reply = "I've noted that. Try asking about your balance, top spending category, wishlist, or for advice.";
+            let reply = "I've noted that. Try asking about your balance, top spending category, wishlist, advice, or forecast.";
             const lower = text.toLowerCase();
             const topCat = [...state.categories].sort((a,b) => b.current - a.current)[0];
             const totalIncome = state.income.reduce((s,i)=>s+i.amount,0);
+            const forecast = calculateForecast();
 
             if (lower.includes('balance') || lower.includes('money')) {
                 reply = `💰 Your current balance is ${state.balance.toLocaleString()} KZT.`;
+            } else if (lower.includes('forecast') || lower.includes('predict') || lower.includes('run out')) {
+                reply = `🔮 Forecast: ${forecast.daysLeft} — ${forecast.status}.`;
             } else if (lower.includes('top') || lower.includes('most') || (lower.includes('spend') && lower.includes('categ'))) {
                 reply = topCat && topCat.current > 0 ? `💸 Your top spending category is "${topCat.name}" at ${topCat.current.toLocaleString()} KZT.` : "You haven't logged any expenses by category yet.";
             } else if (lower.includes('spend') || lower.includes('expense')) {
@@ -1244,7 +1547,7 @@
             } else if (lower.includes('hello') || lower.includes('hi')) {
                 reply = "Hello! I'm monitoring your finances. All systems green.";
             } else if (lower.includes('help')) {
-                reply = "You can deposit, log expenses, set income streams, add wishlist items, and track your budget across categories. Ask me about balance, top category, wishlist, or advice!";
+                reply = "You can deposit, log expenses, set income streams, add wishlist items, and track your budget across categories. Ask me about balance, top category, wishlist, advice, or forecast!";
             } else if (lower.includes('level')) {
                 reply = `🏆 You're Level ${Math.floor(state.balance/50000)+1}. Keep going!`;
             }
@@ -1266,7 +1569,7 @@
 
     function quickChat(cmd) {
         const input = document.getElementById('chatInput');
-        const map = { balance: 'What is my balance?', spend: 'What is my top spending category?', wish: 'What can I afford on my wishlist?', advice: 'Give me some advice' };
+        const map = { balance: 'What is my balance?', spend: 'What is my top spending category?', wish: 'What can I afford on my wishlist?', advice: 'Give me some advice', forecast: 'What is my spending forecast?' };
         input.value = map[cmd] || cmd;
         sendChat();
     }
@@ -1277,14 +1580,37 @@
     }
 
     // =============================================================
+    // KEYBOARD SHORTCUTS
+    // =============================================================
+    document.addEventListener('keydown', e => {
+        if (e.key === 'd' && e.ctrlKey) { e.preventDefault(); depositMoney(); }
+        if (e.key === 'e' && e.ctrlKey) { e.preventDefault(); document.getElementById('expenseAmount').focus(); }
+        if (e.key === 'u' && e.ctrlKey) { e.preventDefault(); undoLast(); }
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+        }
+    });
+
+    // =============================================================
     // INIT
     // =============================================================
     loadState();
 
-    document.addEventListener('keydown', e => {
-        if (e.key === 'd' && e.ctrlKey) { e.preventDefault(); depositMoney(); }
-        if (e.key === 'e' && e.ctrlKey) { e.preventDefault(); document.getElementById('expenseAmount').focus(); }
-    });
+    // Simple storage polyfill for local testing
+    if (!window.storage) {
+        window.storage = {
+            get: (key) => {
+                try {
+                    const val = localStorage.getItem(key);
+                    return Promise.resolve(val ? { value: val } : null);
+                } catch (e) { return Promise.resolve(null); }
+            },
+            set: (key, val) => {
+                try { localStorage.setItem(key, val); return Promise.resolve(); }
+                catch (e) { return Promise.reject(e); }
+            }
+        };
+    }
 </script>
 </body>
 </html>
