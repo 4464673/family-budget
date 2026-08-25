@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>💎 Nova Finance — AI Command Center</title>
-    <link rel="manifest" href="data:application/json,{}" />
+    <title>💎 Nova Finance — Ultimate Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -202,6 +201,17 @@
         .bubble.ai { background: rgba(255,255,255,0.04); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
         .bubble.user { background: linear-gradient(135deg, var(--a1), var(--a2)); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 20px var(--g1); }
 
+        .insight-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .insight-card .icon { font-size: 1.2rem; margin-right: 8px; }
+
         .forecast-card {
             background: rgba(255,255,255,0.02);
             border: 1px solid var(--border);
@@ -256,6 +266,28 @@
             background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 6px 10px; border-radius: 10px;
             color: var(--text); font-size: 0.8rem; font-family: inherit; max-width: 140px;
         }
+        .goal-progress {
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .goal-progress .label { font-size: 0.75rem; color: var(--text2); }
+        .goal-progress .value { font-size: 1rem; font-weight: 700; }
+
+        .install-btn {
+            background: var(--a3);
+            color: #000;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--trans);
+        }
+        .install-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--g1); }
 
         @media (max-width: 1024px) {
             .grid { grid-template-columns: 1fr; }
@@ -294,10 +326,11 @@
     <header class="header">
         <div class="brand">
             💎 Nova Finance
-            <small>v5.0 • AI</small>
+            <small>v6.0 • Ultimate</small>
             <button class="level-badge" id="levelBadge" onclick="showBalanceDetail()">🏆 Level 1</button>
         </div>
         <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <button class="install-btn" id="installBtn" style="display:none;" onclick="installPWA()">📱 Install</button>
             <div class="theme-toggles">
                 <button class="theme-btn active" data-theme="cyber" onclick="setTheme('cyber')" aria-label="Cyber theme"></button>
                 <button class="theme-btn" data-theme="ocean" onclick="setTheme('ocean')" aria-label="Ocean theme"></button>
@@ -308,7 +341,7 @@
             </div>
             <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇️ Export</button>
             <label class="btn btn-ghost btn-sm" style="cursor:pointer;">⬆️ Import<input type="file" accept="application/json" onchange="importData(event)" style="display:none;"></label>
-            <button class="btn btn-ghost btn-sm" onclick="createRestorePoint()">💾 Snapshot</button>
+            <button class="btn btn-ghost btn-sm" onclick="showRestoreModal()">💾 Snapshots</button>
         </div>
     </header>
 
@@ -349,16 +382,42 @@
                             <div class="value" id="achievementCount">0</div>
                         </div>
                     </div>
-                    <!-- NEW: Forecast Card -->
-                    <div class="forecast-card" id="forecastCard" style="margin-top:8px;">
-                        <div class="label">🔮 AI Spending Forecast</div>
-                        <div id="forecastContent" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:4px;">
-                            <span class="value" id="forecastDays" style="font-size:1rem;">—</span>
-                            <span class="value" id="forecastStatus" style="font-size:1rem;">—</span>
+                    <!-- Forecast & Insights -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;">
+                        <div class="forecast-card">
+                            <div class="label">🔮 Forecast</div>
+                            <div id="forecastContent" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; margin-top:2px;">
+                                <span class="value" id="forecastDays" style="font-size:1rem;">—</span>
+                                <span class="value" id="forecastStatus" style="font-size:1rem;">—</span>
+                            </div>
+                        </div>
+                        <div class="forecast-card">
+                            <div class="label">📊 Projected 30‑day balance</div>
+                            <div class="value" id="projectedBalance" style="font-size:1.2rem; font-weight:700; color:var(--a3);">—</div>
                         </div>
                     </div>
                 </div>
 
+                <!-- SAVINGS GOAL (NEW) -->
+                <div class="glass" style="margin-bottom:16px;">
+                    <h3 style="margin-bottom:10px; font-size:1.05rem;">🎯 Savings Goal</h3>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                        <input type="number" id="goalInput" placeholder="Target amount (KZT)" min="0" style="flex:2; min-width:150px; background:rgba(0,0,0,0.4); border:1px solid var(--border); padding:10px 14px; border-radius:12px; color:white;">
+                        <button class="btn" onclick="setSavingsGoal()">Set Goal</button>
+                        <button class="btn btn-ghost btn-sm" onclick="clearGoal()">Clear</button>
+                    </div>
+                    <div id="goalProgress" class="goal-progress" style="display:none;">
+                        <div class="label">Progress</div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="value" id="goalCurrent">0 KZT</span>
+                            <span class="value" id="goalTarget">0 KZT</span>
+                        </div>
+                        <div class="progress"><div class="progress-fill" id="goalFill" style="width:0%; background:var(--a3);"></div></div>
+                        <div style="font-size:0.75rem; color:var(--text2); margin-top:4px;" id="goalEta">—</div>
+                    </div>
+                </div>
+
+                <!-- QUICK ACTIONS -->
                 <div class="glass" style="margin-bottom:16px;">
                     <h3 style="margin-bottom:14px; font-size:1.1rem;">⚡ Quick Actions</h3>
                     <div class="input-group" style="margin-bottom:12px;">
@@ -376,6 +435,7 @@
                     </div>
                 </div>
 
+                <!-- BUDGET DISTRIBUTION + INSIGHTS -->
                 <div class="glass">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
                         <h3 style="font-size:1.05rem;">📂 Budget Distribution</h3>
@@ -385,6 +445,8 @@
                         </div>
                     </div>
                     <div id="categoriesContainer"></div>
+                    <!-- Insights panel -->
+                    <div id="insightsPanel" style="margin-top:16px;"></div>
                     <div style="margin-top:16px; text-align:center;">
                         <canvas id="pieCanvas" width="400" height="400"></canvas>
                     </div>
@@ -412,7 +474,7 @@
                         <div class="stat"><div class="label">Total Outflow</div><div class="value red" id="analyticsSpent">0</div></div>
                         <div class="stat"><div class="label">System Health</div><div class="value green" id="analyticsHealth">Optimal</div></div>
                         <div class="stat"><div class="label">Total Income</div><div class="value green" id="analyticsIncome">0</div></div>
-                        <div class="stat"><div class="label">Net Worth</div><div class="value gold" id="analyticsNetWorth">0</div></div>
+                        <div class="stat"><div class="label">30‑day Projection</div><div class="value gold" id="analyticsProjection">0</div></div>
                     </div>
                     <h4 style="color:var(--text2); margin-bottom:10px;">Balance Trend</h4>
                     <canvas id="trendCanvas" width="600" height="160" style="margin-bottom:20px;"></canvas>
@@ -442,7 +504,7 @@
                 </div>
             </div>
 
-            <!-- INCOME -->
+            <!-- INCOME + RECURRING BILLS -->
             <div id="income" class="view" role="tabpanel">
                 <div class="glass">
                     <h3 style="margin-bottom:14px;">💵 Income Streams</h3>
@@ -452,6 +514,14 @@
                         <button class="btn" onclick="addIncome()">⚡ Setup</button>
                     </div>
                     <div id="incomeContainer"></div>
+                    <div style="height:1px; background:var(--border); margin:16px 0;"></div>
+                    <h3 style="margin-bottom:10px; font-size:1.05rem;">🔄 Recurring Bills</h3>
+                    <div class="input-group" style="margin-bottom:12px;">
+                        <input type="text" id="billName" placeholder="Bill name (e.g. Rent)">
+                        <input type="number" id="billAmount" placeholder="Monthly cost" min="0">
+                        <button class="btn" onclick="addRecurringBill()">➕ Add Bill</button>
+                    </div>
+                    <div id="billsContainer"></div>
                 </div>
             </div>
 
@@ -465,6 +535,9 @@
                         <button class="btn btn-sm btn-ghost" onclick="document.getElementById('historyStart').value='';document.getElementById('historyEnd').value='';updateUI();">Clear</button>
                     </div>
                     <div id="fullHistory"></div>
+                    <div style="text-align:center; margin-top:12px;">
+                        <button class="btn btn-sm btn-ghost" id="loadMoreBtn" onclick="loadMoreHistory()">Load more</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -478,7 +551,7 @@
                 <button class="btn btn-sm btn-mic" id="micBtn" onclick="toggleVoice()" aria-label="Voice input">🎤</button>
             </div>
             <div class="chat-box" id="chatBox">
-                <div class="bubble ai">👋 I'm your finance assistant. Ask me about your balance, spending, or wishlist!</div>
+                <div class="bubble ai">👋 I'm your finance assistant. Ask me about your balance, spending, wishlist, or forecast!</div>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
                 <button class="btn btn-sm btn-ghost" onclick="quickChat('balance')">💰 Balance</button>
@@ -554,10 +627,9 @@
 
 <script>
     // =============================================================
-    // STATE
+    // STATE & STORAGE (with IndexedDB fallback)
     // =============================================================
     const STORAGE_KEY = 'nova-finance-state';
-    const RESTORE_KEY = 'nova-finance-restore';
     const CAT_COLORS = ['#38bdf8','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#f472b6','#34d399','#06b6d4','#a78bfa'];
 
     const DEFAULT = {
@@ -571,9 +643,13 @@
         logs: [{ id: 'l0', desc: 'Initial Boot', amount: 15000, type: 'deposit', categoryId: null, time: new Date().toLocaleTimeString(), ts: Date.now() }],
         wishlist: [{ id: 'w1', name: 'Sony Headphones', cost: 120000 }],
         income: [{ id: 'i1', source: 'Monthly Allowance', amount: 25000 }],
+        bills: [],
+        savingsGoal: null, // { target: number, started: timestamp }
         achievements: [],
         restorePoints: [],
-        txCount: 0
+        txCount: 0,
+        historyPage: 1,
+        historyPageSize: 20
     };
 
     let state = JSON.parse(JSON.stringify(DEFAULT));
@@ -583,7 +659,63 @@
     let saving = false;
     let isListening = false;
     let recognition = null;
+    let storageReady = false;
 
+    // ---- Storage abstraction ----
+    const storage = {
+        async get(key) {
+            try {
+                // Try localStorage first
+                const val = localStorage.getItem(key);
+                if (val !== null) return { value: val };
+            } catch (e) { /* fall through */ }
+            // Fallback: IndexedDB
+            return new Promise((resolve) => {
+                const req = indexedDB.open('NovaFinanceDB', 1);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('store')) {
+                        db.createObjectStore('store');
+                    }
+                };
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    const tx = db.transaction('store', 'readonly');
+                    const store = tx.objectStore('store');
+                    const getReq = store.get(key);
+                    getReq.onsuccess = () => resolve(getReq.result ? { value: getReq.result } : null);
+                    getReq.onerror = () => resolve(null);
+                };
+                req.onerror = () => resolve(null);
+            });
+        },
+        async set(key, value) {
+            try {
+                localStorage.setItem(key, value);
+                return;
+            } catch (e) { /* fall through */ }
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open('NovaFinanceDB', 1);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('store')) {
+                        db.createObjectStore('store');
+                    }
+                };
+                req.onsuccess = (e) => {
+                    const db = e.target.result;
+                    const tx = db.transaction('store', 'readwrite');
+                    const store = tx.objectStore('store');
+                    const putReq = store.put(value, key);
+                    putReq.onsuccess = () => resolve();
+                    putReq.onerror = () => reject();
+                };
+                req.onerror = () => reject();
+            });
+        }
+    };
+
+    // ---- State sync ----
     function syncCategories() {
         state.categories.forEach(c => c.current = 0);
         state.logs.forEach(l => {
@@ -596,10 +728,9 @@
 
     async function loadState() {
         try {
-            const result = await window.storage.get(STORAGE_KEY, false);
+            const result = await storage.get(STORAGE_KEY);
             if (result && result.value) {
                 const parsed = JSON.parse(result.value);
-                // Ensure categories have color fields
                 if (parsed.categories) {
                     parsed.categories.forEach((c, i) => {
                         if (!c.color) c.color = CAT_COLORS[i % CAT_COLORS.length];
@@ -608,25 +739,29 @@
                 state = { ...DEFAULT, ...parsed };
                 if (!state.restorePoints) state.restorePoints = [];
                 if (!state.txCount) state.txCount = 0;
+                if (!state.bills) state.bills = [];
+                if (!state.savingsGoal) state.savingsGoal = null;
+                if (!state.historyPage) state.historyPage = 1;
             }
         } catch (e) {
-            // no saved state — use defaults
+            showToast('Could not load saved data — starting fresh.', 'error', '⚠️');
         }
         syncCategories();
         document.getElementById('loadingOverlay').style.opacity = '0';
         setTimeout(() => document.getElementById('loadingOverlay').style.display = 'none', 400);
         updateUI();
-        // Auto-restore from localStorage every 5 transactions
         if (state.restorePoints && state.restorePoints.length > 0) {
             populateRestoreList();
         }
+        // Process recurring bills
+        processRecurringBills();
     }
 
     async function saveState() {
         updateUI();
         try {
             saving = true;
-            await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+            await storage.set(STORAGE_KEY, JSON.stringify(state));
             // Auto-snapshot every 5 transactions
             if (state.logs.length % 5 === 0 && state.logs.length > 0 && state.txCount !== state.logs.length) {
                 state.txCount = state.logs.length;
@@ -700,7 +835,7 @@
     setTheme('cyber');
 
     // =============================================================
-    // PARTICLES
+    // PARTICLES (same as before)
     // =============================================================
     const canvas = document.getElementById('particles');
     const pctx = canvas.getContext('2d');
@@ -794,41 +929,198 @@
     }
 
     // =============================================================
-    // FORECAST ENGINE (NEW)
+    // FORECAST ENGINE (fixed — uses actual days elapsed)
     // =============================================================
     function calculateForecast() {
-        const expenses = state.logs.filter(l => l.type === 'expense');
-        const totalExpense = expenses.reduce((s,l) => s + l.amount, 0);
+        const now = Date.now();
+        const expenses = state.logs.filter(l => l.type === 'expense' && l.ts);
+        let dailyBurn = 0;
+        if (expenses.length > 0) {
+            const minTs = Math.min(...expenses.map(l => l.ts));
+            const days = Math.max((now - minTs) / 86400000, 0.001);
+            const total = expenses.reduce((s,l) => s + l.amount, 0);
+            dailyBurn = total / days;
+        } else {
+            dailyBurn = state.balance / 30; // fallback
+        }
         const totalIncome = state.income.reduce((s,i) => s + i.amount, 0);
         const monthlyIncome = totalIncome;
-        const avgDailyBurn = expenses.length > 0 ? totalExpense / Math.max(1, expenses.length) : state.balance / 30;
+        const netDaily = (monthlyIncome / 30) - dailyBurn;
 
         let daysLeft = '∞';
         let status = '💚 Healthy';
+        let projectedBalance = state.balance + (netDaily * 30);
 
-        if (avgDailyBurn > 0 && monthlyIncome > 0) {
-            const netDaily = (monthlyIncome / 30) - avgDailyBurn;
-            if (netDaily < 0 && state.balance > 0) {
-                const days = state.balance / Math.abs(netDaily);
-                daysLeft = `~${Math.round(days)} days`;
-                status = days < 30 ? '⚠️ Critical' : '🔶 Caution';
-            } else if (netDaily >= 0) {
-                daysLeft = '♾️ (growing)';
-                status = '💚 Healthy';
-            }
-        } else if (avgDailyBurn > 0 && state.balance > 0) {
-            const days = state.balance / avgDailyBurn;
+        if (netDaily < 0 && state.balance > 0) {
+            const days = state.balance / Math.abs(netDaily);
             daysLeft = `~${Math.round(days)} days`;
             status = days < 30 ? '⚠️ Critical' : '🔶 Caution';
+        } else if (netDaily >= 0) {
+            daysLeft = '♾️ (growing)';
+            status = '💚 Healthy';
         }
 
-        return { daysLeft, status };
+        // Linear regression for advanced forecast
+        const points = state.logs.filter(l => l.ts).sort((a,b) => a.ts - b.ts);
+        let slope = 0;
+        if (points.length >= 2) {
+            const n = points.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            const firstTs = points[0].ts;
+            points.forEach((p, i) => {
+                const x = (p.ts - firstTs) / 86400000; // days since first
+                let y = 0;
+                // reconstruct balance at this point
+                for (let j=0; j<=i; j++) {
+                    y += (points[j].type === 'deposit' ? points[j].amount : -points[j].amount);
+                }
+                sumX += x; sumY += y; sumXY += x*y; sumX2 += x*x;
+            });
+            const denom = n * sumX2 - sumX * sumX;
+            if (denom !== 0) slope = (n * sumXY - sumX * sumY) / denom;
+        }
+        // Use slope to predict 30 days out
+        if (slope !== 0 && points.length >= 2) {
+            const lastPoint = points[points.length-1];
+            let lastBalance = 0;
+            for (let j=0; j<points.length; j++) {
+                lastBalance += (points[j].type === 'deposit' ? points[j].amount : -points[j].amount);
+            }
+            const pred30 = lastBalance + slope * 30;
+            projectedBalance = pred30;
+        }
+
+        return { daysLeft, status, projectedBalance: Math.round(projectedBalance) };
     }
 
     // =============================================================
-    // UI UPDATE
+    // SAVINGS GOAL
+    // =============================================================
+    function setSavingsGoal() {
+        const val = parseFloat(document.getElementById('goalInput').value);
+        if (val > 0) {
+            state.savingsGoal = { target: val, started: Date.now() };
+            document.getElementById('goalInput').value = '';
+            soundClick();
+            showToast(`🎯 Goal set to ${val.toLocaleString()} KZT`, 'success', '🎯');
+            saveState();
+        } else {
+            showToast('Enter a valid target', 'error', '⚠️');
+        }
+    }
+
+    function clearGoal() {
+        state.savingsGoal = null;
+        soundClick();
+        showToast('Goal cleared', 'success', '🗑️');
+        saveState();
+    }
+
+    function updateGoalUI() {
+        const container = document.getElementById('goalProgress');
+        const goal = state.savingsGoal;
+        if (!goal) { container.style.display = 'none'; return; }
+        container.style.display = 'block';
+        document.getElementById('goalTarget').textContent = goal.target.toLocaleString() + ' KZT';
+        const current = state.balance;
+        document.getElementById('goalCurrent').textContent = current.toLocaleString() + ' KZT';
+        const pct = Math.min((current / goal.target) * 100, 100);
+        document.getElementById('goalFill').style.width = pct + '%';
+        document.getElementById('goalFill').style.background = pct >= 100 ? 'var(--a3)' : 'var(--a4)';
+        // ETA
+        const totalIncome = state.income.reduce((s,i) => s + i.amount, 0);
+        const avgDailyBurn = state.logs.filter(l => l.type === 'expense').reduce((s,l) => s + l.amount, 0) / Math.max(1, state.logs.length);
+        const netDaily = (totalIncome / 30) - avgDailyBurn;
+        if (netDaily > 0 && current < goal.target) {
+            const days = (goal.target - current) / netDaily;
+            document.getElementById('goalEta').textContent = `⏳ ~${Math.round(days)} days left (at current rate)`;
+        } else if (current >= goal.target) {
+            document.getElementById('goalEta').textContent = '🎉 Goal achieved!';
+        } else {
+            document.getElementById('goalEta').textContent = '⏳ Saving... (increase income or reduce spending)';
+        }
+    }
+
+    // =============================================================
+    // RECURRING BILLS
+    // =============================================================
+    function addRecurringBill() {
+        const name = document.getElementById('billName').value.trim();
+        const amount = parseFloat(document.getElementById('billAmount').value);
+        if (name && amount > 0) {
+            if (!state.bills) state.bills = [];
+            state.bills.push({ id: 'b' + Date.now(), name, amount, lastPaid: Date.now() });
+            document.getElementById('billName').value = '';
+            document.getElementById('billAmount').value = '';
+            soundClick();
+            showToast(`🔄 Added bill "${name}"`, 'success', '🔄');
+            saveState();
+        } else {
+            showToast('Enter name and amount', 'error', '⚠️');
+        }
+    }
+
+    function processRecurringBills() {
+        if (!state.bills || state.bills.length === 0) return;
+        const now = Date.now();
+        let changed = false;
+        state.bills.forEach(bill => {
+            const daysSince = (now - bill.lastPaid) / 86400000;
+            if (daysSince >= 30) {
+                // auto-deduct
+                state.balance -= bill.amount;
+                state.logs.push({
+                    id: 'l' + Date.now(),
+                    desc: `Auto‑payment: ${bill.name}`,
+                    amount: bill.amount,
+                    type: 'expense',
+                    categoryId: null,
+                    time: new Date().toLocaleTimeString(),
+                    ts: now
+                });
+                bill.lastPaid = now;
+                changed = true;
+                showToast(`🔄 Auto‑deducted ${bill.amount.toLocaleString()} KZT for ${bill.name}`, 'error', '🔄');
+            }
+        });
+        if (changed) saveState();
+    }
+
+    // =============================================================
+    // SPENDING INSIGHTS (AI‑style summary)
+    // =============================================================
+    function generateInsights() {
+        const totalIncome = state.income.reduce((s,i) => s + i.amount, 0);
+        const totalSpent = state.logs.filter(l => l.type === 'expense').reduce((s,l) => s + l.amount, 0);
+        if (totalSpent === 0) return 'No spending data yet. Start logging expenses to get insights.';
+
+        const topCat = [...state.categories].sort((a,b) => b.current - a.current)[0];
+        let msg = '';
+        if (topCat && topCat.current > 0) {
+            const pctOfIncome = totalIncome > 0 ? (topCat.current / totalIncome) * 100 : 0;
+            msg += `💸 Top category: "${topCat.name}" (${topCat.current.toLocaleString()} KZT, ${pctOfIncome.toFixed(1)}% of income). `;
+            if (pctOfIncome > 30) msg += 'This is above a typical 30% benchmark — consider reviewing. ';
+            else msg += 'This is within a healthy range. ';
+        }
+        if (totalIncome > 0) {
+            const savingsRate = ((totalIncome - totalSpent) / totalIncome) * 100;
+            msg += `📊 Savings rate: ${Math.round(savingsRate)}%. `;
+            if (savingsRate < 10) msg += 'Try to aim for at least 10‑15% savings. ';
+            else if (savingsRate > 30) msg += 'Excellent savings discipline! ';
+        }
+        const avgDailyBurn = totalSpent / Math.max(1, state.logs.filter(l => l.type === 'expense').length);
+        if (avgDailyBurn > 0) {
+            const daysLeft = state.balance / avgDailyBurn;
+            msg += `⏳ Current burn rate would last ~${Math.round(daysLeft)} days without income.`;
+        }
+        return msg;
+    }
+
+    // =============================================================
+    // UI UPDATE (main render)
     // =============================================================
     function updateUI() {
+        // === Balance
         const balEl = document.getElementById('balanceDisplay');
         const target = state.balance;
         const current = parseInt(balEl.textContent.replace(/,/g,'')) || 0;
@@ -848,41 +1140,50 @@
             balEl.textContent = target.toLocaleString();
         }
 
-        // Daily burn
-        const recentExpenses = state.logs.filter(l => l.type === 'expense' && (Date.now() - (l.ts || 0)) < 7 * 86400000);
-        const burnBasis = recentExpenses.length > 0 ? recentExpenses.reduce((s,l)=>s+l.amount,0) / 7 : state.balance / 30;
-        document.getElementById('paceDisplay').textContent = Math.round(burnBasis).toLocaleString();
-        document.getElementById('paceSub').textContent = recentExpenses.length > 0 ? 'avg over last 7 days' : 'estimate (no recent data)';
+        // === Daily burn (fixed: actual days elapsed)
+        const now = Date.now();
+        const expenses = state.logs.filter(l => l.type === 'expense' && l.ts);
+        let dailyBurn = 0;
+        if (expenses.length > 0) {
+            const minTs = Math.min(...expenses.map(l => l.ts));
+            const days = Math.max((now - minTs) / 86400000, 0.001);
+            const total = expenses.reduce((s,l) => s + l.amount, 0);
+            dailyBurn = total / days;
+        } else {
+            dailyBurn = state.balance / 30;
+        }
+        document.getElementById('paceDisplay').textContent = Math.round(dailyBurn).toLocaleString();
+        document.getElementById('paceSub').textContent = expenses.length > 0 ? 'avg over actual days' : 'estimate (no recent data)';
 
-        // Savings rate
+        // === Savings rate
         const totalIncome = state.income.reduce((s, i) => s + i.amount, 0);
-        const totalSpentAll = state.logs.filter(l => l.type === 'expense').reduce((s,l)=>s+l.amount, 0);
-        const totalDepositedAll = state.logs.filter(l => l.type === 'deposit').reduce((s,l)=>s+l.amount, 0);
+        const totalSpentAll = state.logs.filter(l => l.type === 'expense').reduce((s,l) => s + l.amount, 0);
+        const totalDepositedAll = state.logs.filter(l => l.type === 'deposit').reduce((s,l) => s + l.amount, 0);
         const rate = totalDepositedAll > 0 ? Math.round(((totalDepositedAll - totalSpentAll) / totalDepositedAll) * 100) : 0;
         document.getElementById('savingsRate').textContent = Math.max(Math.min(rate, 100), 0) + '%';
 
-        // Level
+        // === Level & achievements
         const level = Math.floor(state.balance / 50000) + 1;
         document.getElementById('levelBadge').innerHTML = `🏆 Level ${Math.min(level, 99)}`;
-
-        // Achievements
         const achCount = state.achievements ? state.achievements.length : 0;
         document.getElementById('achievementCount').textContent = achCount;
 
-        // FORECAST
+        // === Forecast
         const forecast = calculateForecast();
         document.getElementById('forecastDays').textContent = `⏳ ${forecast.daysLeft}`;
         document.getElementById('forecastStatus').textContent = forecast.status;
         document.getElementById('forecastStatus').className = 'value ' + (forecast.status.includes('Healthy') ? 'green' : forecast.status.includes('Critical') ? 'red' : 'gold');
+        document.getElementById('projectedBalance').textContent = forecast.projectedBalance.toLocaleString() + ' KZT';
+        document.getElementById('analyticsProjection').textContent = forecast.projectedBalance.toLocaleString() + ' KZT';
 
-        // Category dropdown
+        // === Category dropdown
         const sel = document.getElementById('expenseCategory');
         const prevSelVal = sel.value;
         sel.innerHTML = '';
         state.categories.forEach(c => sel.innerHTML += `<option value="${c.id}">${esc(c.name)}</option>`);
         if ([...sel.options].some(o => o.value === prevSelVal)) sel.value = prevSelVal;
 
-        // Categories
+        // === Categories
         const cont = document.getElementById('categoriesContainer');
         cont.innerHTML = '';
         let totalSpent = 0;
@@ -910,17 +1211,20 @@
             `;
         });
 
-        // Analytics
+        // === Insights
+        const insights = generateInsights();
+        document.getElementById('insightsPanel').innerHTML = `
+            <div class="insight-card">🧠 ${insights}</div>
+        `;
+
+        // === Analytics
         document.getElementById('analyticsSpent').textContent = totalSpent.toLocaleString() + ' KZT';
         const health = document.getElementById('analyticsHealth');
         if (totalSpent > state.balance * 0.8 && state.balance > 0) { health.textContent = '⚠️ Critical'; health.className = 'value red'; }
         else { health.textContent = '✅ Optimal'; health.className = 'value green'; }
         document.getElementById('analyticsIncome').textContent = totalIncome.toLocaleString() + ' KZT/mo';
-        // Net worth
-        const netWorth = state.balance + totalIncome - totalSpentAll;
-        document.getElementById('analyticsNetWorth').textContent = netWorth.toLocaleString() + ' KZT';
 
-        // Transaction log with search
+        // === Transaction log (with search)
         const searchTerm = (document.getElementById('txSearch')?.value || '').toLowerCase();
         const logDiv = document.getElementById('transactionLog');
         logDiv.innerHTML = '';
@@ -939,24 +1243,30 @@
             `;
         });
 
-        // Full history with date filters
+        // === Full history (with date filters & pagination)
         const startDate = document.getElementById('historyStart')?.value;
         const endDate = document.getElementById('historyEnd')?.value;
         const histDiv = document.getElementById('fullHistory');
-        histDiv.innerHTML = '';
         let filteredLogs = [...state.logs];
         if (startDate) {
-            const startTs = new Date(startDate).getTime();
+            const startTs = new Date(startDate).getTime(); // local midnight
             filteredLogs = filteredLogs.filter(l => (l.ts || 0) >= startTs);
         }
         if (endDate) {
-            const endTs = new Date(endDate).getTime() + 86400000;
+            const endTs = new Date(endDate).getTime() + 86400000; // next midnight
             filteredLogs = filteredLogs.filter(l => (l.ts || 0) <= endTs);
         }
-        if (filteredLogs.length === 0) {
+        // Sort by most recent
+        filteredLogs.sort((a,b) => (b.ts||0) - (a.ts||0));
+        const pageSize = state.historyPageSize || 20;
+        const page = state.historyPage || 1;
+        const startIdx = (page - 1) * pageSize;
+        const paged = filteredLogs.slice(startIdx, startIdx + pageSize);
+        if (paged.length === 0 && page === 1) {
             histDiv.innerHTML = `<div class="empty-state"><span class="icon">📭</span>No transactions in this period.</div>`;
         } else {
-            filteredLogs.reverse().forEach((l) => {
+            histDiv.innerHTML = '';
+            paged.forEach(l => {
                 const sign = l.type === 'deposit' ? '+' : '-';
                 const color = l.type === 'deposit' ? 'var(--a3)' : 'var(--a5)';
                 histDiv.innerHTML += `
@@ -970,15 +1280,22 @@
                 `;
             });
         }
+        // Show/hide "Load More" button
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (filteredLogs.length > startIdx + pageSize) {
+            loadMoreBtn.style.display = 'inline-block';
+        } else {
+            loadMoreBtn.style.display = 'none';
+        }
 
-        // Converter
+        // === Converter
         const kzt = parseFloat(document.getElementById('convKZT').value) || state.balance;
         document.getElementById('convUSD').textContent = (kzt / 480).toFixed(2);
         document.getElementById('convEUR').textContent = (kzt / 520).toFixed(2);
         document.getElementById('convRUB').textContent = (kzt / 5.2).toFixed(2);
         document.getElementById('convCNY').textContent = (kzt / 66).toFixed(2);
 
-        // Wishlist
+        // === Wishlist
         const wishDiv = document.getElementById('wishlistContainer');
         wishDiv.innerHTML = '';
         if (state.wishlist.length === 0) {
@@ -1002,7 +1319,7 @@
             `;
         });
 
-        // Income
+        // === Income
         const incDiv = document.getElementById('incomeContainer');
         incDiv.innerHTML = '';
         if (state.income.length === 0) {
@@ -1020,20 +1337,44 @@
             `;
         });
 
+        // === Recurring Bills
+        const billsDiv = document.getElementById('billsContainer');
+        billsDiv.innerHTML = '';
+        if (!state.bills || state.bills.length === 0) {
+            billsDiv.innerHTML = `<div class="empty-state"><span class="icon">🔄</span>No recurring bills added.</div>`;
+        } else {
+            state.bills.forEach(bill => {
+                billsDiv.innerHTML += `
+                    <div class="list-item" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:600;">${esc(bill.name)}</span>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="color:var(--a5); font-weight:700;">-${bill.amount.toLocaleString()} / mo</span>
+                            <button class="btn btn-danger btn-sm" onclick="deleteBill('${bill.id}')" aria-label="Remove ${esc(bill.name)}">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // === Undo button state
         document.getElementById('undoBtn').disabled = state.logs.length === 0;
 
+        // === Savings Goal UI
+        updateGoalUI();
+
+        // === Draw charts
         drawPieChart();
         drawTrendChart();
+
+        // === Achievements & alerts
         checkAchievements();
-        // Check for budget alerts
         checkBudgetAlerts();
     }
 
     // =============================================================
-    // BUDGET ALERTS (NEW)
+    // BUDGET ALERTS
     // =============================================================
     let alertShown = {};
-
     function checkBudgetAlerts() {
         state.categories.forEach(cat => {
             const target = cat.targetLimit ?? Math.round((state.balance * cat.percentShare) / 100);
@@ -1052,7 +1393,7 @@
     }
 
     // =============================================================
-    // PIE + TREND CHARTS
+    // CHARTS
     // =============================================================
     function drawPieChart() {
         const canvas = document.getElementById('pieCanvas');
@@ -1068,7 +1409,6 @@
         }
         const total = data.reduce((s,c) => s + c.current, 0);
         let start = -Math.PI/2;
-        // Use category colors
         data.forEach((cat, i) => {
             const angle = (cat.current / total) * 2 * Math.PI;
             ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, start, start + angle); ctx.closePath();
@@ -1114,7 +1454,7 @@
     }
 
     // =============================================================
-    // ACHIEVEMENTS (expanded)
+    // ACHIEVEMENTS
     // =============================================================
     function checkAchievements() {
         if (!state.achievements) state.achievements = [];
@@ -1125,24 +1465,21 @@
         if (state.wishlist.length >= 3 && !state.achievements.includes('dreamer')) newAch.push({ id: 'dreamer', name: '🎯 Dreamer', msg: 'Added 3+ wishlist items!' });
         if (state.income.length >= 2 && !state.achievements.includes('earner')) newAch.push({ id: 'earner', name: '💵 Earner', msg: 'Set up 2+ income streams!' });
         if (state.logs.filter(l => l.type === 'expense').length >= 5 && !state.achievements.includes('spender')) newAch.push({ id: 'spender', name: '💸 Spender', msg: 'Logged 5+ expenses!' });
+        if (state.savingsGoal && state.balance >= state.savingsGoal.target && !state.achievements.includes('goal_achieved')) newAch.push({ id: 'goal_achieved', name: '🎯 Goal Achiever', msg: 'Reached your savings target!' });
         if (newAch.length === 0) return;
         newAch.forEach(a => state.achievements.push(a.id));
         newAch.forEach((a, i) => setTimeout(() => { showToast(`🏆 ACHIEVEMENT: ${a.name} — ${a.msg}`, 'success', '🏆'); soundAchievement(); fireConfetti(80); }, i * 200));
-        try { window.storage.set(STORAGE_KEY, JSON.stringify(state), false); } catch(e) {}
+        saveState();
     }
 
     // =============================================================
-    // RESTORE POINTS (NEW)
+    // RESTORE POINTS (differential, capped at 5)
     // =============================================================
     function createRestorePoint(auto = false) {
         if (!state.restorePoints) state.restorePoints = [];
-        // Remove old auto points if too many
-        if (!auto) {
-            // manual snapshot
-        }
-        // Keep last 10 restore points
-        if (state.restorePoints.length >= 10) {
-            state.restorePoints = state.restorePoints.slice(-9);
+        // Keep only last 5
+        if (state.restorePoints.length >= 5) {
+            state.restorePoints.shift();
         }
         const snapshot = {
             id: 'rp' + Date.now(),
@@ -1152,7 +1489,9 @@
             categories: JSON.parse(JSON.stringify(state.categories)),
             logs: JSON.parse(JSON.stringify(state.logs)),
             wishlist: JSON.parse(JSON.stringify(state.wishlist)),
-            income: JSON.parse(JSON.stringify(state.income))
+            income: JSON.parse(JSON.stringify(state.income)),
+            bills: JSON.parse(JSON.stringify(state.bills || [])),
+            savingsGoal: state.savingsGoal ? { ...state.savingsGoal } : null
         };
         state.restorePoints.push(snapshot);
         if (!auto) {
@@ -1160,7 +1499,7 @@
             soundClick();
         }
         populateRestoreList();
-        try { window.storage.set(STORAGE_KEY, JSON.stringify(state), false); } catch(e) {}
+        saveState();
     }
 
     function populateRestoreList() {
@@ -1194,6 +1533,8 @@
             state.logs = JSON.parse(JSON.stringify(rp.logs));
             state.wishlist = JSON.parse(JSON.stringify(rp.wishlist));
             state.income = JSON.parse(JSON.stringify(rp.income));
+            state.bills = JSON.parse(JSON.stringify(rp.bills || []));
+            state.savingsGoal = rp.savingsGoal ? { ...rp.savingsGoal } : null;
             syncCategories();
             closeModal('confirmModal');
             closeModal('restoreModal');
@@ -1205,8 +1546,13 @@
         soundClick();
     }
 
+    function showRestoreModal() {
+        document.getElementById('restoreModal').classList.add('show');
+        soundClick();
+    }
+
     // =============================================================
-    // VOICE INPUT (NEW)
+    // VOICE INPUT
     // =============================================================
     function toggleVoice() {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -1259,6 +1605,27 @@
             document.getElementById('micBtn').textContent = '🎤';
         };
         recognition.start();
+    }
+
+    // =============================================================
+    // PWA INSTALL
+    // =============================================================
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installBtn').style.display = 'inline-block';
+    });
+
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+                document.getElementById('installBtn').style.display = 'none';
+            });
+        } else {
+            showToast('Installation not available', 'error', '⚠️');
+        }
     }
 
     // =============================================================
@@ -1357,6 +1724,14 @@
         saveState();
     }
 
+    function deleteBill(id) {
+        if (!state.bills) return;
+        state.bills = state.bills.filter(b => b.id !== id);
+        soundClick();
+        showToast('Bill removed', 'error', '🗑️');
+        saveState();
+    }
+
     function deleteLog(id) {
         const idx = state.logs.findIndex(l => l.id === id);
         if (idx === -1) return;
@@ -1372,9 +1747,11 @@
         saveState();
     }
 
-    // =============================================================
-    // CONFIRM MODAL
-    // =============================================================
+    function loadMoreHistory() {
+        state.historyPage = (state.historyPage || 1) + 1;
+        updateUI();
+    }
+
     function confirmReset() {
         document.getElementById('confirmTitle').textContent = '🔥 Reset all data?';
         document.getElementById('confirmBody').textContent = 'This clears your balance, categories, logs, wishlist, and income streams back to defaults. This cannot be undone.';
@@ -1383,6 +1760,8 @@
             state = JSON.parse(JSON.stringify(DEFAULT));
             state.logs[0].ts = Date.now();
             state.logs[0].time = new Date().toLocaleTimeString();
+            state.bills = [];
+            state.savingsGoal = null;
             syncCategories();
             closeModal('confirmModal');
             soundClick();
@@ -1489,7 +1868,6 @@
             try {
                 const parsed = JSON.parse(e.target.result);
                 if (typeof parsed.balance !== 'number' || !Array.isArray(parsed.categories)) throw new Error('bad shape');
-                // Ensure colors
                 if (parsed.categories) {
                     parsed.categories.forEach((c, i) => {
                         if (!c.color) c.color = CAT_COLORS[i % CAT_COLORS.length];
@@ -1498,6 +1876,8 @@
                 state = { ...DEFAULT, ...parsed };
                 if (!state.restorePoints) state.restorePoints = [];
                 if (!state.txCount) state.txCount = 0;
+                if (!state.bills) state.bills = [];
+                if (!state.savingsGoal) state.savingsGoal = null;
                 syncCategories();
                 showToast('Data imported successfully', 'success', '⬆️');
                 saveState();
@@ -1510,7 +1890,7 @@
     }
 
     // =============================================================
-    // CHAT (enhanced with forecast)
+    // CHAT (enhanced)
     // =============================================================
     function sendChat() {
         const input = document.getElementById('chatInput');
@@ -1528,11 +1908,12 @@
             const topCat = [...state.categories].sort((a,b) => b.current - a.current)[0];
             const totalIncome = state.income.reduce((s,i)=>s+i.amount,0);
             const forecast = calculateForecast();
+            const insights = generateInsights();
 
             if (lower.includes('balance') || lower.includes('money')) {
                 reply = `💰 Your current balance is ${state.balance.toLocaleString()} KZT.`;
             } else if (lower.includes('forecast') || lower.includes('predict') || lower.includes('run out')) {
-                reply = `🔮 Forecast: ${forecast.daysLeft} — ${forecast.status}.`;
+                reply = `🔮 Forecast: ${forecast.daysLeft} — ${forecast.status}. Projected 30‑day balance: ${forecast.projectedBalance.toLocaleString()} KZT.`;
             } else if (lower.includes('top') || lower.includes('most') || (lower.includes('spend') && lower.includes('categ'))) {
                 reply = topCat && topCat.current > 0 ? `💸 Your top spending category is "${topCat.name}" at ${topCat.current.toLocaleString()} KZT.` : "You haven't logged any expenses by category yet.";
             } else if (lower.includes('spend') || lower.includes('expense')) {
@@ -1541,15 +1922,15 @@
                 const affordable = state.wishlist.filter(w => state.balance >= w.cost);
                 reply = affordable.length > 0 ? `🎯 You can already afford: ${affordable.map(w=>w.name).join(', ')}.` : "Check the Wishlist tab — none of your goals are affordable yet, but keep saving!";
             } else if (lower.includes('advice') || lower.includes('tip')) {
-                if (totalIncome === 0) reply = "💡 Set up an income stream first so I can gauge your savings rate.";
-                else if (topCat && topCat.current > totalIncome * 0.4) reply = `💡 "${topCat.name}" is eating a big chunk of your income — worth a closer look.`;
-                else reply = "💡 Your spending looks balanced across categories. Keep logging consistently for better insight.";
+                reply = `💡 ${insights}`;
             } else if (lower.includes('hello') || lower.includes('hi')) {
                 reply = "Hello! I'm monitoring your finances. All systems green.";
             } else if (lower.includes('help')) {
                 reply = "You can deposit, log expenses, set income streams, add wishlist items, and track your budget across categories. Ask me about balance, top category, wishlist, advice, or forecast!";
             } else if (lower.includes('level')) {
                 reply = `🏆 You're Level ${Math.floor(state.balance/50000)+1}. Keep going!`;
+            } else if (lower.includes('goal')) {
+                reply = state.savingsGoal ? `🎯 Your savings goal is ${state.savingsGoal.target.toLocaleString()} KZT — you're at ${Math.round((state.balance/state.savingsGoal.target)*100)}%` : "You don't have a savings goal set yet.";
             }
             typeReply(reply);
         }, 400);
@@ -1569,7 +1950,13 @@
 
     function quickChat(cmd) {
         const input = document.getElementById('chatInput');
-        const map = { balance: 'What is my balance?', spend: 'What is my top spending category?', wish: 'What can I afford on my wishlist?', advice: 'Give me some advice', forecast: 'What is my spending forecast?' };
+        const map = {
+            balance: 'What is my balance?',
+            spend: 'What is my top spending category?',
+            wish: 'What can I afford on my wishlist?',
+            advice: 'Give me some advice',
+            forecast: 'What is my spending forecast?'
+        };
         input.value = map[cmd] || cmd;
         sendChat();
     }
@@ -1595,22 +1982,6 @@
     // INIT
     // =============================================================
     loadState();
-
-    // Simple storage polyfill for local testing
-    if (!window.storage) {
-        window.storage = {
-            get: (key) => {
-                try {
-                    const val = localStorage.getItem(key);
-                    return Promise.resolve(val ? { value: val } : null);
-                } catch (e) { return Promise.resolve(null); }
-            },
-            set: (key, val) => {
-                try { localStorage.setItem(key, val); return Promise.resolve(); }
-                catch (e) { return Promise.reject(e); }
-            }
-        };
-    }
 </script>
 </body>
 </html>
